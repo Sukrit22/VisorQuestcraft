@@ -1,0 +1,8 @@
+/sources/
+/downloads/
+/prepared/
+/build/
+/outputs/
+*.log
+gradle-thread-dump.txt
+/logs/
