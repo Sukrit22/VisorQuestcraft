@@ -1,0 +1,10 @@
+{
+  "schemaVersion": 1,
+  "id": "visor_android_bridge",
+  "version": "0.1.1",
+  "name": "Visor Android Bridge",
+  "description": "QuestCraft XR handoff backend for the local Visor 0.5.0 Android-backend prototype. Requires the matching launcher and patched AtumVR.",
+  "environment": "client",
+  "license": "MPL-2.0",
+  "depends": { "fabricloader": ">=0.14.14", "minecraft": "1.20.1", "java": ">=17", "visor": "0.5.0" }
+}

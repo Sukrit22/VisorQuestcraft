@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    { "id": "forge05", "loader": "forge", "version": "0.5.0", "asset": "mods/forge/Visor-0.5.0-android-forge.1.jar", "localPath": "sources/Visor-0.5.0/visor-forge/build/libs/Visor-0.5.0+mc1.20.1-forge.jar", "url": null, "sha256": null },
+    { "id": "fabric05", "loader": "fabric", "version": "0.5.0", "asset": "mods/fabric/Visor-0.5.0-android-fabric.1.jar", "localPath": "sources/Visor-0.5.0/visor-fabric/build/libs/Visor-0.5.0+mc1.20.1-fabric.jar", "url": null, "sha256": null },
+    { "id": "forge06", "loader": "forge", "version": "0.6.0-alpha.2", "asset": "mods/forge/Visor-0.6.0-alpha.2-android.1+mc1.20.1-forge.jar", "localPath": "outputs/Visor-0.6.0-alpha.2-android.1+mc1.20.1-forge.jar", "url": null, "sha256": null },
+    { "id": "bridge", "loader": "both", "version": "0.1.1", "asset": "mods/android/Visor-Android-Bridge-0.1.1.jar", "localPath": "outputs/Visor-Android-Bridge-0.1.1.jar", "url": null, "sha256": null }
+  ]
+}

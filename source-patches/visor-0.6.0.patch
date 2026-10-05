@@ -1,0 +1,1498 @@
+diff --git a/stonecutter.properties.toml b/stonecutter.properties.toml
+index 40241fce41f076b7eb9b10b15d7430b71c53c61c..feb872363b7f3fe75ba12dbbdc198e9dcaf6bf5b 100644
+--- a/stonecutter.properties.toml
++++ b/stonecutter.properties.toml
+@@ -1,207 +1,207 @@
+-# ---- Mod --------------------------------------------------------------------------------------
+-mod_id = "visor"
+-mod_name = "Visor"
+-mod_group = "org.vmstudio"
+-mod_authors = "PhoenixRa"
+-mod_description = "Next-gen VR core mod for Minecraft. Based on OpenXR. Built as a platform"
+-mod_api_description = "The Visor API. Not a mod! Use only in a development as a dependency."
+-mod_license = "MPL-2.0"
+-
+-# ---- Common dependencies ----------------------------------------------------------------------
+-fabric_loader_version = "0.16.14"
+-fabric_loader_version_range = ">=0.14.14"
+-atumvr_source         = "local"   # "local" = <root>/libs, "maven" = external repository
+-atumvr_version        = "1.14.0beta-snapshot#23"
+-atumconfig_version    = "1.2.0pre3"
+-lwjgl_version         = "3.3.6"
+-mixin_extras_version  = "0.4.1"
+-# Forge 50 and NeoForge 20.6 ship Mixin 0.8.5, which knows no level above JAVA_18
+-mixin_compat_level    = 17
+-lombok_version        = "1.18.46"
+-jetbrains_annotations_version = "26.1.0"
+-
+-# ---- Version Targets --------------------------------------------------------------------------
+-[targets]
+-"1.20.1" = ["fabric", "forge"]
+-"1.20.2" = ["fabric", "forge", "neoforge"]
+-"1.20.4" = ["fabric", "forge", "neoforge"]
+-"1.20.6" = ["fabric", "forge", "neoforge"]
+-"1.21.1" = ["fabric", "forge", "neoforge"]
+-"1.21.3" = ["fabric", "forge", "neoforge"]
+-"1.21.4" = ["fabric", "forge", "neoforge"]
+-"1.21.5" = ["fabric", "forge", "neoforge"]
+-"1.21.8" = ["fabric", "forge", "neoforge"]
+-"1.21.10" = ["fabric", "forge", "neoforge"]
+-"1.21.11" = ["fabric", "forge", "neoforge"]
+-
+-# ---- Version dependencies ---------------------------------------------------------------------
+-["1.20.1"]
+-# 1.20 - 1.20.1
+-java_version = 17
+-pack_format = 15
+-minecraft_version_range_fabric = ">=1.20 <1.20.2"
+-minecraft_version_range_forgelike = "[1.20,1.20.1]"
+-parchment_version = "2023.09.03"
+-fabric_api_version = "0.92.3"
+-forge_version = "47.4.0"
+-forge_version_range = "[47,)"
+-sodium_version = "mc1.20.1-0.5.8"
+-iris_version = "1.7.1+1.20.1"
+-
+-["1.20.2"]
+-# 1.20.2
+-java_version = 17
+-pack_format = 18
+-minecraft_version_range_fabric = ">=1.20.2 <1.20.3"
+-minecraft_version_range_forgelike = "[1.20.2]"
+-parchment_version = "2023.12.10"
+-fabric_api_version = "0.91.6"
+-forge_version = "48.1.0"
+-forge_version_range = "[48,)"
+-neoforge_version = "20.2.93"
+-neoforge_version_range = "[20.2,)"
+-sodium_version = "mc1.20.2-0.5.5"
+-iris_version = "1.7.1+1.20.1"
+-
+-["1.20.4"]
+-# 1.20.3 - 1.20.4
+-java_version = 17
+-pack_format = 22
+-minecraft_version_range_fabric = ">=1.20.3 <1.20.5"
+-minecraft_version_range_forgelike = "[1.20.3,1.20.4]"
+-parchment_version = "2024.04.14"
+-fabric_api_version = "0.97.3"
+-forge_version = "49.2.9"
+-forge_version_range = "[49,)"
+-neoforge_version = "20.4.251"
+-neoforge_version_range = "[20.4,)"
+-sodium_version = "mc1.20.4-0.5.8"
+-iris_version = "1.7.2+1.20.4"
+-
+-["1.20.6"]
+-# 1.20.5 - 1.20.6
+-java_version = 21
+-pack_format = 32
+-minecraft_version_range_fabric = ">=1.20.5 <1.21"
+-minecraft_version_range_forgelike = "[1.20.5,1.20.6]"
+-parchment_version = "2024.06.16"
+-fabric_api_version = "0.100.8"
+-forge_version = "50.2.10"
+-forge_version_range = "[50,)"
+-neoforge_version = "20.6.141"
+-neoforge_version_range = "[20.6,)"
+-sodium_version = "mc1.20.6-0.5.11"
+-iris_version = "1.7.2+1.20.6"
+-
+-["1.21.1"]
+-# 1.21 - 1.21.1
+-java_version = 21
+-pack_format = 34
+-minecraft_version_range_fabric = ">=1.21 <1.21.2"
+-minecraft_version_range_forgelike = "[1.21,1.21.1]"
+-parchment_version = "2024.11.17"
+-fabric_api_version = "0.116.17"
+-forge_version = "52.1.16"
+-forge_version_range = "[52,)"
+-neoforge_version = "21.1.250"
+-neoforge_version_range = "[21.1,)"
+-sodium_version = "mc1.21.1-0.6.13-fabric"
+-iris_version = "1.8.8+1.21.1-fabric"
+-
+-["1.21.3"]
+-# 1.21.2 - 1.21.3
+-java_version = 21
+-pack_format = 42
+-minecraft_version_range_fabric = ">=1.21.2 <1.21.4"
+-minecraft_version_range_forgelike = "[1.21.3]"
+-parchment_version = "2024.12.07"
+-fabric_api_version = "0.114.1"
+-forge_version = "53.1.12"
+-forge_version_range = "[53,)"
+-neoforge_version = "21.3.97"
+-neoforge_version_range = "[21.3,)"
+-sodium_version = "mc1.21.3-0.6.13-fabric"
+-iris_version = "1.8.1+1.21.3-fabric"
+-
+-["1.21.4"]
+-# 1.21.4
+-java_version = 21
+-pack_format = 46
+-minecraft_version_range_fabric = ">=1.21.4 <1.21.5"
+-minecraft_version_range_forgelike = "[1.21.4]"
+-parchment_version = "2025.03.23"
+-fabric_api_version = "0.119.4"
+-forge_version = "54.1.18"
+-forge_version_range = "[54,)"
+-neoforge_version = "21.4.157"
+-neoforge_version_range = "[21.4,)"
+-sodium_version = "mc1.21.4-0.6.13-fabric"
+-iris_version = "1.8.8+1.21.4-fabric"
+-
+-["1.21.5"]
+-# 1.21.5
+-java_version = 21
+-pack_format = 55
+-minecraft_version_range_fabric = ">=1.21.5 <1.21.6"
+-minecraft_version_range_forgelike = "[1.21.5]"
+-parchment_version = "2025.06.15"
+-fabric_api_version = "0.128.2"
+-forge_version = "55.1.13"
+-forge_version_range = "[55,)"
+-neoforge_version = "21.5.98"
+-neoforge_version_range = "[21.5,)"
+-sodium_version = "mc1.21.5-0.6.13-fabric"
+-iris_version = "1.8.11+1.21.5-fabric"
+-
+-["1.21.8"]
+-# 1.21.6 - 1.21.8
+-java_version = 21
+-pack_format = 64
+-minecraft_version_range_fabric = ">=1.21.6 <1.21.9"
+-minecraft_version_range_forgelike = "[1.21.6,1.21.8]"
+-parchment_version = "2025.09.14"
+-fabric_api_version = "0.136.1"
+-forge_version = "58.1.22"
+-forge_version_range = "[56,)"
+-neoforge_version = "21.8.54"
+-neoforge_version_range = "[21.7.0-beta,)"
+-sodium_version = "mc1.21.8-0.7.3-fabric"
+-iris_version = "1.9.6+1.21.8-fabric"
+-
+-["1.21.10"]
+-# 1.21.9 - 1.21.10
+-java_version = 21
+-# fabric-api 0.138.4 requires Fabric Loader 0.17+
+-fabric_loader_version = "0.17.3"
+-fabric_loader_version_range = ">=0.17.0"
+-pack_format = 69
+-data_pack_format = 88
+-minecraft_version_range_fabric = ">=1.21.9 <1.21.11"
+-minecraft_version_range_forgelike = "[1.21.9,1.21.10]"
+-parchment_version = "2025.10.12"
+-fabric_api_version = "0.138.4"
+-forge_version = "60.1.15"
+-forge_version_range = "[59,)"
+-neoforge_version = "21.10.64"
+-neoforge_version_range = "[21.9.0-beta,)"
+-sodium_version = "mc1.21.10-0.7.3-fabric"
+-iris_version = "1.9.7+1.21.10-fabric"
+-
+-["1.21.11"]
+-# 1.21.11
+-java_version = 21
+-# fabric-api 0.141.6 and the modules Visor bundles require Fabric Loader 0.17.3+
+-fabric_loader_version = "0.17.3"
+-fabric_loader_version_range = ">=0.17.3"
+-pack_format = 75
+-data_pack_format = 94
+-minecraft_version_range_fabric = ">=1.21.11 <1.21.12"
+-minecraft_version_range_forgelike = "[1.21.11]"
+-parchment_version = "2025.12.20"
+-fabric_api_version = "0.141.6"
+-forge_version = "61.2.1"
+-forge_version_range = "[61,)"
+-neoforge_version = "21.11.45"
+-neoforge_version_range = "[21.11,)"
+-sodium_version = "mc1.21.11-0.8.14-fabric"
+-iris_version = "1.10.7+1.21.11-fabric"
++# ---- Mod --------------------------------------------------------------------------------------
++mod_id = "visor"
++mod_name = "Visor"
++mod_group = "org.vmstudio"
++mod_authors = "PhoenixRa"
++mod_description = "Next-gen VR core mod for Minecraft. Based on OpenXR. Built as a platform"
++mod_api_description = "The Visor API. Not a mod! Use only in a development as a dependency."
++mod_license = "MPL-2.0"
++
++# ---- Common dependencies ----------------------------------------------------------------------
++fabric_loader_version = "0.16.14"
++fabric_loader_version_range = ">=0.14.14"
++atumvr_source         = "local"   # "local" = <root>/libs, "maven" = external repository
++atumvr_version        = "pico" # Shared Android bridge plus capability-gated Pico inputs
++atumconfig_version    = "1.2.0pre3"
++lwjgl_version         = "3.3.6"
++mixin_extras_version  = "0.4.1"
++# Forge 50 and NeoForge 20.6 ship Mixin 0.8.5, which knows no level above JAVA_18
++mixin_compat_level    = 17
++lombok_version        = "1.18.46"
++jetbrains_annotations_version = "26.1.0"
++
++# ---- Version Targets --------------------------------------------------------------------------
++[targets]
++"1.20.1" = ["fabric", "forge"]
++"1.20.2" = ["fabric", "forge", "neoforge"]
++"1.20.4" = ["fabric", "forge", "neoforge"]
++"1.20.6" = ["fabric", "forge", "neoforge"]
++"1.21.1" = ["fabric", "forge", "neoforge"]
++"1.21.3" = ["fabric", "forge", "neoforge"]
++"1.21.4" = ["fabric", "forge", "neoforge"]
++"1.21.5" = ["fabric", "forge", "neoforge"]
++"1.21.8" = ["fabric", "forge", "neoforge"]
++"1.21.10" = ["fabric", "forge", "neoforge"]
++"1.21.11" = ["fabric", "forge", "neoforge"]
++
++# ---- Version dependencies ---------------------------------------------------------------------
++["1.20.1"]
++# 1.20 - 1.20.1
++java_version = 17
++pack_format = 15
++minecraft_version_range_fabric = ">=1.20 <1.20.2"
++minecraft_version_range_forgelike = "[1.20,1.20.1]"
++parchment_version = "2023.09.03"
++fabric_api_version = "0.92.3"
++forge_version = "47.4.0"
++forge_version_range = "[47,)"
++sodium_version = "mc1.20.1-0.5.8"
++iris_version = "1.7.1+1.20.1"
++
++["1.20.2"]
++# 1.20.2
++java_version = 17
++pack_format = 18
++minecraft_version_range_fabric = ">=1.20.2 <1.20.3"
++minecraft_version_range_forgelike = "[1.20.2]"
++parchment_version = "2023.12.10"
++fabric_api_version = "0.91.6"
++forge_version = "48.1.0"
++forge_version_range = "[48,)"
++neoforge_version = "20.2.93"
++neoforge_version_range = "[20.2,)"
++sodium_version = "mc1.20.2-0.5.5"
++iris_version = "1.7.1+1.20.1"
++
++["1.20.4"]
++# 1.20.3 - 1.20.4
++java_version = 17
++pack_format = 22
++minecraft_version_range_fabric = ">=1.20.3 <1.20.5"
++minecraft_version_range_forgelike = "[1.20.3,1.20.4]"
++parchment_version = "2024.04.14"
++fabric_api_version = "0.97.3"
++forge_version = "49.2.9"
++forge_version_range = "[49,)"
++neoforge_version = "20.4.251"
++neoforge_version_range = "[20.4,)"
++sodium_version = "mc1.20.4-0.5.8"
++iris_version = "1.7.2+1.20.4"
++
++["1.20.6"]
++# 1.20.5 - 1.20.6
++java_version = 21
++pack_format = 32
++minecraft_version_range_fabric = ">=1.20.5 <1.21"
++minecraft_version_range_forgelike = "[1.20.5,1.20.6]"
++parchment_version = "2024.06.16"
++fabric_api_version = "0.100.8"
++forge_version = "50.2.10"
++forge_version_range = "[50,)"
++neoforge_version = "20.6.141"
++neoforge_version_range = "[20.6,)"
++sodium_version = "mc1.20.6-0.5.11"
++iris_version = "1.7.2+1.20.6"
++
++["1.21.1"]
++# 1.21 - 1.21.1
++java_version = 21
++pack_format = 34
++minecraft_version_range_fabric = ">=1.21 <1.21.2"
++minecraft_version_range_forgelike = "[1.21,1.21.1]"
++parchment_version = "2024.11.17"
++fabric_api_version = "0.116.17"
++forge_version = "52.1.16"
++forge_version_range = "[52,)"
++neoforge_version = "21.1.250"
++neoforge_version_range = "[21.1,)"
++sodium_version = "mc1.21.1-0.6.13-fabric"
++iris_version = "1.8.8+1.21.1-fabric"
++
++["1.21.3"]
++# 1.21.2 - 1.21.3
++java_version = 21
++pack_format = 42
++minecraft_version_range_fabric = ">=1.21.2 <1.21.4"
++minecraft_version_range_forgelike = "[1.21.3]"
++parchment_version = "2024.12.07"
++fabric_api_version = "0.114.1"
++forge_version = "53.1.12"
++forge_version_range = "[53,)"
++neoforge_version = "21.3.97"
++neoforge_version_range = "[21.3,)"
++sodium_version = "mc1.21.3-0.6.13-fabric"
++iris_version = "1.8.1+1.21.3-fabric"
++
++["1.21.4"]
++# 1.21.4
++java_version = 21
++pack_format = 46
++minecraft_version_range_fabric = ">=1.21.4 <1.21.5"
++minecraft_version_range_forgelike = "[1.21.4]"
++parchment_version = "2025.03.23"
++fabric_api_version = "0.119.4"
++forge_version = "54.1.18"
++forge_version_range = "[54,)"
++neoforge_version = "21.4.157"
++neoforge_version_range = "[21.4,)"
++sodium_version = "mc1.21.4-0.6.13-fabric"
++iris_version = "1.8.8+1.21.4-fabric"
++
++["1.21.5"]
++# 1.21.5
++java_version = 21
++pack_format = 55
++minecraft_version_range_fabric = ">=1.21.5 <1.21.6"
++minecraft_version_range_forgelike = "[1.21.5]"
++parchment_version = "2025.06.15"
++fabric_api_version = "0.128.2"
++forge_version = "55.1.13"
++forge_version_range = "[55,)"
++neoforge_version = "21.5.98"
++neoforge_version_range = "[21.5,)"
++sodium_version = "mc1.21.5-0.6.13-fabric"
++iris_version = "1.8.11+1.21.5-fabric"
++
++["1.21.8"]
++# 1.21.6 - 1.21.8
++java_version = 21
++pack_format = 64
++minecraft_version_range_fabric = ">=1.21.6 <1.21.9"
++minecraft_version_range_forgelike = "[1.21.6,1.21.8]"
++parchment_version = "2025.09.14"
++fabric_api_version = "0.136.1"
++forge_version = "58.1.22"
++forge_version_range = "[56,)"
++neoforge_version = "21.8.54"
++neoforge_version_range = "[21.7.0-beta,)"
++sodium_version = "mc1.21.8-0.7.3-fabric"
++iris_version = "1.9.6+1.21.8-fabric"
++
++["1.21.10"]
++# 1.21.9 - 1.21.10
++java_version = 21
++# fabric-api 0.138.4 requires Fabric Loader 0.17+
++fabric_loader_version = "0.17.3"
++fabric_loader_version_range = ">=0.17.0"
++pack_format = 69
++data_pack_format = 88
++minecraft_version_range_fabric = ">=1.21.9 <1.21.11"
++minecraft_version_range_forgelike = "[1.21.9,1.21.10]"
++parchment_version = "2025.10.12"
++fabric_api_version = "0.138.4"
++forge_version = "60.1.15"
++forge_version_range = "[59,)"
++neoforge_version = "21.10.64"
++neoforge_version_range = "[21.9.0-beta,)"
++sodium_version = "mc1.21.10-0.7.3-fabric"
++iris_version = "1.9.7+1.21.10-fabric"
++
++["1.21.11"]
++# 1.21.11
++java_version = 21
++# fabric-api 0.141.6 and the modules Visor bundles require Fabric Loader 0.17.3+
++fabric_loader_version = "0.17.3"
++fabric_loader_version_range = ">=0.17.3"
++pack_format = 75
++data_pack_format = 94
++minecraft_version_range_fabric = ">=1.21.11 <1.21.12"
++minecraft_version_range_forgelike = "[1.21.11]"
++parchment_version = "2025.12.20"
++fabric_api_version = "0.141.6"
++forge_version = "61.2.1"
++forge_version_range = "[61,)"
++neoforge_version = "21.11.45"
++neoforge_version_range = "[21.11,)"
++sodium_version = "mc1.21.11-0.8.14-fabric"
++iris_version = "1.10.7+1.21.11-fabric"
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
+index 887e6fd9d2b30b472ef3e69de80d8592454cadc4..ddfc21bead148ccae09b7f532a4257b096be532e 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
+@@ -1,220 +1,222 @@
+-package org.vmstudio.visor.core.client.provider;
+-
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McGlState;
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McProjection;
+-import org.vmstudio.visor.api.compatibility.mcversion.McVersionClientUtils;
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderUtils;
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McModelViewStack;
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderTarget;
+-
+-import com.mojang.blaze3d.pipeline.RenderTarget;
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.enums.EyeType;
+-import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
+-import me.phoenixra.atumvr.api.rendering.AtumVRScene;
+-import me.phoenixra.atumvr.api.utils.GLUtils;
+-import org.vmstudio.visor.api.client.render.VRRenderPass;
+-import org.vmstudio.visor.api.client.render.VRRenderer;
+-import org.vmstudio.visor.core.client.render.context.RenderContext;
+-import org.vmstudio.visor.core.client.ClientContext;
+-import org.vmstudio.visor.core.client.render.VRShaders;
+-import org.vmstudio.visor.core.client.render.VRRenderState;
+-import org.vmstudio.visor.compatibility.ShaderCompatHelper;
+-import org.vmstudio.visor.core.client.render.helpers.MirrorHelper;
+-import org.vmstudio.visor.core.client.render.helpers.RenderStateHelper;
+-import org.vmstudio.visor.api.client.settings.VRClientSettings;
+-import org.vmstudio.visor.core.client.utils.ClientUtils;
+-import org.joml.Matrix4f;
+-import org.jetbrains.annotations.NotNull;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.*;
+-
+-
+-public class VisorScene implements AtumVRScene {
+-
+-    @Getter
+-    private VRRenderer renderer;
+-
+-
+-    public VisorScene(VRRenderer renderer) {
+-        this.renderer = renderer;
+-    }
+-
+-    @Override
+-    public void init() {
+-
+-    }
+-
+-    @Override
+-    public void render(@NotNull AtumVRRenderContext context) {
+-
+-        var renderContext = (RenderContext) context;
+-        var profiler =  renderContext.profiler();
+-
+-        McGlState.depthMask(true);
+-        McModelViewStack.apply();
+-
+-
+-        profiler.push("prepare VROverlays and cursor");
+-        ClientContext.overlayManager.prepareOverlaysAndCursor(
+-                context.partialTicks()
+-        );
+-        profiler.pop();
+-
+-        profiler.push("VROverlay texturing");
+-        ClientContext.overlayManager.renderOverlayTextures(
+-                McVersionClientUtils.profiler(),
+-                renderContext.partialTicks()
+-        );
+-        profiler.pop();
+-
+-        ShaderCompatHelper.bridge().beginFrame(
+-                renderContext.partialTicks(),
+-                renderContext.nanoTime()
+-        );
+-
+-        for (VRRenderPass renderPass : VRRenderState.getActivePasses()) {
+-            profiler.push("VR render pass: "+renderPass.name());
+-
+-            renderPass(
+-                    renderPass,
+-                    renderContext
+-            );
+-            GLUtils.checkGLError("post VR render pass: " + renderPass.name());
+-
+-
+-            if (ClientContext.renderer.isAskedForScreenShot()) {
+-                takeScreenshot(renderPass);
+-            }
+-            profiler.pop();
+-        }
+-
+-
+-        ShaderCompatHelper.bridge().endFrame();
+-
+-        profiler.push("VR mirror");
+-        VRRenderState.startVRMirrorPhase();
+-        McRenderTarget.bindWrite(McRenderTarget.mainTarget());
+-        MirrorHelper.drawMirror();
+-        profiler.pop();
+-        GLUtils.checkGLError("post mirror");
+-
+-
+-    }
+-
+-    private void renderOverlaysAfterPostProcessing(RenderContext context) {
+-        McModelViewStack.push();
+-        McModelViewStack.identity();
+-        McModelViewStack.apply();
+-
+-        McProjection.State projection = McProjection.save();
+-        try{
+-            ClientContext.decorationRenderer.renderAfterPostProcessing(new PoseStack(), context.partialTicks());
+-        } finally {
+-            McProjection.restore(projection);
+-            McModelViewStack.pop();
+-            McModelViewStack.apply();
+-        }
+-
+-        GLUtils.checkGLError("post VROverlays skipping post processing");
+-    }
+-
+-    private void takeScreenshot(VRRenderPass currentStage) {
+-
+-        boolean flag;
+-        if (currentStage == VRRenderPass.CENTER) {
+-            flag = true;
+-        } else {
+-            flag = VRClientSettings.getMirrorEye() == EyeType.LEFT ?
+-                    currentStage == VRRenderPass.EYE_LEFT
+-                    : currentStage == VRRenderPass.EYE_RIGHT;
+-        }
+-
+-        if (flag) {
+-            RenderTarget rendertarget = McRenderTarget.mainTarget();
+-
+-            McRenderTarget.unbindWrite(rendertarget);
+-            ClientUtils.takeScreenshot(rendertarget);
+-            McRenderUtils.updateDisplay(MC.getWindow());
+-            ClientContext.renderer.setAskedForScreenShot(false);
+-        }
+-    }
+-
+-    @Override
+-    public void destroy() {
+-
+-    }
+-
+-    private void renderPass(VRRenderPass renderPass,
+-                            RenderContext context
+-    ) {
+-        VRRenderState.startVRWorldPhase(renderPass);
+-
+-        if (McRenderTarget.mainTarget() == null) {
+-            LOGGER.warn("Visor: no render target for pass {}; requesting renderer reinit.", renderPass);
+-            VRRenderState.startVanillaPhase();
+-            ClientContext.renderer.prepareReinit("Missing target for pass " + renderPass);
+-            return;
+-        }
+-
+-        McRenderTarget.bindWrite(McRenderTarget.mainTarget());
+-        McGlState.clearColor(0.0F, 0.0F, 0.0F, 1.0F);
+-        McGlState.clear(16384);
+-        McGlState.enableDepthTest();
+-
+-        ShaderCompatHelper.bridge().beginEye(renderPass.getEyeOrLeft());
+-
+-        if (ShaderCompatHelper.isShaderActive()) {
+-            McGlState.clearShaderTexture(0);
+-            McGlState.clearShaderTexture(1);
+-            McGlState.clearShaderTexture(2);
+-        }
+-
+-        McRenderUtils.renderGame(
+-                MC.gameRenderer,
+-                context.partialTicks(),
+-                context.nanoTime(),
+-                context.renderLevel()
+-        );
+-        //render game is outside of VR control. many mods might interfere
+-        //so, we drain GL errors instead of crash
+-        RenderStateHelper.drainExternalGLErrors("VR level render");
+-
+-        if (ShaderCompatHelper.isShaderActive()) {
+-            McRenderTarget.bindWrite(McRenderTarget.mainTarget());
+-            McModelViewStack.push();
+-            McModelViewStack.identity();
+-            McModelViewStack.apply();
+-            ClientContext.decorationRenderer.renderShaderUi(new PoseStack(), context.partialTicks());
+-            McModelViewStack.pop();
+-            McModelViewStack.apply();
+-        }
+-
+-        if (renderPass.isEye()) {
+-            if (renderPass == VRRenderPass.EYE_LEFT) {
+-                McRenderTarget.bindWrite(
+-                        ClientContext.renderer.getTextureLeftEye().getRenderTarget()
+-                );
+-            } else {
+-                McRenderTarget.bindWrite(
+-                        ClientContext.renderer.getTextureRightEye().getRenderTarget()
+-                );
+-            }
+-
+-            VRShaders.getPostProcess().finishEye(
+-                    renderPass == VRRenderPass.EYE_LEFT
+-                            ? EyeType.LEFT : EyeType.RIGHT,
+-                    McRenderTarget.mainTarget(),
+-                    context.partialTicks()
+-            );
+-        }
+-
+-        renderOverlaysAfterPostProcessing(context);
+-
+-        ShaderCompatHelper.bridge().endEye();
+-    }
+-
+-
+-
+-}
++package org.vmstudio.visor.core.client.provider;
++
++import org.vmstudio.visor.api.compatibility.mcversion.render.McGlState;
++import org.vmstudio.visor.api.compatibility.mcversion.render.McProjection;
++import org.vmstudio.visor.api.compatibility.mcversion.McVersionClientUtils;
++import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderUtils;
++import org.vmstudio.visor.api.compatibility.mcversion.render.McModelViewStack;
++import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderTarget;
++
++import com.mojang.blaze3d.pipeline.RenderTarget;
++import com.mojang.blaze3d.vertex.PoseStack;
++import lombok.Getter;
++import me.phoenixra.atumvr.api.enums.EyeType;
++import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
++import me.phoenixra.atumvr.api.rendering.AtumVRScene;
++import me.phoenixra.atumvr.api.utils.GLUtils;
++import org.vmstudio.visor.api.client.render.VRRenderPass;
++import org.vmstudio.visor.api.client.render.VRRenderer;
++import org.vmstudio.visor.core.client.render.context.RenderContext;
++import org.vmstudio.visor.core.client.ClientContext;
++import org.vmstudio.visor.core.client.render.VRShaders;
++import org.vmstudio.visor.core.client.render.VRRenderState;
++import org.vmstudio.visor.compatibility.ShaderCompatHelper;
++import org.vmstudio.visor.core.client.render.helpers.MirrorHelper;
++import org.vmstudio.visor.core.client.render.helpers.RenderStateHelper;
++import org.vmstudio.visor.api.client.settings.VRClientSettings;
++import org.vmstudio.visor.core.client.utils.ClientUtils;
++import org.joml.Matrix4f;
++import org.jetbrains.annotations.NotNull;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.*;
++
++
++public class VisorScene implements AtumVRScene {
++
++    @Getter
++    private VRRenderer renderer;
++
++
++    public VisorScene(VRRenderer renderer) {
++        this.renderer = renderer;
++    }
++
++    @Override
++    public void init() {
++
++    }
++
++    @Override
++    public void render(@NotNull AtumVRRenderContext context) {
++
++        var renderContext = (RenderContext) context;
++        var profiler =  renderContext.profiler();
++
++        McGlState.depthMask(true);
++        McModelViewStack.apply();
++
++
++        profiler.push("prepare VROverlays and cursor");
++        ClientContext.overlayManager.prepareOverlaysAndCursor(
++                context.partialTicks()
++        );
++        profiler.pop();
++
++        profiler.push("VROverlay texturing");
++        ClientContext.overlayManager.renderOverlayTextures(
++                McVersionClientUtils.profiler(),
++                renderContext.partialTicks()
++        );
++        profiler.pop();
++
++        ShaderCompatHelper.bridge().beginFrame(
++                renderContext.partialTicks(),
++                renderContext.nanoTime()
++        );
++
++        for (VRRenderPass renderPass : VRRenderState.getActivePasses()) {
++            profiler.push("VR render pass: "+renderPass.name());
++
++            renderPass(
++                    renderPass,
++                    renderContext
++            );
++            GLUtils.checkGLError("post VR render pass: " + renderPass.name());
++
++
++            if (ClientContext.renderer.isAskedForScreenShot()) {
++                takeScreenshot(renderPass);
++            }
++            profiler.pop();
++        }
++
++
++        ShaderCompatHelper.bridge().endFrame();
++
++        profiler.push("VR mirror");
++        VRRenderState.startVRMirrorPhase();
++        McRenderTarget.bindWrite(McRenderTarget.mainTarget());
++        if (!me.phoenixra.atumvr.core.session.platform.XRPlatform.isAndroid()) {
++            MirrorHelper.drawMirror();
++        }
++        profiler.pop();
++        GLUtils.checkGLError("post mirror");
++
++
++    }
++
++    private void renderOverlaysAfterPostProcessing(RenderContext context) {
++        McModelViewStack.push();
++        McModelViewStack.identity();
++        McModelViewStack.apply();
++
++        McProjection.State projection = McProjection.save();
++        try{
++            ClientContext.decorationRenderer.renderAfterPostProcessing(new PoseStack(), context.partialTicks());
++        } finally {
++            McProjection.restore(projection);
++            McModelViewStack.pop();
++            McModelViewStack.apply();
++        }
++
++        GLUtils.checkGLError("post VROverlays skipping post processing");
++    }
++
++    private void takeScreenshot(VRRenderPass currentStage) {
++
++        boolean flag;
++        if (currentStage == VRRenderPass.CENTER) {
++            flag = true;
++        } else {
++            flag = VRClientSettings.getMirrorEye() == EyeType.LEFT ?
++                    currentStage == VRRenderPass.EYE_LEFT
++                    : currentStage == VRRenderPass.EYE_RIGHT;
++        }
++
++        if (flag) {
++            RenderTarget rendertarget = McRenderTarget.mainTarget();
++
++            McRenderTarget.unbindWrite(rendertarget);
++            ClientUtils.takeScreenshot(rendertarget);
++            McRenderUtils.updateDisplay(MC.getWindow());
++            ClientContext.renderer.setAskedForScreenShot(false);
++        }
++    }
++
++    @Override
++    public void destroy() {
++
++    }
++
++    private void renderPass(VRRenderPass renderPass,
++                            RenderContext context
++    ) {
++        VRRenderState.startVRWorldPhase(renderPass);
++
++        if (McRenderTarget.mainTarget() == null) {
++            LOGGER.warn("Visor: no render target for pass {}; requesting renderer reinit.", renderPass);
++            VRRenderState.startVanillaPhase();
++            ClientContext.renderer.prepareReinit("Missing target for pass " + renderPass);
++            return;
++        }
++
++        McRenderTarget.bindWrite(McRenderTarget.mainTarget());
++        McGlState.clearColor(0.0F, 0.0F, 0.0F, 1.0F);
++        McGlState.clear(16384);
++        McGlState.enableDepthTest();
++
++        ShaderCompatHelper.bridge().beginEye(renderPass.getEyeOrLeft());
++
++        if (ShaderCompatHelper.isShaderActive()) {
++            McGlState.clearShaderTexture(0);
++            McGlState.clearShaderTexture(1);
++            McGlState.clearShaderTexture(2);
++        }
++
++        McRenderUtils.renderGame(
++                MC.gameRenderer,
++                context.partialTicks(),
++                context.nanoTime(),
++                context.renderLevel()
++        );
++        //render game is outside of VR control. many mods might interfere
++        //so, we drain GL errors instead of crash
++        RenderStateHelper.drainExternalGLErrors("VR level render");
++
++        if (ShaderCompatHelper.isShaderActive()) {
++            McRenderTarget.bindWrite(McRenderTarget.mainTarget());
++            McModelViewStack.push();
++            McModelViewStack.identity();
++            McModelViewStack.apply();
++            ClientContext.decorationRenderer.renderShaderUi(new PoseStack(), context.partialTicks());
++            McModelViewStack.pop();
++            McModelViewStack.apply();
++        }
++
++        if (renderPass.isEye()) {
++            if (renderPass == VRRenderPass.EYE_LEFT) {
++                McRenderTarget.bindWrite(
++                        ClientContext.renderer.getTextureLeftEye().getRenderTarget()
++                );
++            } else {
++                McRenderTarget.bindWrite(
++                        ClientContext.renderer.getTextureRightEye().getRenderTarget()
++                );
++            }
++
++            VRShaders.getPostProcess().finishEye(
++                    renderPass == VRRenderPass.EYE_LEFT
++                            ? EyeType.LEFT : EyeType.RIGHT,
++                    McRenderTarget.mainTarget(),
++                    context.partialTicks()
++            );
++        }
++
++        renderOverlaysAfterPostProcessing(context);
++
++        ShaderCompatHelper.bridge().endEye();
++    }
++
++
++
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestAndroidXRBridge.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestAndroidXRBridge.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..6e6de81cb72b4629c4f46ba96836e28e4385971e
+--- /dev/null
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestAndroidXRBridge.java
+@@ -0,0 +1,35 @@
++package org.vmstudio.visor.core.client.provider.openxr;
++
++import me.phoenixra.atumvr.core.session.platform.AndroidXRBridge;
++
++public final class QuestAndroidXRBridge implements AndroidXRBridge {
++    @Override
++    public long getEGLDisplay() {
++        return QuestVLoader.getEGLDisplay();
++    }
++
++    @Override
++    public long getEGLContext() {
++        return QuestVLoader.getEGLContext();
++    }
++
++    @Override
++    public long getEGLConfig() {
++        return QuestVLoader.getEGLConfig();
++    }
++
++    @Override
++    public long getDalvikVM() {
++        return QuestVLoader.getDalvikVM();
++    }
++
++    @Override
++    public long getDalvikActivity() {
++        return QuestVLoader.getDalvikActivity();
++    }
++
++    @Override
++    public void setupAndroid() {
++        QuestVLoader.setupAndroid();
++    }
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestVLoader.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestVLoader.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..dc5940a0bc05e64dd4b64e56af8f13a2d8fb2659
+--- /dev/null
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/QuestVLoader.java
+@@ -0,0 +1,36 @@
++package org.vmstudio.visor.core.client.provider.openxr;
++
++public final class QuestVLoader {
++    private static String deviceModel;
++
++    static {
++        System.loadLibrary("vloader");
++    }
++
++    private QuestVLoader() {
++    }
++
++    public static native long getEGLDisplay();
++    public static native long getEGLContext();
++    public static native long getEGLConfig();
++    public static native long getDalvikVM();
++    public static native long getDalvikActivity();
++    public static native void setupAndroid();
++    private static native String getDeviceModel();
++
++    public static String deviceModel() {
++        if (deviceModel == null) {
++            deviceModel = getDeviceModel();
++        }
++        return deviceModel;
++    }
++
++    public static boolean isQuest2() {
++        return deviceModel().equalsIgnoreCase("Quest 2");
++    }
++
++    public static boolean isQuest3Family() {
++        return deviceModel().equalsIgnoreCase("Quest 3")
++                || deviceModel().equalsIgnoreCase("Quest 3S");
++    }
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
+index d1e05863cb3c363b72116145998243d6bee90585..72be496607a5769a074a0888328d052101d38eec 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
+@@ -1,81 +1,86 @@
+-package org.vmstudio.visor.core.client.provider.openxr;
+-
+-import me.phoenixra.atumvr.api.AtumVRLogger;
+-import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import me.phoenixra.atumvr.core.XRState;
+-import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
+-import me.phoenixra.atumvr.core.enums.XRSessionState;
+-import org.vmstudio.visor.api.client.settings.VRClientSettings;
+-import org.vmstudio.visor.core.client.ClientContext;
+-import org.vmstudio.visor.core.client.VisorClientImpl;
+-import org.vmstudio.visor.core.client.provider.openxr.render.XrRenderer;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
+-
+-public class XrProvider extends XRProvider {
+-
+-    public XrProvider(@NotNull String appName, @NotNull AtumVRLogger logger) {
+-        super(appName, logger);
+-
+-        ClientContext.rawPoseHandler = new XrRawPoseHandler(this);
+-        ClientContext.inputProvider = inputHandler;
+-    }
+-
+-    @Override
+-    public void initializeVR() throws Throwable {
+-
+-        super.initializeVR();
+-
+-        ClientContext.rawPoseHandler.getTrackersData().setTracking(
+-                !getInputHandler().getTrackerProviders().isEmpty()
+-        );
+-        ClientContext.rawPoseHandler.getHandsData().setTracking(
+-                getInputHandler().getHandsProvider() != null
+-        );
+-
+-        ClientContext.settingsManager.loadOptions();
+-
+-        VisorClientImpl.LOGGER.info("OpenXR initialized");
+-    }
+-
+-    @Override
+-    public void startFrame() {
+-        super.startFrame();
+-        ClientContext.rawPoseHandler.updatePose();
+-    }
+-
+-    @Override
+-    public @Nullable XRGraphicsApi getGraphicsApiPreference() {
+-        return VRClientSettings.getGraphicsApi().toPreference();
+-    }
+-
+-    @Override
+-    public @NotNull XRState createStateHandler() {
+-        return new XRState(this);
+-    }
+-
+-    @Override
+-    public @NotNull XrInputHandler createInputHandler() {
+-        return new XrInputHandler(this);
+-    }
+-
+-    @Override
+-    public @NotNull AtumVRRenderer createRenderer() {
+-        return new XrRenderer(this);
+-    }
+-
+-    @Override
+-    public void onStateChanged(XRSessionState state) {
+-        if(state == XRSessionState.EXITING){
+-            MC.stop();
+-        }
+-    }
+-
+-    @Override
+-    public @NotNull XrInputHandler getInputHandler() {
+-        return (XrInputHandler) super.getInputHandler();
+-    }
+-}
++package org.vmstudio.visor.core.client.provider.openxr;
++
++import me.phoenixra.atumvr.api.AtumVRLogger;
++import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.XRState;
++import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++import me.phoenixra.atumvr.core.enums.XRSessionState;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import org.vmstudio.visor.api.client.settings.VRClientSettings;
++import org.vmstudio.visor.core.client.ClientContext;
++import org.vmstudio.visor.core.client.VisorClientImpl;
++import org.vmstudio.visor.core.client.provider.openxr.render.XrRenderer;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
++
++public class XrProvider extends XRProvider {
++
++    public XrProvider(@NotNull String appName, @NotNull AtumVRLogger logger) {
++        super(appName, logger);
++
++        if (XRPlatform.isAndroid()) {
++            XRPlatform.setAndroidBridge(new QuestAndroidXRBridge());
++        }
++
++        ClientContext.rawPoseHandler = new XrRawPoseHandler(this);
++        ClientContext.inputProvider = inputHandler;
++    }
++
++    @Override
++    public void initializeVR() throws Throwable {
++
++        super.initializeVR();
++
++        ClientContext.rawPoseHandler.getTrackersData().setTracking(
++                !getInputHandler().getTrackerProviders().isEmpty()
++        );
++        ClientContext.rawPoseHandler.getHandsData().setTracking(
++                getInputHandler().getHandsProvider() != null
++        );
++
++        ClientContext.settingsManager.loadOptions();
++
++        VisorClientImpl.LOGGER.info("OpenXR initialized");
++    }
++
++    @Override
++    public void startFrame() {
++        super.startFrame();
++        ClientContext.rawPoseHandler.updatePose();
++    }
++
++    @Override
++    public @Nullable XRGraphicsApi getGraphicsApiPreference() {
++        return VRClientSettings.getGraphicsApi().toPreference();
++    }
++
++    @Override
++    public @NotNull XRState createStateHandler() {
++        return new XRState(this);
++    }
++
++    @Override
++    public @NotNull XrInputHandler createInputHandler() {
++        return new XrInputHandler(this);
++    }
++
++    @Override
++    public @NotNull AtumVRRenderer createRenderer() {
++        return new XrRenderer(this);
++    }
++
++    @Override
++    public void onStateChanged(XRSessionState state) {
++        if(state == XRSessionState.EXITING){
++            MC.stop();
++        }
++    }
++
++    @Override
++    public @NotNull XrInputHandler getInputHandler() {
++        return (XrInputHandler) super.getInputHandler();
++    }
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
+index 0ed22614c5b950516b8b253974d6d6659d72d2b8..0822997be1c63b80049cbaf0a15d974557109156 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
+@@ -1,78 +1,79 @@
+-package org.vmstudio.visor.core.client.render.target.types;
+-
+-import com.mojang.blaze3d.pipeline.RenderTarget;
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.utils.GLUtils;
+-import org.vmstudio.visor.core.client.VisorClientImpl;
+-import org.vmstudio.visor.extensions.client.WindowExtension;
+-import org.vmstudio.visor.core.client.render.target.RenderTargetHolder;
+-import org.vmstudio.visor.core.client.render.target.VRRenderTarget;
+-import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderTarget;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
+-
+-
+-public class RenderTargetMain implements RenderTargetHolder {
+-    @Getter
+-    private RenderTarget target;
+-    @Getter
+-    private RenderTarget mirrorTarget;
+-
+-    @Override
+-    public void init(int width, int height) throws Exception {
+-        target = new VRRenderTarget(
+-                "Main VR",
+-                width, height,
+-                true,
+-                () -> -1,
+-                 true,
+-                true
+-        );
+-        GLUtils.checkGLError("Main VR target setup");
+-        VisorClientImpl.LOGGER.info(this.target.toString());
+-
+-        var mcWindow = (WindowExtension) (Object) MC.getWindow();
+-        this.mirrorTarget = new VRRenderTarget(
+-                "Mirror",
+-                mcWindow.visor$mcScreenWidth(),
+-                mcWindow.visor$mcScreenHeight(),
+-                true, () -> -1,
+-                false, false
+-        );
+-        GLUtils.checkGLError("Mirror VR target setup");
+-        VisorClientImpl.LOGGER.info(this.mirrorTarget.toString());
+-
+-
+-
+-
+-    }
+-
+-    @Override
+-    public void resize(int width, int height) throws Exception {
+-        //? if <1.21.2 {
+-        /*((org.vmstudio.visor.extensions.client.render.RenderTargetExtension) target).visor$setUseStencil(
+-                true
+-        );
+-        *///?}
+-        McRenderTarget.resize(target, width, height);
+-        var mcWindow = (WindowExtension) (Object) MC.getWindow();
+-        McRenderTarget.resize(
+-                this.mirrorTarget,
+-                Math.max(1, mcWindow.visor$mcScreenWidth()),
+-                Math.max(1, mcWindow.visor$mcScreenHeight())
+-        );
+-
+-    }
+-
+-    @Override
+-    public void destroy() {
+-        if(target != null) {
+-            target.destroyBuffers();
+-            target = null;
+-        }
+-        if(mirrorTarget != null) {
+-            mirrorTarget.destroyBuffers();
+-            mirrorTarget = null;
+-        }
+-    }
+-}
++package org.vmstudio.visor.core.client.render.target.types;
++
++import com.mojang.blaze3d.pipeline.RenderTarget;
++import lombok.Getter;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import me.phoenixra.atumvr.api.utils.GLUtils;
++import org.vmstudio.visor.core.client.VisorClientImpl;
++import org.vmstudio.visor.extensions.client.WindowExtension;
++import org.vmstudio.visor.core.client.render.target.RenderTargetHolder;
++import org.vmstudio.visor.core.client.render.target.VRRenderTarget;
++import org.vmstudio.visor.api.compatibility.mcversion.render.McRenderTarget;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
++
++
++public class RenderTargetMain implements RenderTargetHolder {
++    @Getter
++    private RenderTarget target;
++    @Getter
++    private RenderTarget mirrorTarget;
++
++    @Override
++    public void init(int width, int height) throws Exception {
++        target = new VRRenderTarget(
++                "Main VR",
++                width, height,
++                true,
++                () -> -1,
++                 true,
++                true
++        );
++        GLUtils.checkGLError("Main VR target setup");
++        VisorClientImpl.LOGGER.info(this.target.toString());
++
++        var mcWindow = (WindowExtension) (Object) MC.getWindow();
++        this.mirrorTarget = new VRRenderTarget(
++                "Mirror",
++                XRPlatform.isAndroid() ? 1 : mcWindow.visor$mcScreenWidth(),
++                XRPlatform.isAndroid() ? 1 : mcWindow.visor$mcScreenHeight(),
++                true, () -> -1,
++                false, false
++        );
++        GLUtils.checkGLError("Mirror VR target setup");
++        VisorClientImpl.LOGGER.info(this.mirrorTarget.toString());
++
++
++
++
++    }
++
++    @Override
++    public void resize(int width, int height) throws Exception {
++        //? if <1.21.2 {
++        /*((org.vmstudio.visor.extensions.client.render.RenderTargetExtension) target).visor$setUseStencil(
++                true
++        );
++        *///?}
++        McRenderTarget.resize(target, width, height);
++        var mcWindow = (WindowExtension) (Object) MC.getWindow();
++        McRenderTarget.resize(
++                this.mirrorTarget,
++                XRPlatform.isAndroid() ? 1 : Math.max(1, mcWindow.visor$mcScreenWidth()),
++                XRPlatform.isAndroid() ? 1 : Math.max(1, mcWindow.visor$mcScreenHeight())
++        );
++
++    }
++
++    @Override
++    public void destroy() {
++        if(target != null) {
++            target.destroyBuffers();
++            target = null;
++        }
++        if(mirrorTarget != null) {
++            mirrorTarget.destroyBuffers();
++            mirrorTarget = null;
++        }
++    }
++}
+diff --git a/visor-forge/build.gradle b/visor-forge/build.gradle
+index 1917688a9c4f4834ad2b19b29b9ca9d3ce6daee8..e89c647338960bcb528bdfd64764d11b09fe6e09 100644
+--- a/visor-forge/build.gradle
++++ b/visor-forge/build.gradle
+@@ -1,107 +1,103 @@
+-import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+-
+-// Build script of every ":visor-forge:<mc>" subproject.
+-plugins {
+-    id "visor.loader"
+-}
+-
+-// Atum Configuration for Dev Runtime on Forge
+-configurations {
+-    atumConfigRaw { canBeConsumed = false; canBeResolved = true; transitive = false }
+-}
+-dependencies {
+-    atumConfigRaw "com.github.Phoenix-Ra.AtumConfiguration:atumconfig-core:${atumconfig_version}"
+-}
+-def devAtumConfigJar = tasks.register("devAtumConfigJar", ShadowJar) {
+-    description = "Relocated AtumConfiguration for the Forge dev runtime"
+-    configurations = [project.configurations.atumConfigRaw]
+-    archiveBaseName = "atumconfig-dev"
+-    archiveVersion = ""
+-    archiveClassifier = ""
+-    destinationDirectory = layout.buildDirectory.dir("dev-runtime")
+-    ["com.google.gson": "gson", "org.yaml.snakeyaml": "snakeyaml", "com.google.errorprone": "errorprone"].each { pkg, alias ->
+-        relocate pkg, "me.phoenixra.atumconfig.libs.${alias}"
+-    }
+-    exclude "META-INF/versions/**", "module-info.class"
+-}
+-// LWJGL for the Forge dev runtime
+-configurations {
+-    lwjglRaw { canBeConsumed = false; canBeResolved = true; transitive = false }
+-}
+-dependencies {
+-    lwjglRaw "org.lwjgl:lwjgl-openxr:${lwjgl_version}"
+-    lwjglRaw "org.lwjgl:lwjgl-openxr:${lwjgl_version}:natives-linux"
+-    lwjglRaw "org.lwjgl:lwjgl-openxr:${lwjgl_version}:natives-windows"
+-    lwjglRaw "org.lwjgl:lwjgl-vulkan:${lwjgl_version}"
+-}
+-def devNativesJar = tasks.register("devNativesJar", Jar) {
+-    description = "LWJGL OpenXR and Vulkan without module-info, for the Forge dev runtime"
+-    archiveBaseName = "lwjgl-visor-dev"
+-    archiveVersion = ""
+-    archiveClassifier = ""
+-    destinationDirectory = layout.buildDirectory.dir("dev-runtime")
+-    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+-    from { configurations.lwjglRaw.collect { zipTree(it) } }
+-    // LWJGL keeps its only module descriptor under META-INF/versions/11, so the whole
+-    // directory goes - and with it the Multi-Release manifests, or securejarhandler would
+-    // look for a path that is no longer there.
+-    exclude "META-INF/versions/**", "META-INF/MANIFEST.MF",
+-            "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
+-}
+-//------
+-
+-//excluding unnecessary stuff for Dev runtime
+-configurations.runtimeClasspath {
+-    exclude group: "com.github.Phoenix-Ra", module: "AtumConfiguration"
+-    exclude group: "com.github.Phoenix-Ra.AtumConfiguration"
+-
+-    exclude group: "com.github.Phoenix-Ra.AtumVR"
+-    exclude module: "atumvr-api-${atumvr_version}"
+-    exclude module: "atumvr-core-${atumvr_version}"
+-}
+-
+-dependencies {
+-    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
+-
+-    // We need it for @Environment annotation, to mark methods/classes
+-    // Forge ignores this annotation, but addons will see
+-    compileOnly("net.fabricmc:fabric-loader:${fabric_loader_version}") { transitive = false }
+-
+-    // Forge 1.20.1 use Mixin 0.8.5, which has no @Inject(order = ..) The shared sources use it,
+-    // so compile against the 0.8.7 annotations; Forge's runtime simply ignores the extra attribute.
+-    compileOnly("dev.architectury:mixin-patched:0.8.7.12") { transitive = false }
+-
+-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
+-    implementation(include("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
+-
+-    //Natives
+-    forgeRuntimeLibrary files(devNativesJar)
+-
+-    shadowBundle("org.lwjgl:lwjgl-openxr:${lwjgl_version}") { transitive = false }
+-    shadowBundle("org.lwjgl:lwjgl-openxr:${lwjgl_version}:natives-linux") { transitive = false }
+-    shadowBundle("org.lwjgl:lwjgl-openxr:${lwjgl_version}:natives-windows") { transitive = false }
+-    shadowBundle("org.lwjgl:lwjgl-vulkan:${lwjgl_version}") { transitive = false }
+-
+-    // Dev Runtime
+-    forgeRuntimeLibrary(atumvr("api")) { transitive = false }
+-    forgeRuntimeLibrary(atumvr("core")) { transitive = false }
+-    forgeRuntimeLibrary files(devAtumConfigJar)
+-}
+-
+-loom {
+-    forge {
+-        convertAccessWideners = true
+-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+-
+-        mixinConfig "${mod_id}.mixins.json"
+-        mixinConfig "${mod_id}.sodium.mixins.json"
+-        mixinConfig "${mod_id}.replaymod.mixins.json"
+-        mixinConfig "${mod_id}.flashback.mixins.json"
+-        mixinConfig "${mod_id}.dh.mixins.json"
+-        mixinConfig "${mod_id}.dynamicfps.mixins.json"
+-        mixinConfig "${mod_id}.iris.mixins.json"
+-        mixinConfig "${mod_id}.blur.mixins.json"
+-        mixinConfig "${mod_id}.create.mixins.json"
+-        mixinConfig "${mod_id}.mixins.forge.json"
+-    }
+-}
++import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
++
++// Build script of every ":visor-forge:<mc>" subproject.
++plugins {
++    id "visor.loader"
++}
++
++// Atum Configuration for Dev Runtime on Forge
++configurations {
++    atumConfigRaw { canBeConsumed = false; canBeResolved = true; transitive = false }
++}
++dependencies {
++    atumConfigRaw "com.github.Phoenix-Ra.AtumConfiguration:atumconfig-core:${atumconfig_version}"
++}
++def devAtumConfigJar = tasks.register("devAtumConfigJar", ShadowJar) {
++    description = "Relocated AtumConfiguration for the Forge dev runtime"
++    configurations = [project.configurations.atumConfigRaw]
++    archiveBaseName = "atumconfig-dev"
++    archiveVersion = ""
++    archiveClassifier = ""
++    destinationDirectory = layout.buildDirectory.dir("dev-runtime")
++    ["com.google.gson": "gson", "org.yaml.snakeyaml": "snakeyaml", "com.google.errorprone": "errorprone"].each { pkg, alias ->
++        relocate pkg, "me.phoenixra.atumconfig.libs.${alias}"
++    }
++    exclude "META-INF/versions/**", "module-info.class"
++}
++// LWJGL for the Forge dev runtime
++configurations {
++    lwjglRaw { canBeConsumed = false; canBeResolved = true; transitive = false }
++}
++dependencies {
++    lwjglRaw files(rootProject.file('libs/lwjgl-openxr-quest-3.3.3.jar'))
++    lwjglRaw "org.lwjgl:lwjgl-vulkan:${lwjgl_version}"
++}
++def devNativesJar = tasks.register("devNativesJar", Jar) {
++    description = "LWJGL OpenXR and Vulkan without module-info, for the Forge dev runtime"
++    archiveBaseName = "lwjgl-visor-dev"
++    archiveVersion = ""
++    archiveClassifier = ""
++    destinationDirectory = layout.buildDirectory.dir("dev-runtime")
++    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
++    from { configurations.lwjglRaw.collect { zipTree(it) } }
++    // LWJGL keeps its only module descriptor under META-INF/versions/11, so the whole
++    // directory goes - and with it the Multi-Release manifests, or securejarhandler would
++    // look for a path that is no longer there.
++    exclude "META-INF/versions/**", "META-INF/MANIFEST.MF",
++            "META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA"
++}
++//------
++
++//excluding unnecessary stuff for Dev runtime
++configurations.runtimeClasspath {
++    exclude group: "com.github.Phoenix-Ra", module: "AtumConfiguration"
++    exclude group: "com.github.Phoenix-Ra.AtumConfiguration"
++
++    exclude group: "com.github.Phoenix-Ra.AtumVR"
++    exclude module: "atumvr-api-${atumvr_version}"
++    exclude module: "atumvr-core-${atumvr_version}"
++}
++
++dependencies {
++    forge "net.minecraftforge:forge:${minecraft_version}-${forge_version}"
++
++    // We need it for @Environment annotation, to mark methods/classes
++    // Forge ignores this annotation, but addons will see
++    compileOnly("net.fabricmc:fabric-loader:${fabric_loader_version}") { transitive = false }
++
++    // Forge 1.20.1 use Mixin 0.8.5, which has no @Inject(order = ..) The shared sources use it,
++    // so compile against the 0.8.7 annotations; Forge's runtime simply ignores the extra attribute.
++    compileOnly("dev.architectury:mixin-patched:0.8.7.12") { transitive = false }
++
++    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${mixin_extras_version}"))
++    implementation(include("io.github.llamalad7:mixinextras-forge:${mixin_extras_version}"))
++
++    //Natives
++    forgeRuntimeLibrary files(devNativesJar)
++
++    shadowBundle files(rootProject.file('libs/lwjgl-openxr-quest-3.3.3.jar'))
++    shadowBundle("org.lwjgl:lwjgl-vulkan:${lwjgl_version}") { transitive = false }
++
++    // Dev Runtime
++    forgeRuntimeLibrary(atumvr("api")) { transitive = false }
++    forgeRuntimeLibrary(atumvr("core")) { transitive = false }
++    forgeRuntimeLibrary files(devAtumConfigJar)
++}
++
++loom {
++    forge {
++        convertAccessWideners = true
++        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
++
++        mixinConfig "${mod_id}.mixins.json"
++        mixinConfig "${mod_id}.sodium.mixins.json"
++        mixinConfig "${mod_id}.replaymod.mixins.json"
++        mixinConfig "${mod_id}.flashback.mixins.json"
++        mixinConfig "${mod_id}.dh.mixins.json"
++        mixinConfig "${mod_id}.dynamicfps.mixins.json"
++        mixinConfig "${mod_id}.iris.mixins.json"
++        mixinConfig "${mod_id}.blur.mixins.json"
++        mixinConfig "${mod_id}.create.mixins.json"
++        mixinConfig "${mod_id}.mixins.forge.json"
++    }
++}

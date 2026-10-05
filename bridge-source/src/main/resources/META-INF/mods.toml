@@ -1,0 +1,20 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="MPL-2.0"
+[[mods]]
+modId="visor_android_bridge"
+version="0.1.1"
+displayName="Visor Android Bridge"
+description='''QuestCraft XR handoff backend. Requires the local Android-backend Visor prototype; stock released Visor is not yet supported.'''
+[[dependencies.visor_android_bridge]]
+modId="visor"
+mandatory=true
+versionRange="[0.5.0]"
+ordering="AFTER"
+side="CLIENT"
+[[dependencies.visor_android_bridge]]
+modId="minecraft"
+mandatory=true
+versionRange="[1.20.1]"
+ordering="NONE"
+side="CLIENT"

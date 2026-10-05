@@ -1,0 +1,4118 @@
+diff --git a/atumvr-api/build.gradle b/atumvr-api/build.gradle
+index 9f3e473c406b426c0f6c426a65eb60b63caacc55..761031a2e96ca2a0147ea7fdd82e7a418e0aabc8 100644
+--- a/atumvr-api/build.gradle
++++ b/atumvr-api/build.gradle
+@@ -1,49 +1,49 @@
+-plugins {
+-    id 'java'
+-}
+-
+-
+-
+-dependencies {
+-    api("com.github.Phoenix-Ra:AtumConfiguration:1.2.0pre3")
+-    api("org.reflections:reflections:0.10.2")
+-
+-    api("org.joml:joml:1.10.5")
+-
+-    api platform("org.lwjgl:lwjgl-bom:3.3.6")
+-
+-    api("org.lwjgl:lwjgl")
+-    api("org.lwjgl:lwjgl-opengl")
+-    api("org.lwjgl:lwjgl-glfw")
+-    api("org.lwjgl:lwjgl-openxr")
+-    api("org.lwjgl:lwjgl-vulkan")
+-
+-    api("org.lwjgl:lwjgl::natives-windows")
+-    api("org.lwjgl:lwjgl-opengl::natives-windows")
+-    api("org.lwjgl:lwjgl-glfw::natives-windows")
+-    api("org.lwjgl:lwjgl-openxr::natives-windows")
+-
+-    api("org.lwjgl:lwjgl::natives-linux")
+-    api("org.lwjgl:lwjgl-opengl::natives-linux")
+-    api("org.lwjgl:lwjgl-glfw::natives-linux")
+-    api("org.lwjgl:lwjgl-openxr::natives-linux")
+-
+-    api("org.lwjgl:lwjgl-stb::natives-linux")
+-}
+-
+-task javadocJar(type: Jar, dependsOn: javadoc) {
+-    archiveClassifier.set('javadoc')
+-    from javadoc.destinationDir
+-}
+-artifacts {
+-    archives javadocJar
+-}
+-publishing {
+-    publications {
+-        jar(MavenPublication) {
+-            from components.java
+-            artifactId 'atumvr-api'
+-            artifact javadocJar
+-        }
+-    }
+-}
+\ No newline at end of file
++plugins {
++    id 'java'
++}
++
++
++
++dependencies {
++    api("com.github.Phoenix-Ra:AtumConfiguration:1.2.0pre3")
++    api("org.reflections:reflections:0.10.2")
++
++    api("org.joml:joml:1.10.5")
++
++    api platform("org.lwjgl:lwjgl-bom:3.3.6")
++
++    api("org.lwjgl:lwjgl")
++    api("org.lwjgl:lwjgl-opengl")
++    api("org.lwjgl:lwjgl-glfw")
++    api files("${rootDir}/../Visor/libs/lwjgl-openxr-quest-3.3.3.jar")
++    api("org.lwjgl:lwjgl-vulkan")
++
++    api("org.lwjgl:lwjgl::natives-windows")
++    api("org.lwjgl:lwjgl-opengl::natives-windows")
++    api("org.lwjgl:lwjgl-glfw::natives-windows")
++    api("org.lwjgl:lwjgl-openxr::natives-windows")
++
++    api("org.lwjgl:lwjgl::natives-linux")
++    api("org.lwjgl:lwjgl-opengl::natives-linux")
++    api("org.lwjgl:lwjgl-glfw::natives-linux")
++    api("org.lwjgl:lwjgl-openxr::natives-linux")
++
++    api("org.lwjgl:lwjgl-stb::natives-linux")
++}
++
++task javadocJar(type: Jar, dependsOn: javadoc) {
++    archiveClassifier.set('javadoc')
++    from javadoc.destinationDir
++}
++artifacts {
++    archives javadocJar
++}
++publishing {
++    publications {
++        jar(MavenPublication) {
++            from components.java
++            artifactId 'atumvr-api'
++            artifact javadocJar
++        }
++    }
++}
+diff --git a/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java b/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
+index 9bac251f194a81c392cfa9c40916c3d7502ce2b3..52bc7c1443e7c825ab8380f69901d60b9605c491 100644
+--- a/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
++++ b/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
+@@ -1,170 +1,174 @@
+-package me.phoenixra.atumvr.api.input.profile;
+-
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
+-import me.phoenixra.atumvr.api.input.profile.types.*;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-import java.util.*;
+-
+-/**
+- * The enum, that represents supported interaction profiles
+- */
+-public enum VRInteractionProfileType {
+-
+-    VALVE_INDEX("/interaction_profiles/valve/index_controller", Kind.CONTROLLER),
+-
+-    OCULUS_TOUCH("/interaction_profiles/oculus/touch_controller", Kind.CONTROLLER),
+-
+-    VIVE("/interaction_profiles/htc/vive_controller", Kind.CONTROLLER),
+-
+-    VIVE_COSMOS("/interaction_profiles/htc/vive_cosmos_controller", Kind.CONTROLLER),
+-
+-    HP_MIXED_REALITY("/interaction_profiles/hp/mixed_reality_controller", Kind.CONTROLLER),
+-
+-    WINDOWS_MOTION("/interaction_profiles/microsoft/motion_controller", Kind.CONTROLLER),
+-
+-    VIVE_TRACKER("/interaction_profiles/htc/vive_tracker_htcx", Kind.TRACKER);
+-
+-
+-    public enum Kind {
+-        CONTROLLER,
+-        TRACKER
+-    }
+-
+-    @Getter
+-    private final String xrPath;
+-
+-    @Getter
+-    private final Kind kind;
+-
+-    private static final HashMap<String, VRInteractionProfileType> values = new HashMap<>();
+-    private static final VRInteractionProfileType[] valuesControllers;
+-
+-    static {
+-        var list = new ArrayList<VRInteractionProfileType>();
+-        for(VRInteractionProfileType entry : values()){
+-            values.put(entry.xrPath, entry);
+-            if(entry.isController()){
+-                list.add(entry);
+-            }
+-        }
++package me.phoenixra.atumvr.api.input.profile;
++
++import lombok.Getter;
++import me.phoenixra.atumvr.api.input.action.VRActionIdentifier;
++import me.phoenixra.atumvr.api.input.profile.types.*;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.*;
++
++/**
++ * The enum, that represents supported interaction profiles
++ */
++public enum VRInteractionProfileType {
++
++    VALVE_INDEX("/interaction_profiles/valve/index_controller", Kind.CONTROLLER),
++
++    OCULUS_TOUCH("/interaction_profiles/oculus/touch_controller", Kind.CONTROLLER),
++
++    VIVE("/interaction_profiles/htc/vive_controller", Kind.CONTROLLER),
++
++    VIVE_COSMOS("/interaction_profiles/htc/vive_cosmos_controller", Kind.CONTROLLER),
++
++    HP_MIXED_REALITY("/interaction_profiles/hp/mixed_reality_controller", Kind.CONTROLLER),
++
++    WINDOWS_MOTION("/interaction_profiles/microsoft/motion_controller", Kind.CONTROLLER),
++
++    VIVE_TRACKER("/interaction_profiles/htc/vive_tracker_htcx", Kind.TRACKER);
++
++
++    public enum Kind {
++        CONTROLLER,
++        TRACKER
++    }
++
++    @Getter
++    private final String xrPath;
++
++    @Getter
++    private final Kind kind;
++
++    private static final HashMap<String, VRInteractionProfileType> values = new HashMap<>();
++    private static final VRInteractionProfileType[] valuesControllers;
++
++    static {
++        var list = new ArrayList<VRInteractionProfileType>();
++        for(VRInteractionProfileType entry : values()){
++            values.put(entry.xrPath, entry);
++            if(entry.isController()){
++                list.add(entry);
++            }
++        }
+         valuesControllers = list.toArray(new VRInteractionProfileType[0]);
+-    }
+-
+-    VRInteractionProfileType(String xrPath, Kind kind){
+-        this.xrPath = xrPath;
+-        this.kind = kind;
+-    }
+-
+-    /**
+-     * If this is a controller profile.
+-     *
+-     * @return true/false
+-     */
+-    public boolean isController(){
+-        return kind == Kind.CONTROLLER;
+-    }
+-
+-    /**
+-     * If this is a tracker profile.
+-     *
+-     * @return true/false
+-     */
+-    public boolean isTracker(){
+-        return kind == Kind.TRACKER;
+-    }
+-
+-
+-    /**
+-     * Get values with controllers only types
+-     *
+-     * @return list of controllers only interaction profile types
+-     */
+-    @NotNull
+-    public static VRInteractionProfileType[] valuesController(){
+-        return valuesControllers;
+-    }
+-
+-    /**
+-     * Get enum from interaction profile path
+-     */
+-    public static @Nullable VRInteractionProfileType fromXRPath(@NotNull String path){
+-        return values.get(path);
+-    }
+-
+-
+-
+-    /**
+-     * Get action ids of specified profile type
+-     *
+-     * @param profileType the interaction profile type
+-     * @return the list of action ids
+-     */
+-    public static List<VRActionIdentifier> getActionIdsOf(@NotNull VRInteractionProfileType profileType){
+-        return switch (profileType){
+-            case HP_MIXED_REALITY -> HpMixedRealityProfile.ALL_ACTION_IDS;
+-
+-            case OCULUS_TOUCH -> OculusTouchProfile.ALL_ACTION_IDS;
+-
+-            case VALVE_INDEX -> ValveIndexProfile.ALL_ACTION_IDS;
+-
+-            case VIVE_COSMOS -> ViveCosmosProfile.ALL_ACTION_IDS;
+-
+-            case VIVE -> ViveProfile.ALL_ACTION_IDS;
+-
+-            case WINDOWS_MOTION -> WindowsMotionProfile.ALL_ACTION_IDS;
+-
+-            case VIVE_TRACKER ->  List.of();
+-        };
+-    }
+-
+-    /**
+-     * Get action button ids of specified profile type
+-     *
+-     * @param profileType the interaction profile type
+-     * @return the list of action ids
+-     */
+-    public static List<VRActionIdentifier> getButtonIdsOf(@NotNull VRInteractionProfileType profileType){
+-        return switch (profileType){
+-            case HP_MIXED_REALITY -> HpMixedRealityProfile.BUTTON_IDS;
+-
+-            case OCULUS_TOUCH -> OculusTouchProfile.BUTTON_IDS;
+-
+-            case VALVE_INDEX -> ValveIndexProfile.BUTTON_IDS;
+-
+-            case VIVE_COSMOS -> ViveCosmosProfile.BUTTON_IDS;
+-
+-            case VIVE -> ViveProfile.BUTTON_IDS;
+-
+-            case WINDOWS_MOTION -> WindowsMotionProfile.BUTTON_IDS;
+-
+-            case VIVE_TRACKER ->  List.of();
+-        };
+-    }
+-
+-    /**
+-     * Get action vec2 ids of specified profile type
+-     *
+-     * @param profileType the interaction profile type
+-     * @return the list of action ids
+-     */
+-    public static List<VRActionIdentifier> getVec2IdsOf(@NotNull VRInteractionProfileType profileType){
+-        return switch (profileType){
+-            case HP_MIXED_REALITY -> HpMixedRealityProfile.VEC2_IDS;
+-
+-            case OCULUS_TOUCH -> OculusTouchProfile.VEC2_IDS;
+-
+-            case VALVE_INDEX -> ValveIndexProfile.VEC2_IDS;
+-
+-            case VIVE_COSMOS -> ViveCosmosProfile.VEC2_IDS;
+-
+-            case VIVE -> ViveProfile.VEC2_IDS;
+-
+-            case WINDOWS_MOTION -> WindowsMotionProfile.VEC2_IDS;
+-
+-            case VIVE_TRACKER ->  List.of();
+-        };
+-    }
+-}
++        // Pico uses the same logical buttons and axes as our Touch action layout.
++        // Preserve that layout when the runtime reports its native Pico profile.
++        values.put("/interaction_profiles/bytedance/pico4_controller", OCULUS_TOUCH);
++        values.put("/interaction_profiles/bytedance/pico4s_controller", OCULUS_TOUCH);
++    }
++
++    VRInteractionProfileType(String xrPath, Kind kind){
++        this.xrPath = xrPath;
++        this.kind = kind;
++    }
++
++    /**
++     * If this is a controller profile.
++     *
++     * @return true/false
++     */
++    public boolean isController(){
++        return kind == Kind.CONTROLLER;
++    }
++
++    /**
++     * If this is a tracker profile.
++     *
++     * @return true/false
++     */
++    public boolean isTracker(){
++        return kind == Kind.TRACKER;
++    }
++
++
++    /**
++     * Get values with controllers only types
++     *
++     * @return list of controllers only interaction profile types
++     */
++    @NotNull
++    public static VRInteractionProfileType[] valuesController(){
++        return valuesControllers;
++    }
++
++    /**
++     * Get enum from interaction profile path
++     */
++    public static @Nullable VRInteractionProfileType fromXRPath(@NotNull String path){
++        return values.get(path);
++    }
++
++
++
++    /**
++     * Get action ids of specified profile type
++     *
++     * @param profileType the interaction profile type
++     * @return the list of action ids
++     */
++    public static List<VRActionIdentifier> getActionIdsOf(@NotNull VRInteractionProfileType profileType){
++        return switch (profileType){
++            case HP_MIXED_REALITY -> HpMixedRealityProfile.ALL_ACTION_IDS;
++
++            case OCULUS_TOUCH -> OculusTouchProfile.ALL_ACTION_IDS;
++
++            case VALVE_INDEX -> ValveIndexProfile.ALL_ACTION_IDS;
++
++            case VIVE_COSMOS -> ViveCosmosProfile.ALL_ACTION_IDS;
++
++            case VIVE -> ViveProfile.ALL_ACTION_IDS;
++
++            case WINDOWS_MOTION -> WindowsMotionProfile.ALL_ACTION_IDS;
++
++            case VIVE_TRACKER ->  List.of();
++        };
++    }
++
++    /**
++     * Get action button ids of specified profile type
++     *
++     * @param profileType the interaction profile type
++     * @return the list of action ids
++     */
++    public static List<VRActionIdentifier> getButtonIdsOf(@NotNull VRInteractionProfileType profileType){
++        return switch (profileType){
++            case HP_MIXED_REALITY -> HpMixedRealityProfile.BUTTON_IDS;
++
++            case OCULUS_TOUCH -> OculusTouchProfile.BUTTON_IDS;
++
++            case VALVE_INDEX -> ValveIndexProfile.BUTTON_IDS;
++
++            case VIVE_COSMOS -> ViveCosmosProfile.BUTTON_IDS;
++
++            case VIVE -> ViveProfile.BUTTON_IDS;
++
++            case WINDOWS_MOTION -> WindowsMotionProfile.BUTTON_IDS;
++
++            case VIVE_TRACKER ->  List.of();
++        };
++    }
++
++    /**
++     * Get action vec2 ids of specified profile type
++     *
++     * @param profileType the interaction profile type
++     * @return the list of action ids
++     */
++    public static List<VRActionIdentifier> getVec2IdsOf(@NotNull VRInteractionProfileType profileType){
++        return switch (profileType){
++            case HP_MIXED_REALITY -> HpMixedRealityProfile.VEC2_IDS;
++
++            case OCULUS_TOUCH -> OculusTouchProfile.VEC2_IDS;
++
++            case VALVE_INDEX -> ValveIndexProfile.VEC2_IDS;
++
++            case VIVE_COSMOS -> ViveCosmosProfile.VEC2_IDS;
++
++            case VIVE -> ViveProfile.VEC2_IDS;
++
++            case WINDOWS_MOTION -> WindowsMotionProfile.VEC2_IDS;
++
++            case VIVE_TRACKER ->  List.of();
++        };
++    }
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
+index 1b0ef2dce180b2afbec81cac2425106528da0a31..020e8c433125eae9fc8d44723f4718b755dbfdab 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
+@@ -1,76 +1,76 @@
+-package me.phoenixra.atumvr.core.enums;
+-
+-import lombok.Getter;
+-import org.lwjgl.openxr.*;
+-
+-import java.util.HashMap;
+-
+-/**
+- * An enum representation of XR event
+- */
+-public enum XREvent {
+-
+-    DISPLAY_REFRESH_RATE_CHANGED_FB(FBDisplayRefreshRate.XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB),
+-
+-    EVENTS_LOST(XR10.XR_TYPE_EVENT_DATA_EVENTS_LOST),
+-
+-    EYE_CALIBRATION_CHANGED_ML(MLUserCalibration.XR_TYPE_EVENT_DATA_EYE_CALIBRATION_CHANGED_ML),
+-
+-    HEADSET_FIT_CHANGED_ML(MLUserCalibration.XR_TYPE_EVENT_DATA_HEADSET_FIT_CHANGED_ML),
+-
+-    INSTANCE_LOSS_PENDING(XR10.XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING),
+-
+-    INTERACTION_PROFILE_CHANGED(XR10.XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED),
+-
+-    LOCALIZATION_CHANGED_ML(MLLocalizationMap.XR_TYPE_EVENT_DATA_LOCALIZATION_CHANGED_ML),
+-
+-    MAIN_SESSION_VISIBILITY_CHANGED_EXTX(EXTXOverlay.XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX),
+-
+-    MARKER_TRACKING_UPDATE_VARJO(VARJOMarkerTracking.XR_TYPE_EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO),
+-
+-    PERF_SETTINGS_EXT(EXTPerformanceSettings.XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT),
+-
+-    REFERENCE_SPACE_CHANGE_PENDING(XR10.XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING),
+-
+-    SESSION_STATE_CHANGED(XR10.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED),
+-
+-    SPACE_ERASE_COMPLETE_FB(FBSpatialEntityStorage.XR_TYPE_EVENT_DATA_SPACE_ERASE_COMPLETE_FB),
+-
+-    SPACE_LIST_SAVE_COMPLETE_FB(FBSpatialEntityStorageBatch.XR_TYPE_EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB),
+-
+-    SPACE_QUERY_COMPLETE_FB(FBSpatialEntityQuery.XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB),
+-
+-    SPACE_QUERY_RESULTS_AVAILABLE_FB(FBSpatialEntityQuery.XR_TYPE_EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB),
+-
+-    SPACE_SAVE_COMPLETE_FB(FBSpatialEntityStorage.XR_TYPE_EVENT_DATA_SPACE_SAVE_COMPLETE_FB),
+-
+-    SPACE_SET_STATUS_COMPLETE_FB(FBSpatialEntity.XR_TYPE_EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB),
+-
+-    SPACE_SHARE_COMPLETE_FB(FBSpatialEntitySharing.XR_TYPE_EVENT_DATA_SPACE_SHARE_COMPLETE_FB),
+-
+-    SPATIAL_ANCHOR_CREATE_COMPLETE_FB(FBSpatialEntity.XR_TYPE_EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB),
+-
+-    VISIBILITY_MASK_CHANGED_KHR(KHRVisibilityMask.XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR),
+-
+-    VIVE_TRACKER_CONNECTED_HTCX(HTCXViveTrackerInteraction.XR_TYPE_EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX);
+-
+-    @Getter
+-    private final int id;
+-
+-    private static final HashMap<Integer, XREvent> values = new HashMap<>();
+-
+-
+-    XREvent(int id){
+-        this.id = id;
+-    }
+-
+-    public static XREvent fromId(int id){
+-        if(values.isEmpty()){
+-            for(XREvent event : values()){
+-                values.put(event.id,event);
+-            }
+-        }
+-        return values.get(id);
+-    }
+-
+-}
++package me.phoenixra.atumvr.core.enums;
++
++import lombok.Getter;
++import org.lwjgl.openxr.*;
++
++import java.util.HashMap;
++
++/**
++ * An enum representation of XR event
++ */
++public enum XREvent {
++
++    DISPLAY_REFRESH_RATE_CHANGED_FB(FBDisplayRefreshRate.XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB),
++
++    EVENTS_LOST(XR10.XR_TYPE_EVENT_DATA_EVENTS_LOST),
++
++    EYE_CALIBRATION_CHANGED_ML(1000472001),
++
++    HEADSET_FIT_CHANGED_ML(1000472000),
++
++    INSTANCE_LOSS_PENDING(XR10.XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING),
++
++    INTERACTION_PROFILE_CHANGED(XR10.XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED),
++
++    LOCALIZATION_CHANGED_ML(1000139001),
++
++    MAIN_SESSION_VISIBILITY_CHANGED_EXTX(EXTXOverlay.XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX),
++
++    MARKER_TRACKING_UPDATE_VARJO(VARJOMarkerTracking.XR_TYPE_EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO),
++
++    PERF_SETTINGS_EXT(EXTPerformanceSettings.XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT),
++
++    REFERENCE_SPACE_CHANGE_PENDING(XR10.XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING),
++
++    SESSION_STATE_CHANGED(XR10.XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED),
++
++    SPACE_ERASE_COMPLETE_FB(FBSpatialEntityStorage.XR_TYPE_EVENT_DATA_SPACE_ERASE_COMPLETE_FB),
++
++    SPACE_LIST_SAVE_COMPLETE_FB(FBSpatialEntityStorageBatch.XR_TYPE_EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB),
++
++    SPACE_QUERY_COMPLETE_FB(FBSpatialEntityQuery.XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB),
++
++    SPACE_QUERY_RESULTS_AVAILABLE_FB(FBSpatialEntityQuery.XR_TYPE_EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB),
++
++    SPACE_SAVE_COMPLETE_FB(FBSpatialEntityStorage.XR_TYPE_EVENT_DATA_SPACE_SAVE_COMPLETE_FB),
++
++    SPACE_SET_STATUS_COMPLETE_FB(FBSpatialEntity.XR_TYPE_EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB),
++
++    SPACE_SHARE_COMPLETE_FB(FBSpatialEntitySharing.XR_TYPE_EVENT_DATA_SPACE_SHARE_COMPLETE_FB),
++
++    SPATIAL_ANCHOR_CREATE_COMPLETE_FB(FBSpatialEntity.XR_TYPE_EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB),
++
++    VISIBILITY_MASK_CHANGED_KHR(KHRVisibilityMask.XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR),
++
++    VIVE_TRACKER_CONNECTED_HTCX(HTCXViveTrackerInteraction.XR_TYPE_EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX);
++
++    @Getter
++    private final int id;
++
++    private static final HashMap<Integer, XREvent> values = new HashMap<>();
++
++
++    XREvent(int id){
++        this.id = id;
++    }
++
++    public static XREvent fromId(int id){
++        if(values.isEmpty()){
++            for(XREvent event : values()){
++                values.put(event.id,event);
++            }
++        }
++        return values.get(id);
++    }
++
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
+index 3faeb36a67fe0fceb0e13feaec090528d4fafbb6..0a088609df6bc65187a6a0e8644bb664ce535f82 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
+@@ -1,952 +1,981 @@
+-package me.phoenixra.atumvr.core.input;
+-
+-import lombok.Getter;
+-import me.phoenixra.atumconfig.api.tuples.PairRecord;
+-import me.phoenixra.atumvr.api.exceptions.AtumVRException;
+-import me.phoenixra.atumvr.api.input.AtumVRInputHandler;
+-import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import me.phoenixra.atumvr.api.input.action.data.VRActionData;
+-import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
+-import me.phoenixra.atumvr.core.input.action.XRAction;
+-import me.phoenixra.atumvr.core.input.action.XRActionSet;
+-import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
+-import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
+-import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
+-import me.phoenixra.atumvr.api.input.haptics.AtumVRBodyHaptics;
+-import me.phoenixra.atumvr.api.input.treadmill.AtumVRTreadmillView;
+-import me.phoenixra.atumvr.core.input.body.XRBody;
+-import me.phoenixra.atumvr.core.input.device.XRDevice;
+-import me.phoenixra.atumvr.core.input.haptics.XRBodyHapticsProvider;
+-import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
+-import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
+-import me.phoenixra.atumvr.core.input.profile.tracker.hand.XRHandsProvider;
+-import me.phoenixra.atumvr.core.input.treadmill.XRTreadmillProvider;
+-import me.phoenixra.atumvr.core.input.profile.types.*;
+-import me.phoenixra.atumvr.core.session.XRInstance;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-import org.lwjgl.openxr.*;
+-import org.lwjgl.system.MemoryStack;
+-
+-import java.nio.LongBuffer;
+-import java.util.*;
+-
+-import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.*;
+-import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.VIVE_COSMOS;
+-import static org.lwjgl.openxr.XR10.*;
+-import static org.lwjgl.system.MemoryStack.*;
+-import static org.lwjgl.system.MemoryUtil.NULL;
+-import static org.lwjgl.system.MemoryUtil.memUTF8;
+-
+-/**
+- * Abstract base class for XR input
+- */
+-public abstract class XRInputHandler implements AtumVRInputHandler {
+-
+-    @Getter
+-    private final XRProvider vrProvider;
+-
+-
+-    private final HashMap<String, Long> paths = new HashMap<>();
+-
+-    private final Map<String, XRActionSet> actionSets = new LinkedHashMap<>();
+-    private final Map<String, XRDevice> devices = new LinkedHashMap<>();
+-
+-    private final List<XRTrackerProvider> trackerProviders = new ArrayList<>();
+-    private final List<XRTrackerProvider> trackerProvidersView =
+-            Collections.unmodifiableList(trackerProviders);
+-
+-    private @Nullable XRHandsProvider handsProvider;
+-    private @Nullable XRTreadmillProvider treadmillProvider;
+-    private @Nullable XRBodyHapticsProvider bodyHapticsProvider;
+-
+-    private final XRBody vrBody;
+-
+-    private boolean bodyTrackingEnabled = true;
+-    private boolean handTrackingEnabled = true;
+-    private boolean treadmillEnabled = true;
+-    private boolean bodyHapticsEnabled = true;
+-
+-    private boolean initialized;
+-
+-    private final List<XRActionSet> appActionSets = new ArrayList<>();
+-    // action sets synced this frame, rebuilt on init and on feature toggles
+-    private final List<XRActionSet> activeActionSets = new ArrayList<>();
+-    // generated body views in priority order, incl. tracker providers
+-    private final List<AtumVRBodyView> bodyViewSources = new ArrayList<>();
+-
+-    // detection of these is deferred until the feature is first enabled
+-    private List<? extends XRTreadmillProvider> treadmillCandidates = List.of();
+-    private List<? extends XRBodyHapticsProvider> bodyHapticsCandidates = List.of();
+-    private boolean treadmillResolved;
+-    private boolean bodyHapticsResolved;
+-
+-    private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
+-
+-
+-    public XRInputHandler(@NotNull XRProvider vrProvider){
+-        this.vrProvider = vrProvider;
+-        this.vrBody = new XRBody();
+-    }
+-
+-    // -------- SETTING UP --------
+-
+-    /**
+-     * Generate action sets
+-     *
+-     * @param stack the memory stack to use
+-     * @return the list containing action sets
+-     */
+-    protected abstract @NotNull List<? extends XRActionSet> generateActionSets(@NotNull MemoryStack stack);
+-
+-    /**
+-     * Generate VR devices
+-     *
+-     * @param stack the memory stack to use
+-     * @return the list containing VR devices
+-     */
+-    protected abstract @NotNull List<? extends XRDevice> generateDevices(@NotNull MemoryStack stack);
+-
+-
+-    protected @NotNull List<? extends AtumVRBodyView> generateBodyViews(@NotNull MemoryStack stack){
+-        return List.of();
+-    }
+-
+-    /**
+-     * Generate hands provider candidates in priority order,
+-     * the first supported one becomes the hands source
+-     *
+-     * @param stack the memory stack to use
+-     * @return the list containing hands provider candidates
+-     */
+-    protected @NotNull List<? extends XRHandsProvider> generateHandsProviders(@NotNull MemoryStack stack){
+-        return List.of();
+-    }
+-
+-    /**
+-     * Generate treadmill provider candidates in priority order,
+-     * the first supported one becomes the treadmill
+-     *
+-     * @param stack the memory stack to use
+-     * @return the list containing treadmill provider candidates
+-     */
+-    protected @NotNull List<? extends XRTreadmillProvider> generateTreadmillProviders(@NotNull MemoryStack stack){
+-        return List.of();
+-    }
+-
+-    /**
+-     * Generate body haptics provider candidates in priority order,
+-     * the first supported one becomes the body haptics vendor
+-     *
+-     * @param stack the memory stack to use
+-     * @return the list containing body haptics provider candidates
+-     */
+-    protected @NotNull List<? extends XRBodyHapticsProvider> generateBodyHapticsProviders(@NotNull MemoryStack stack){
+-        return List.of();
+-    }
+-
+-
+-    // -------- LIFECYCLE --------
+-
+-    @Override
+-    public void init() {
+-
+-        XrSession xrSession = vrProvider.getSession().getHandle();
+-
+-
+-        try (MemoryStack stack = MemoryStack.stackPush()) {
+-
+-
+-            //LOAD ACTION SETS
+-            actionSets.clear();
+-            appActionSets.clear();
+-            appActionSets.addAll(generateActionSets(stack));
+-            List<XRActionSet> loadedActionSets = new ArrayList<>(appActionSets);
+-
+-            //LOAD BODY VIEWS
+-            //action sets of disabled providers are still created and attached,
+-            //attaching is once per session and runtime enabling needs them
+-            trackerProviders.clear();
+-            bodyViewSources.clear();
+-            handsProvider = null;
+-            treadmillProvider = null;
+-            bodyHapticsProvider = null;
+-            vrBody.clearSources();
+-
+-            for(AtumVRBodyView bodyView : generateBodyViews(stack)){
+-                if(bodyView instanceof XRTrackerProvider provider){
+-                    if(!provider.isSupported()){
+-                        logUnsupportedProvider(provider);
+-                        continue;
+-                    }
+-                    trackerProviders.add(provider);
+-                    loadedActionSets.addAll(provider.getActionSets());
+-                }
+-                bodyViewSources.add(bodyView);
+-            }
+-
+-            //LOAD HANDS PROVIDER (single slot, first supported candidate wins)
+-            for(XRHandsProvider provider : generateHandsProviders(stack)){
+-                if(!provider.isSupported()){
+-                    logUnsupportedProvider(provider);
+-                    continue;
+-                }
+-                if(handsProvider != null){
+-                    logProviderSlotTaken(provider, handsProvider);
+-                    continue;
+-                }
+-                handsProvider = provider;
+-            }
+-
+-            //LOAD TREADMILL / BODY HAPTICS CANDIDATES
+-            //selection is deferred while the feature is disabled,
+-            //so their hardware detection costs nothing until enabled
+-            treadmillResolved = false;
+-            treadmillCandidates = List.copyOf(generateTreadmillProviders(stack));
+-            if(treadmillEnabled){
+-                resolveTreadmillProvider();
+-            }
+-
+-            bodyHapticsResolved = false;
+-            bodyHapticsCandidates = List.copyOf(generateBodyHapticsProviders(stack));
+-            if(bodyHapticsEnabled){
+-                resolveBodyHapticsProvider();
+-            }
+-
+-            loadedActionSets.forEach(XRActionSet::init);
+-
+-            long[] actionSetsArray = new long[loadedActionSets.size()];
+-            int i = 0;
+-            for(XRActionSet entry : loadedActionSets){
+-                actionSets.put(entry.getName(), entry);
+-                actionSetsArray[i] = entry.getHandle().address();
+-                i++;
+-            }
+-
+-            //suggest defaults before attaching action sets
+-            suggestDefaultBindings();
+-
+-            //attach action sets
+-            XrSessionActionSetsAttachInfo attach_info = XrSessionActionSetsAttachInfo.calloc(stack).set(
+-                    XR10.XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO,
+-                    NULL,
+-                    stackPointers(actionSetsArray)
+-            );
+-            vrProvider.checkXRError(
+-                    XR10.xrAttachSessionActionSets(xrSession, attach_info),
+-                    "xrAttachSessionActionSets"
+-            );
+-
+-
+-            if(bodyTrackingEnabled){
+-                trackerProviders.forEach(XRTrackerProvider::onAttached);
+-            }
+-            if(handTrackingEnabled && handsProvider != null){
+-                handsProvider.onAttached();
+-            }
+-            //treadmill/haptics providers only get resolved while enabled
+-            if(treadmillProvider != null){
+-                treadmillProvider.onAttached();
+-            }
+-            if(bodyHapticsProvider != null){
+-                bodyHapticsProvider.onAttached();
+-            }
+-
+-            //LOAD DEVICES
+-            devices.clear();
+-            for(XRDevice entry : generateDevices(stack)){
+-                devices.put(entry.getId(), entry);
+-            }
+-            if(bodyTrackingEnabled){
+-                registerTrackerDevices();
+-            }
+-
+-            rebuildActiveActionSets();
+-            rebuildBodySources();
+-        }
+-        initialized = true;
+-    }
+-
+-    private void resolveTreadmillProvider() {
+-        if(treadmillResolved) return;
+-        treadmillResolved = true;
+-        for(XRTreadmillProvider provider : treadmillCandidates){
+-            if(!provider.isSupported()){
+-                logUnsupportedProvider(provider);
+-                continue;
+-            }
+-            if(treadmillProvider != null){
+-                logProviderSlotTaken(provider, treadmillProvider);
+-                continue;
+-            }
+-            treadmillProvider = provider;
+-        }
+-        treadmillCandidates = List.of();
+-    }
+-
+-    private void resolveBodyHapticsProvider() {
+-        if(bodyHapticsResolved) return;
+-        bodyHapticsResolved = true;
+-        for(XRBodyHapticsProvider provider : bodyHapticsCandidates){
+-            if(!provider.isSupported()){
+-                logUnsupportedProvider(provider);
+-                continue;
+-            }
+-            if(bodyHapticsProvider != null){
+-                logProviderSlotTaken(provider, bodyHapticsProvider);
+-                continue;
+-            }
+-            bodyHapticsProvider = provider;
+-        }
+-        bodyHapticsCandidates = List.of();
+-    }
+-
+-    private void registerTrackerDevices() {
+-        for(XRTrackerProvider provider : trackerProviders){
+-            for(XRDevice entry : provider.getDevices()){
+-                devices.put(entry.getId(), entry);
+-            }
+-        }
+-    }
+-
+-    private void rebuildActiveActionSets() {
+-        activeActionSets.clear();
+-        activeActionSets.addAll(appActionSets);
+-        if(bodyTrackingEnabled){
+-            for(XRTrackerProvider provider : trackerProviders){
+-                activeActionSets.addAll(provider.getActionSets());
+-            }
+-        }
+-    }
+-
+-    private void rebuildBodySources() {
+-        vrBody.clearSources();
+-        if(bodyTrackingEnabled){
+-            bodyViewSources.forEach(vrBody::addSource);
+-        }
+-        // e.g. hand skeletons also deliver wrist/palm body joints
+-        if(handTrackingEnabled && handsProvider instanceof AtumVRBodyView bodyView){
+-            vrBody.addSource(bodyView);
+-        }
+-    }
+-
+-    private void logUnsupportedProvider(@NotNull Object provider) {
+-        vrProvider.getLogger().logInfo(
+-                provider.getClass().getSimpleName()
+-                        + " is unsupported by the user's hardware - skipping"
+-        );
+-    }
+-
+-    private void logProviderSlotTaken(@NotNull Object provider, @NotNull Object active) {
+-        vrProvider.getLogger().logInfo(
+-                provider.getClass().getSimpleName()
+-                        + " skipped - slot already taken by "
+-                        + active.getClass().getSimpleName()
+-        );
+-    }
+-
+-
+-    @Override
+-    public void update() {
+-        XrInstance instance = vrProvider.getSession().getInstance().getHandle();
+-        XrSession session = vrProvider.getSession().getHandle();
+-
+-        // Sync actions, disabled features are excluded so
+-        // the runtime skips the work for their action sets
+-        if (!activeActionSets.isEmpty()) {
+-            try (MemoryStack stack = MemoryStack.stackPush()) {
+-
+-                XrActiveActionSet.Buffer toUpdate = XrActiveActionSet
+-                        .calloc(activeActionSets.size(), stack);
+-                int i = 0;
+-                for (XRActionSet actionSet : activeActionSets) {
+-                    toUpdate.get(i).set(actionSet.getHandle(), XR_NULL_PATH);
+-                    i++;
+-                }
+-
+-                XrActionsSyncInfo syncInfo = XrActionsSyncInfo
+-                        .calloc(stack)
+-                        .type(XR_TYPE_ACTIONS_SYNC_INFO)
+-                        .activeActionSets(toUpdate);
+-                vrProvider.checkXRError(
+-                        xrSyncActions(session, syncInfo),
+-                        "xrSyncActions"
+-                );
+-
+-
+-            }
+-        }
+-
+-        for (XRActionSet entry : activeActionSets) {
+-            entry.update();
+-        }
+-        if (bodyTrackingEnabled) {
+-            for (XRTrackerProvider entry : trackerProviders) {
+-                entry.update();
+-            }
+-        }
+-        if (handTrackingEnabled && handsProvider != null) {
+-            handsProvider.update();
+-        }
+-        if (treadmillEnabled && treadmillProvider != null) {
+-            treadmillProvider.update();
+-        }
+-        if (bodyHapticsEnabled && bodyHapticsProvider != null) {
+-            bodyHapticsProvider.update();
+-        }
+-        for (XRDevice entry : devices.values()) {
+-            entry.update();
+-        }
+-        vrBody.update();
+-
+-    }
+-
+-    /**
+-     * On action data changed
+-     * <p>
+-     *     Override if you need a simple way to listen for actions data change<br>
+-     *     (e.g. button pressed/released, pose changed etc.)
+-     * </p>
+-     *
+-     * @param actionData the action data that was changed
+-     */
+-    public void onActionChanged(@NotNull VRActionData actionData){
+-        //your implementation
+-    }
+-
+-    private void suggestDefaultBindings() {
+-
+-        XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
+-        List<VRInteractionProfileType> supportedProfiles = getSupportedProfileTypes();
+-
+-        for (VRInteractionProfileType profileType : supportedProfiles) {
+-            List<PairRecord<XRAction, String>> bindingsSet = new ArrayList<>();
+-            for(XRActionSet actionSet : actionSets.values()){
+-                var binds = actionSet.getDefaultBindings(profileType);
+-                if(binds == null || binds.isEmpty()) continue;
+-                bindingsSet.addAll(binds);
+-            }
++package me.phoenixra.atumvr.core.input;
++
++import lombok.Getter;
++import me.phoenixra.atumconfig.api.tuples.PairRecord;
++import me.phoenixra.atumvr.api.exceptions.AtumVRException;
++import me.phoenixra.atumvr.api.input.AtumVRInputHandler;
++import me.phoenixra.atumvr.api.input.device.AtumVRDevice;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.api.input.action.data.VRActionData;
++import me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType;
++import me.phoenixra.atumvr.core.input.action.XRAction;
++import me.phoenixra.atumvr.core.input.action.XRActionSet;
++import me.phoenixra.atumvr.core.input.action.types.HapticPulseAction;
++import me.phoenixra.atumvr.api.input.body.AtumVRBodyView;
++import me.phoenixra.atumvr.api.input.body.hand.AtumVRHandsView;
++import me.phoenixra.atumvr.api.input.haptics.AtumVRBodyHaptics;
++import me.phoenixra.atumvr.api.input.treadmill.AtumVRTreadmillView;
++import me.phoenixra.atumvr.core.input.body.XRBody;
++import me.phoenixra.atumvr.core.input.device.XRDevice;
++import me.phoenixra.atumvr.core.input.haptics.XRBodyHapticsProvider;
++import me.phoenixra.atumvr.core.input.profile.XRInteractionProfile;
++import me.phoenixra.atumvr.core.input.profile.tracker.XRTrackerProvider;
++import me.phoenixra.atumvr.core.input.profile.tracker.hand.XRHandsProvider;
++import me.phoenixra.atumvr.core.input.treadmill.XRTreadmillProvider;
++import me.phoenixra.atumvr.core.input.profile.types.*;
++import me.phoenixra.atumvr.core.session.XRInstance;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++import org.lwjgl.openxr.*;
++import org.lwjgl.system.MemoryStack;
++
++import java.nio.LongBuffer;
++import java.util.*;
++
++import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.*;
++import static me.phoenixra.atumvr.api.input.profile.VRInteractionProfileType.VIVE_COSMOS;
++import static org.lwjgl.openxr.XR10.*;
++import static org.lwjgl.system.MemoryStack.*;
++import static org.lwjgl.system.MemoryUtil.NULL;
++import static org.lwjgl.system.MemoryUtil.memUTF8;
++
++/**
++ * Abstract base class for XR input
++ */
++public abstract class XRInputHandler implements AtumVRInputHandler {
++
++    @Getter
++    private final XRProvider vrProvider;
++
++
++    private final HashMap<String, Long> paths = new HashMap<>();
++
++    private final Map<String, XRActionSet> actionSets = new LinkedHashMap<>();
++    private final Map<String, XRDevice> devices = new LinkedHashMap<>();
++
++    private final List<XRTrackerProvider> trackerProviders = new ArrayList<>();
++    private final List<XRTrackerProvider> trackerProvidersView =
++            Collections.unmodifiableList(trackerProviders);
++
++    private @Nullable XRHandsProvider handsProvider;
++    private @Nullable XRTreadmillProvider treadmillProvider;
++    private @Nullable XRBodyHapticsProvider bodyHapticsProvider;
++
++    private final XRBody vrBody;
++
++    private boolean bodyTrackingEnabled = true;
++    private boolean handTrackingEnabled = true;
++    private boolean treadmillEnabled = true;
++    private boolean bodyHapticsEnabled = true;
++
++    private boolean initialized;
++
++    private final List<XRActionSet> appActionSets = new ArrayList<>();
++    // action sets synced this frame, rebuilt on init and on feature toggles
++    private final List<XRActionSet> activeActionSets = new ArrayList<>();
++    // generated body views in priority order, incl. tracker providers
++    private final List<AtumVRBodyView> bodyViewSources = new ArrayList<>();
++
++    // detection of these is deferred until the feature is first enabled
++    private List<? extends XRTreadmillProvider> treadmillCandidates = List.of();
++    private List<? extends XRBodyHapticsProvider> bodyHapticsCandidates = List.of();
++    private boolean treadmillResolved;
++    private boolean bodyHapticsResolved;
++
++    private final Map<String, String> lastLoggedInteractionProfile = new HashMap<>();
++
++
++    public XRInputHandler(@NotNull XRProvider vrProvider){
++        this.vrProvider = vrProvider;
++        this.vrBody = new XRBody();
++    }
++
++    // -------- SETTING UP --------
++
++    /**
++     * Generate action sets
++     *
++     * @param stack the memory stack to use
++     * @return the list containing action sets
++     */
++    protected abstract @NotNull List<? extends XRActionSet> generateActionSets(@NotNull MemoryStack stack);
++
++    /**
++     * Generate VR devices
++     *
++     * @param stack the memory stack to use
++     * @return the list containing VR devices
++     */
++    protected abstract @NotNull List<? extends XRDevice> generateDevices(@NotNull MemoryStack stack);
++
++
++    protected @NotNull List<? extends AtumVRBodyView> generateBodyViews(@NotNull MemoryStack stack){
++        return List.of();
++    }
++
++    /**
++     * Generate hands provider candidates in priority order,
++     * the first supported one becomes the hands source
++     *
++     * @param stack the memory stack to use
++     * @return the list containing hands provider candidates
++     */
++    protected @NotNull List<? extends XRHandsProvider> generateHandsProviders(@NotNull MemoryStack stack){
++        return List.of();
++    }
++
++    /**
++     * Generate treadmill provider candidates in priority order,
++     * the first supported one becomes the treadmill
++     *
++     * @param stack the memory stack to use
++     * @return the list containing treadmill provider candidates
++     */
++    protected @NotNull List<? extends XRTreadmillProvider> generateTreadmillProviders(@NotNull MemoryStack stack){
++        return List.of();
++    }
++
++    /**
++     * Generate body haptics provider candidates in priority order,
++     * the first supported one becomes the body haptics vendor
++     *
++     * @param stack the memory stack to use
++     * @return the list containing body haptics provider candidates
++     */
++    protected @NotNull List<? extends XRBodyHapticsProvider> generateBodyHapticsProviders(@NotNull MemoryStack stack){
++        return List.of();
++    }
++
++
++    // -------- LIFECYCLE --------
++
++    @Override
++    public void init() {
++
++        XrSession xrSession = vrProvider.getSession().getHandle();
++
++
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++
++
++            //LOAD ACTION SETS
++            actionSets.clear();
++            appActionSets.clear();
++            appActionSets.addAll(generateActionSets(stack));
++            List<XRActionSet> loadedActionSets = new ArrayList<>(appActionSets);
++
++            //LOAD BODY VIEWS
++            //action sets of disabled providers are still created and attached,
++            //attaching is once per session and runtime enabling needs them
++            trackerProviders.clear();
++            bodyViewSources.clear();
++            handsProvider = null;
++            treadmillProvider = null;
++            bodyHapticsProvider = null;
++            vrBody.clearSources();
++
++            for(AtumVRBodyView bodyView : generateBodyViews(stack)){
++                if(bodyView instanceof XRTrackerProvider provider){
++                    if(!provider.isSupported()){
++                        logUnsupportedProvider(provider);
++                        continue;
++                    }
++                    trackerProviders.add(provider);
++                    loadedActionSets.addAll(provider.getActionSets());
++                }
++                bodyViewSources.add(bodyView);
++            }
++
++            //LOAD HANDS PROVIDER (single slot, first supported candidate wins)
++            for(XRHandsProvider provider : generateHandsProviders(stack)){
++                if(!provider.isSupported()){
++                    logUnsupportedProvider(provider);
++                    continue;
++                }
++                if(handsProvider != null){
++                    logProviderSlotTaken(provider, handsProvider);
++                    continue;
++                }
++                handsProvider = provider;
++            }
++
++            //LOAD TREADMILL / BODY HAPTICS CANDIDATES
++            //selection is deferred while the feature is disabled,
++            //so their hardware detection costs nothing until enabled
++            treadmillResolved = false;
++            treadmillCandidates = List.copyOf(generateTreadmillProviders(stack));
++            if(treadmillEnabled){
++                resolveTreadmillProvider();
++            }
++
++            bodyHapticsResolved = false;
++            bodyHapticsCandidates = List.copyOf(generateBodyHapticsProviders(stack));
++            if(bodyHapticsEnabled){
++                resolveBodyHapticsProvider();
++            }
++
++            loadedActionSets.forEach(XRActionSet::init);
++
++            long[] actionSetsArray = new long[loadedActionSets.size()];
++            int i = 0;
++            for(XRActionSet entry : loadedActionSets){
++                actionSets.put(entry.getName(), entry);
++                actionSetsArray[i] = entry.getHandle().address();
++                i++;
++            }
++
++            //suggest defaults before attaching action sets
++            suggestDefaultBindings();
++
++            //attach action sets
++            XrSessionActionSetsAttachInfo attach_info = XrSessionActionSetsAttachInfo.calloc(stack).set(
++                    XR10.XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO,
++                    NULL,
++                    stackPointers(actionSetsArray)
++            );
++            vrProvider.checkXRError(
++                    XR10.xrAttachSessionActionSets(xrSession, attach_info),
++                    "xrAttachSessionActionSets"
++            );
++
++
++            if(bodyTrackingEnabled){
++                trackerProviders.forEach(XRTrackerProvider::onAttached);
++            }
++            if(handTrackingEnabled && handsProvider != null){
++                handsProvider.onAttached();
++            }
++            //treadmill/haptics providers only get resolved while enabled
++            if(treadmillProvider != null){
++                treadmillProvider.onAttached();
++            }
++            if(bodyHapticsProvider != null){
++                bodyHapticsProvider.onAttached();
++            }
++
++            //LOAD DEVICES
++            devices.clear();
++            for(XRDevice entry : generateDevices(stack)){
++                devices.put(entry.getId(), entry);
++            }
++            if(bodyTrackingEnabled){
++                registerTrackerDevices();
++            }
++
++            rebuildActiveActionSets();
++            rebuildBodySources();
++        }
++        initialized = true;
++    }
++
++    private void resolveTreadmillProvider() {
++        if(treadmillResolved) return;
++        treadmillResolved = true;
++        for(XRTreadmillProvider provider : treadmillCandidates){
++            if(!provider.isSupported()){
++                logUnsupportedProvider(provider);
++                continue;
++            }
++            if(treadmillProvider != null){
++                logProviderSlotTaken(provider, treadmillProvider);
++                continue;
++            }
++            treadmillProvider = provider;
++        }
++        treadmillCandidates = List.of();
++    }
++
++    private void resolveBodyHapticsProvider() {
++        if(bodyHapticsResolved) return;
++        bodyHapticsResolved = true;
++        for(XRBodyHapticsProvider provider : bodyHapticsCandidates){
++            if(!provider.isSupported()){
++                logUnsupportedProvider(provider);
++                continue;
++            }
++            if(bodyHapticsProvider != null){
++                logProviderSlotTaken(provider, bodyHapticsProvider);
++                continue;
++            }
++            bodyHapticsProvider = provider;
++        }
++        bodyHapticsCandidates = List.of();
++    }
++
++    private void registerTrackerDevices() {
++        for(XRTrackerProvider provider : trackerProviders){
++            for(XRDevice entry : provider.getDevices()){
++                devices.put(entry.getId(), entry);
++            }
++        }
++    }
++
++    private void rebuildActiveActionSets() {
++        activeActionSets.clear();
++        activeActionSets.addAll(appActionSets);
++        if(bodyTrackingEnabled){
++            for(XRTrackerProvider provider : trackerProviders){
++                activeActionSets.addAll(provider.getActionSets());
++            }
++        }
++    }
++
++    private void rebuildBodySources() {
++        vrBody.clearSources();
++        if(bodyTrackingEnabled){
++            bodyViewSources.forEach(vrBody::addSource);
++        }
++        // e.g. hand skeletons also deliver wrist/palm body joints
++        if(handTrackingEnabled && handsProvider instanceof AtumVRBodyView bodyView){
++            vrBody.addSource(bodyView);
++        }
++    }
++
++    private void logUnsupportedProvider(@NotNull Object provider) {
++        vrProvider.getLogger().logInfo(
++                provider.getClass().getSimpleName()
++                        + " is unsupported by the user's hardware - skipping"
++        );
++    }
++
++    private void logProviderSlotTaken(@NotNull Object provider, @NotNull Object active) {
++        vrProvider.getLogger().logInfo(
++                provider.getClass().getSimpleName()
++                        + " skipped - slot already taken by "
++                        + active.getClass().getSimpleName()
++        );
++    }
++
++
++    @Override
++    public void update() {
++        XrInstance instance = vrProvider.getSession().getInstance().getHandle();
++        XrSession session = vrProvider.getSession().getHandle();
++
++        // Sync actions, disabled features are excluded so
++        // the runtime skips the work for their action sets
++        if (!activeActionSets.isEmpty()) {
++            try (MemoryStack stack = MemoryStack.stackPush()) {
++
++                XrActiveActionSet.Buffer toUpdate = XrActiveActionSet
++                        .calloc(activeActionSets.size(), stack);
++                int i = 0;
++                for (XRActionSet actionSet : activeActionSets) {
++                    toUpdate.get(i).set(actionSet.getHandle(), XR_NULL_PATH);
++                    i++;
++                }
++
++                XrActionsSyncInfo syncInfo = XrActionsSyncInfo
++                        .calloc(stack)
++                        .type(XR_TYPE_ACTIONS_SYNC_INFO)
++                        .activeActionSets(toUpdate);
++                vrProvider.checkXRError(
++                        xrSyncActions(session, syncInfo),
++                        "xrSyncActions"
++                );
++
++
++            }
++        }
++
++        for (XRActionSet entry : activeActionSets) {
++            entry.update();
++        }
++        if (bodyTrackingEnabled) {
++            for (XRTrackerProvider entry : trackerProviders) {
++                entry.update();
++            }
++        }
++        if (handTrackingEnabled && handsProvider != null) {
++            handsProvider.update();
++        }
++        if (treadmillEnabled && treadmillProvider != null) {
++            treadmillProvider.update();
++        }
++        if (bodyHapticsEnabled && bodyHapticsProvider != null) {
++            bodyHapticsProvider.update();
++        }
++        for (XRDevice entry : devices.values()) {
++            entry.update();
++        }
++        vrBody.update();
++
++    }
++
++    /**
++     * On action data changed
++     * <p>
++     *     Override if you need a simple way to listen for actions data change<br>
++     *     (e.g. button pressed/released, pose changed etc.)
++     * </p>
++     *
++     * @param actionData the action data that was changed
++     */
++    public void onActionChanged(@NotNull VRActionData actionData){
++        //your implementation
++    }
++
++    private void suggestDefaultBindings() {
++
++        XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
++        List<VRInteractionProfileType> supportedProfiles = getSupportedProfileTypes();
++
++        for (VRInteractionProfileType profileType : supportedProfiles) {
++            List<PairRecord<XRAction, String>> bindingsSet = new ArrayList<>();
++            for(XRActionSet actionSet : actionSets.values()){
++                var binds = actionSet.getDefaultBindings(profileType);
++                if(binds == null || binds.isEmpty()) continue;
++                bindingsSet.addAll(binds);
++            }
+             if(bindingsSet.isEmpty()) continue;
+ 
+-            // Suggest whole bindings set
+-            int result = trySuggestBindings(xrInstance, profileType.getXrPath(), bindingsSet);
+-            if (result == XR10.XR_SUCCESS) {
+-                continue;
+-            }
+-            if (result != XR10.XR_ERROR_PATH_UNSUPPORTED) {
+-                vrProvider.checkXRError(result, "xrSuggestInteractionProfileBindings", profileType.getXrPath());
+-                continue;
+-            }
+-
+-            //Fallback
+-            List<PairRecord<XRAction, String>> supported = new ArrayList<>();
+-            for (PairRecord<XRAction, String> binding : bindingsSet) {
+-                if (trySuggestBindings(xrInstance, profileType.getXrPath(), List.of(binding)) == XR10.XR_SUCCESS) {
+-                    supported.add(binding);
+-                } else {
+-                    vrProvider.getLogger().logWarn(
+-                            "Dropping unsupported binding for " + profileType + ": " + binding.second()
+-                    );
+-                }
+-            }
+-
+-            if (supported.isEmpty()) {
+-                vrProvider.getLogger().logWarn(
+-                        "No supported bindings for interaction profile " + profileType
+-                                + " (" + profileType.getXrPath() + ") - skipping"
+-                );
+-                continue;
+-            }
+-
+-            // Re-suggest the supported subset
+-            vrProvider.checkXRError(
+-                    trySuggestBindings(xrInstance, profileType.getXrPath(), supported),
+-                    "xrSuggestInteractionProfileBindings", profileType.getXrPath()
+-            );
+-        }
+-    }
+-
+-
+-    private int trySuggestBindings(@NotNull XrInstance xrInstance,
+-                                   @NotNull String profilePath,
+-                                   @NotNull List<PairRecord<XRAction, String>> bindingsSet) {
+-        try (MemoryStack stack = stackPush()) {
+-            var bindings = XrActionSuggestedBinding.calloc(bindingsSet.size(), stack);
+-            for (int i = 0; i < bindingsSet.size(); i++) {
+-                var binding = bindingsSet.get(i);
+-                bindings.get(i).set(
+-                        binding.first().getHandle(),
+-                        convertStringToXrPath(binding.second())
+-                );
+-            }
+-
+-            var suggested_binds = XrInteractionProfileSuggestedBinding.calloc(stack)
+-                    .set(
+-                            XR10.XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
+-                            NULL,
+-                            convertStringToXrPath(profilePath),
+-                            bindings
+-                    );
+-
+-            return XR10.xrSuggestInteractionProfileBindings(xrInstance, suggested_binds);
+-        }
+-    }
+-
+-    // -------- API --------
+-    @Override
+-    public Collection<? extends XRActionSet> getActionSets(){
+-        return actionSets.values();
+-    }
+-
+-    @Override
+-    public Collection<? extends XRDevice> getDevices() {
+-        return devices.values();
+-    }
+-
+-    @Override
+-    public boolean isBodyTrackingEnabled() {
+-        return bodyTrackingEnabled;
+-    }
+-
+-    @Override
+-    public void setBodyTrackingEnabled(boolean enabled) {
+-        if (bodyTrackingEnabled == enabled) {
+-            return;
+-        }
+-        bodyTrackingEnabled = enabled;
+-        if (!initialized) {
++            if (profileType == OCULUS_TOUCH && vrProvider.getSession().getInstance()
++                    .isExtensionEnabled("XR_BD_controller_interaction")) {
++                suggestPicoBindings(xrInstance, "/interaction_profiles/bytedance/pico4_controller", bindingsSet);
++                suggestPicoBindings(xrInstance, "/interaction_profiles/bytedance/pico4s_controller", bindingsSet);
++            }
++
++            // Suggest whole bindings set
++            int result = trySuggestBindings(xrInstance, profileType.getXrPath(), bindingsSet);
++            if (result == XR10.XR_SUCCESS) {
++                continue;
++            }
++            if (result != XR10.XR_ERROR_PATH_UNSUPPORTED) {
++                vrProvider.checkXRError(result, "xrSuggestInteractionProfileBindings", profileType.getXrPath());
++                continue;
++            }
++
++            //Fallback
++            List<PairRecord<XRAction, String>> supported = new ArrayList<>();
++            for (PairRecord<XRAction, String> binding : bindingsSet) {
++                if (trySuggestBindings(xrInstance, profileType.getXrPath(), List.of(binding)) == XR10.XR_SUCCESS) {
++                    supported.add(binding);
++                } else {
++                    vrProvider.getLogger().logWarn(
++                            "Dropping unsupported binding for " + profileType + ": " + binding.second()
++                    );
++                }
++            }
++
++            if (supported.isEmpty()) {
++                vrProvider.getLogger().logWarn(
++                        "No supported bindings for interaction profile " + profileType
++                                + " (" + profileType.getXrPath() + ") - skipping"
++                );
++                continue;
++            }
++
++            // Re-suggest the supported subset
++            vrProvider.checkXRError(
++                    trySuggestBindings(xrInstance, profileType.getXrPath(), supported),
++                    "xrSuggestInteractionProfileBindings", profileType.getXrPath()
++            );
++        }
++    }
++
++
++    private void suggestPicoBindings(XrInstance instance, String profilePath,
++                                     List<PairRecord<XRAction, String>> bindings) {
++        int result = trySuggestBindings(instance, profilePath, bindings);
++        if (result == XR_SUCCESS) return;
++        if (result != XR_ERROR_PATH_UNSUPPORTED) {
++            vrProvider.checkXRError(result, "xrSuggestInteractionProfileBindings", profilePath);
+             return;
+         }
+-        if (enabled) {
+-            trackerProviders.forEach(XRTrackerProvider::onAttached);
+-            registerTrackerDevices();
+-        } else {
+-            for (XRTrackerProvider provider : trackerProviders) {
+-                for (XRDevice entry : provider.getDevices()) {
+-                    devices.remove(entry.getId(), entry);
+-                }
+-                destroySafely(provider, provider::destroy);
++        // Some Pico runtime versions do not expose every Touch capacitive input.
++        List<PairRecord<XRAction, String>> supported = new ArrayList<>();
++        for (var binding : bindings) {
++            if (trySuggestBindings(instance, profilePath, List.of(binding)) == XR_SUCCESS) {
++                supported.add(binding);
+             }
+         }
+-        rebuildActiveActionSets();
+-        rebuildBodySources();
+-        logFeatureToggled("Body tracking", enabled);
+-    }
+-
+-    @Override
+-    public boolean isHandTrackingEnabled() {
+-        return handTrackingEnabled;
+-    }
+-
+-    @Override
+-    public void setHandTrackingEnabled(boolean enabled) {
+-        if (handTrackingEnabled == enabled) {
+-            return;
+-        }
+-        handTrackingEnabled = enabled;
+-        if (!initialized || handsProvider == null) {
+-            return;
+-        }
+-        if (enabled) {
+-            handsProvider.onAttached();
++        if (!supported.isEmpty()) {
++            vrProvider.checkXRError(trySuggestBindings(instance, profilePath, supported),
++                    "xrSuggestInteractionProfileBindings", profilePath);
+         } else {
+-            destroySafely(handsProvider, handsProvider::destroy);
+-        }
+-        rebuildBodySources();
+-        logFeatureToggled("Hand tracking", enabled);
+-    }
+-
+-    @Override
+-    public boolean isTreadmillEnabled() {
+-        return treadmillEnabled;
+-    }
+-
+-    @Override
+-    public void setTreadmillEnabled(boolean enabled) {
+-        if (treadmillEnabled == enabled) {
+-            return;
+-        }
+-        treadmillEnabled = enabled;
+-        if (!initialized) {
+-            return;
+-        }
+-        if (enabled) {
+-            resolveTreadmillProvider();
+-            if (treadmillProvider != null) {
+-                treadmillProvider.onAttached();
+-                logFeatureToggled("Treadmill", true);
+-            }
+-        } else if (treadmillProvider != null) {
+-            destroySafely(treadmillProvider, treadmillProvider::destroy);
+-            logFeatureToggled("Treadmill", false);
+-        }
+-    }
+-
+-    @Override
+-    public boolean isBodyHapticsEnabled() {
+-        return bodyHapticsEnabled;
+-    }
+-
+-    @Override
+-    public void setBodyHapticsEnabled(boolean enabled) {
+-        if (bodyHapticsEnabled == enabled) {
+-            return;
+-        }
+-        bodyHapticsEnabled = enabled;
+-        if (!initialized) {
+-            return;
+-        }
+-        if (enabled) {
+-            resolveBodyHapticsProvider();
+-            if (bodyHapticsProvider != null) {
+-                bodyHapticsProvider.onAttached();
+-                logFeatureToggled("Body haptics", true);
+-            }
+-        } else if (bodyHapticsProvider != null) {
+-            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
+-            logFeatureToggled("Body haptics", false);
+-        }
+-    }
+-
+-    private void logFeatureToggled(@NotNull String feature, boolean enabled) {
+-        vrProvider.getLogger().logInfo(
+-                feature + (enabled ? " enabled" : " disabled") + " at runtime"
+-        );
+-    }
+-
+-    @Override
+-    public @NotNull XRBody getVRBody() {
+-        return vrBody;
+-    }
+-
+-    @Override
+-    public @NotNull AtumVRHandsView getVRHands() {
+-        return handTrackingEnabled && handsProvider != null
+-                ? handsProvider : AtumVRHandsView.EMPTY;
+-    }
+-
+-    @Override
+-    public @NotNull AtumVRTreadmillView getVRTreadmill() {
+-        return treadmillEnabled && treadmillProvider != null
+-                ? treadmillProvider : AtumVRTreadmillView.EMPTY;
+-    }
+-
+-    @Override
+-    public @NotNull AtumVRBodyHaptics getVRBodyHaptics() {
+-        return bodyHapticsEnabled && bodyHapticsProvider != null
+-                ? bodyHapticsProvider : AtumVRBodyHaptics.EMPTY;
+-    }
+-
+-    /**
+-     * Get the tracker providers that survived {@link XRTrackerProvider#isSupported()}
+-     *
+-     * @return the immutable view of active providers
+-     */
+-    public @NotNull List<XRTrackerProvider> getTrackerProviders() {
+-        return trackerProvidersView;
+-    }
+-
+-    /**
+-     * Get an active tracker provider by its type
+-     *
+-     * @param type the provider class
+-     * @param <T>  the provider type
+-     * @return the provider, or null if it is not active
+-     */
+-    public <T extends XRTrackerProvider> @Nullable T getTrackerProvider(@NotNull Class<T> type) {
+-        for (XRTrackerProvider provider : trackerProviders) {
+-            if (type.isInstance(provider)) {
+-                return type.cast(provider);
+-            }
+-        }
+-        return null;
+-    }
+-
+-    /**
+-     * Get the active hands provider
+-     *
+-     * @return the provider, or null if none is supported
+-     */
+-    public @Nullable XRHandsProvider getHandsProvider() {
+-        return handsProvider;
+-    }
+-
+-    /**
+-     * Get the active treadmill provider
+-     *
+-     * @return the provider, or null if none is supported
+-     *         or the feature has never been enabled
+-     */
+-    public @Nullable XRTreadmillProvider getTreadmillProvider() {
+-        return treadmillProvider;
+-    }
+-
+-    /**
+-     * Get the active body haptics provider
+-     *
+-     * @return the provider, or null if none is supported
+-     *         or the feature has never been enabled
+-     */
+-    public @Nullable XRBodyHapticsProvider getBodyHapticsProvider() {
+-        return bodyHapticsProvider;
+-    }
+-
+-    @Override
+-    public XRDevice getDevice(String id) {
+-        return devices.get(id);
+-    }
+-
+-    @Override
+-    public  <T extends AtumVRDevice> T getDevice(String id, Class<T> clazz){
+-        return (T) getDevice(id);
+-    }
+-
+-    @Override
+-    public void registerDevice(@NotNull AtumVRDevice device) {
+-        if(!(device instanceof XRDevice xrDevice)){
+-            throw new AtumVRException("Tried to register VRDevice that is not an instance of XRDevice! Id: "+device.getId());
+-        }
+-        devices.put(device.getId(), xrDevice);
+-    }
+-
+-
+-    /**
+-     * Converts an OpenXR path string to a path handle
+-     *
+-     * @param pathString the path string (e.g., "/user/hand/left")
+-     * @return the OpenXR path handle
+-     * @throws AtumVRException if the path format is invalid
+-     */
+-    public long convertStringToXrPath(@NotNull String pathString) {
+-        return paths.computeIfAbsent(pathString, s -> {
+-            try (MemoryStack ignored = stackPush()) {
+-                LongBuffer buf = stackCallocLong(1);
+-                int xrResult = XR10.xrStringToPath(
+-                        vrProvider.getSession().getInstance().getHandle(),
+-                        pathString, buf
+-                );
+-                if (xrResult == XR10.XR_ERROR_PATH_FORMAT_INVALID) {
+-                    throw new AtumVRException("Invalid path:\"" + pathString + "\"");
+-                } else {
+-                    vrProvider.checkXRError(xrResult, "xrStringToPath");
+-                }
+-                return buf.get();
+-            }
+-        });
+-    }
+-
+-    /**
+-     * Converts an OpenXR path handle back to its path string
+-     *
+-     * @param path the OpenXR path handle
+-     * @return the path string, or null if the handle could not be resolved
+-     */
+-    public @Nullable String convertXrPathToString(long path) {
+-        XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
+-        try (MemoryStack stack = stackPush()) {
+-            var sizeBuf = stack.callocInt(1);
+-
+-            int xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, null);
+-            if (xrResult < 0) {
+-                vrProvider.checkXRError(false, xrResult, "xrPathToString", "size");
+-                return null;
+-            }
+-
+-            int size = sizeBuf.get(0);
+-            var valueBuf = stack.calloc(size);
+-            xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, valueBuf);
+-            if (xrResult < 0) {
+-                vrProvider.checkXRError(false, xrResult, "xrPathToString", "value");
+-                return null;
+-            }
+-
+-            return memUTF8(valueBuf, size - 1);
+-        }
+-    }
+-
+-
+-    /**
+-     * Get the interaction profile the runtime currently has bound to a top level user path.
+-     *
+-     * <p>
+-     *     Requires action sets to be attached, returns null before that
+-     * </p>
+-     *
+-     * @param userPath top level user path, e.g. {@link XRAction#LEFT_HAND_PATH}
+-     * @return the interaction profile path, or null if nothing is bound
+-     */
+-    public @Nullable String getCurrentInteractionProfilePath(@NotNull String userPath){
+-        try (MemoryStack stack = stackPush()) {
+-            var state = XrInteractionProfileState.calloc(stack)
+-                    .type(XR10.XR_TYPE_INTERACTION_PROFILE_STATE);
+-
+-            int result = XR10.xrGetCurrentInteractionProfile(
+-                    vrProvider.getSession().getHandle(),
+-                    convertStringToXrPath(userPath),
+-                    state
+-            );
+-            if (result < 0) {
+-                vrProvider.checkXRError(false, result, "xrGetCurrentInteractionProfile", userPath);
+-                return null;
+-            }
+-
+-            long profilePath = state.interactionProfile();
+-            return profilePath == XR10.XR_NULL_PATH
+-                    ? null
+-                    : convertXrPathToString(profilePath);
+-        }
+-    }
+-
+-    /**
+-     * Log the interaction profile bound to each hand.
+-     *
+-     * <p>
+-     *     Reports profiles the runtime picked that this app suggested no bindings for -
+-     *     those leave every action inactive, which reads as dead controllers
+-     * </p>
+-     */
+-    public void logCurrentInteractionProfiles(){
+-        for (String userPath : List.of(XRAction.LEFT_HAND_PATH, XRAction.RIGHT_HAND_PATH)) {
+-            String profilePath = getCurrentInteractionProfilePath(userPath);
+-            String key = profilePath == null ? "" : profilePath;
+-
+-            // The runtime can fire this event repeatedly, only log actual changes
+-            if (key.equals(lastLoggedInteractionProfile.put(userPath, key))) {
+-                continue;
+-            }
+-
+-            if (profilePath == null) {
+-                vrProvider.getLogger().logInfo(
+-                        "Interaction profile for " + userPath + ": none (controller off or not bound)"
+-                );
+-                continue;
+-            }
+-
+-            var type = VRInteractionProfileType.fromXRPath(profilePath);
+-            if (type == null) {
+-                vrProvider.getLogger().logWarn(
+-                        "Interaction profile for " + userPath + ": " + profilePath
+-                                + " - UNSUPPORTED, no bindings were suggested for it,"
+-                                + " input from this controller will stay inactive"
+-                );
+-                continue;
+-            }
+-
+-            vrProvider.getLogger().logInfo(
+-                    "Interaction profile for " + userPath + ": " + profilePath + " (" + type + ")"
+-            );
+-        }
+-    }
+-
+-    @Override
+-    public @NotNull List<VRInteractionProfileType> getSupportedProfileTypes(){
+-        List<VRInteractionProfileType> list = new ArrayList<>();
+-        XRInstance instance = vrProvider.getSession().getInstance();
+-
+-        list.add(OCULUS_TOUCH);
+-        list.add(VALVE_INDEX);
+-        list.add(WINDOWS_MOTION);
+-        list.add(VIVE);
+-
+-        if(instance.getHandle().getCapabilities().XR_EXT_hp_mixed_reality_controller){
+-            list.add(HP_MIXED_REALITY);
+-        }
+-        if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
+-            list.add(VIVE_COSMOS);
++            vrProvider.getLogger().logWarn("Pico interaction profile unavailable: " + profilePath);
+         }
+-        if(instance.getHandle().getCapabilities().XR_HTCX_vive_tracker_interaction){
+-            list.add(VIVE_TRACKER);
+-        }
+-
+-        return list;
+     }
+ 
+-    /**
+-     * Get supported interaction profiles by the user's hardware
+-     */
+-    public @NotNull List<XRInteractionProfile> getSupportedProfiles(){
+-        var out = new ArrayList<XRInteractionProfile>();
+-        var supported = getSupportedProfileTypes();
+-        if(supported.contains(VALVE_INDEX)) out.add(new ValveIndexXRProfile(vrProvider));
+-
+-        if(supported.contains(OCULUS_TOUCH)) out.add(new OculusTouchXRProfile(vrProvider));
+-
+-        if(supported.contains(WINDOWS_MOTION)) out.add(new WindowsMotionXRProfile(vrProvider));
+-
+-        if(supported.contains(HP_MIXED_REALITY)) out.add(new HpMixedRealityXRProfile(vrProvider));
+-
+-        if(supported.contains(VIVE)) out.add(new ViveXRProfile(vrProvider));
+-
+-        if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosXRProfile(vrProvider));
+-
+-        return out;
+-    }
+-
+-    // -------- DESTROY --------
+-
+-    @Override
+-    public void destroy() {
+-        initialized = false;
+-        stopActiveHaptics();
+-
+-        for (XRTrackerProvider provider : trackerProviders) {
+-            destroySafely(provider, provider::destroy);
+-        }
+-        if (handsProvider != null) {
+-            destroySafely(handsProvider, handsProvider::destroy);
+-            handsProvider = null;
+-        }
+-        if (treadmillProvider != null) {
+-            destroySafely(treadmillProvider, treadmillProvider::destroy);
+-            treadmillProvider = null;
+-        }
+-        if (bodyHapticsProvider != null) {
+-            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
+-            bodyHapticsProvider = null;
+-        }
+-        trackerProviders.clear();
+-        bodyViewSources.clear();
+-        treadmillCandidates = List.of();
+-        bodyHapticsCandidates = List.of();
+-        treadmillResolved = false;
+-        bodyHapticsResolved = false;
+-        vrBody.clearSources();
+-
+-        actionSets.values().forEach(XRActionSet::destroy);
+-        actionSets.clear();
+-        appActionSets.clear();
+-        activeActionSets.clear();
+-        devices.clear();
+-        paths.clear();
+-        lastLoggedInteractionProfile.clear();
+-    }
+-
+-    private void destroySafely(@NotNull Object provider, @NotNull Runnable destroy) {
+-        try {
+-            destroy.run();
+-        } catch (Throwable t) {
+-            vrProvider.getLogger().logError(
+-                    provider.getClass().getSimpleName() + ".destroy() failed: " + t.getMessage()
+-            );
+-        }
+-    }
+-
+-    public void stopActiveHaptics() {
+-        if (vrProvider.getSession().getHandle() == null) {
+-            return;
+-        }
+-        for (XRActionSet actionSet : actionSets.values()) {
+-            for (XRAction action : actionSet.getActions()) {
+-                if (action instanceof HapticPulseAction haptic) {
+-                    try {
+-                        haptic.stop();
+-                    } catch (Throwable ignored) {
+-
+-                    }
+-                }
+-            }
+-        }
+-    }
+-}
+-
++    private int trySuggestBindings(@NotNull XrInstance xrInstance,
++                                   @NotNull String profilePath,
++                                   @NotNull List<PairRecord<XRAction, String>> bindingsSet) {
++        try (MemoryStack stack = stackPush()) {
++            var bindings = XrActionSuggestedBinding.calloc(bindingsSet.size(), stack);
++            for (int i = 0; i < bindingsSet.size(); i++) {
++                var binding = bindingsSet.get(i);
++                bindings.get(i).set(
++                        binding.first().getHandle(),
++                        convertStringToXrPath(binding.second())
++                );
++            }
++
++            var suggested_binds = XrInteractionProfileSuggestedBinding.calloc(stack)
++                    .set(
++                            XR10.XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING,
++                            NULL,
++                            convertStringToXrPath(profilePath),
++                            bindings
++                    );
++
++            return XR10.xrSuggestInteractionProfileBindings(xrInstance, suggested_binds);
++        }
++    }
++
++    // -------- API --------
++    @Override
++    public Collection<? extends XRActionSet> getActionSets(){
++        return actionSets.values();
++    }
++
++    @Override
++    public Collection<? extends XRDevice> getDevices() {
++        return devices.values();
++    }
++
++    @Override
++    public boolean isBodyTrackingEnabled() {
++        return bodyTrackingEnabled;
++    }
++
++    @Override
++    public void setBodyTrackingEnabled(boolean enabled) {
++        if (bodyTrackingEnabled == enabled) {
++            return;
++        }
++        bodyTrackingEnabled = enabled;
++        if (!initialized) {
++            return;
++        }
++        if (enabled) {
++            trackerProviders.forEach(XRTrackerProvider::onAttached);
++            registerTrackerDevices();
++        } else {
++            for (XRTrackerProvider provider : trackerProviders) {
++                for (XRDevice entry : provider.getDevices()) {
++                    devices.remove(entry.getId(), entry);
++                }
++                destroySafely(provider, provider::destroy);
++            }
++        }
++        rebuildActiveActionSets();
++        rebuildBodySources();
++        logFeatureToggled("Body tracking", enabled);
++    }
++
++    @Override
++    public boolean isHandTrackingEnabled() {
++        return handTrackingEnabled;
++    }
++
++    @Override
++    public void setHandTrackingEnabled(boolean enabled) {
++        if (handTrackingEnabled == enabled) {
++            return;
++        }
++        handTrackingEnabled = enabled;
++        if (!initialized || handsProvider == null) {
++            return;
++        }
++        if (enabled) {
++            handsProvider.onAttached();
++        } else {
++            destroySafely(handsProvider, handsProvider::destroy);
++        }
++        rebuildBodySources();
++        logFeatureToggled("Hand tracking", enabled);
++    }
++
++    @Override
++    public boolean isTreadmillEnabled() {
++        return treadmillEnabled;
++    }
++
++    @Override
++    public void setTreadmillEnabled(boolean enabled) {
++        if (treadmillEnabled == enabled) {
++            return;
++        }
++        treadmillEnabled = enabled;
++        if (!initialized) {
++            return;
++        }
++        if (enabled) {
++            resolveTreadmillProvider();
++            if (treadmillProvider != null) {
++                treadmillProvider.onAttached();
++                logFeatureToggled("Treadmill", true);
++            }
++        } else if (treadmillProvider != null) {
++            destroySafely(treadmillProvider, treadmillProvider::destroy);
++            logFeatureToggled("Treadmill", false);
++        }
++    }
++
++    @Override
++    public boolean isBodyHapticsEnabled() {
++        return bodyHapticsEnabled;
++    }
++
++    @Override
++    public void setBodyHapticsEnabled(boolean enabled) {
++        if (bodyHapticsEnabled == enabled) {
++            return;
++        }
++        bodyHapticsEnabled = enabled;
++        if (!initialized) {
++            return;
++        }
++        if (enabled) {
++            resolveBodyHapticsProvider();
++            if (bodyHapticsProvider != null) {
++                bodyHapticsProvider.onAttached();
++                logFeatureToggled("Body haptics", true);
++            }
++        } else if (bodyHapticsProvider != null) {
++            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
++            logFeatureToggled("Body haptics", false);
++        }
++    }
++
++    private void logFeatureToggled(@NotNull String feature, boolean enabled) {
++        vrProvider.getLogger().logInfo(
++                feature + (enabled ? " enabled" : " disabled") + " at runtime"
++        );
++    }
++
++    @Override
++    public @NotNull XRBody getVRBody() {
++        return vrBody;
++    }
++
++    @Override
++    public @NotNull AtumVRHandsView getVRHands() {
++        return handTrackingEnabled && handsProvider != null
++                ? handsProvider : AtumVRHandsView.EMPTY;
++    }
++
++    @Override
++    public @NotNull AtumVRTreadmillView getVRTreadmill() {
++        return treadmillEnabled && treadmillProvider != null
++                ? treadmillProvider : AtumVRTreadmillView.EMPTY;
++    }
++
++    @Override
++    public @NotNull AtumVRBodyHaptics getVRBodyHaptics() {
++        return bodyHapticsEnabled && bodyHapticsProvider != null
++                ? bodyHapticsProvider : AtumVRBodyHaptics.EMPTY;
++    }
++
++    /**
++     * Get the tracker providers that survived {@link XRTrackerProvider#isSupported()}
++     *
++     * @return the immutable view of active providers
++     */
++    public @NotNull List<XRTrackerProvider> getTrackerProviders() {
++        return trackerProvidersView;
++    }
++
++    /**
++     * Get an active tracker provider by its type
++     *
++     * @param type the provider class
++     * @param <T>  the provider type
++     * @return the provider, or null if it is not active
++     */
++    public <T extends XRTrackerProvider> @Nullable T getTrackerProvider(@NotNull Class<T> type) {
++        for (XRTrackerProvider provider : trackerProviders) {
++            if (type.isInstance(provider)) {
++                return type.cast(provider);
++            }
++        }
++        return null;
++    }
++
++    /**
++     * Get the active hands provider
++     *
++     * @return the provider, or null if none is supported
++     */
++    public @Nullable XRHandsProvider getHandsProvider() {
++        return handsProvider;
++    }
++
++    /**
++     * Get the active treadmill provider
++     *
++     * @return the provider, or null if none is supported
++     *         or the feature has never been enabled
++     */
++    public @Nullable XRTreadmillProvider getTreadmillProvider() {
++        return treadmillProvider;
++    }
++
++    /**
++     * Get the active body haptics provider
++     *
++     * @return the provider, or null if none is supported
++     *         or the feature has never been enabled
++     */
++    public @Nullable XRBodyHapticsProvider getBodyHapticsProvider() {
++        return bodyHapticsProvider;
++    }
++
++    @Override
++    public XRDevice getDevice(String id) {
++        return devices.get(id);
++    }
++
++    @Override
++    public  <T extends AtumVRDevice> T getDevice(String id, Class<T> clazz){
++        return (T) getDevice(id);
++    }
++
++    @Override
++    public void registerDevice(@NotNull AtumVRDevice device) {
++        if(!(device instanceof XRDevice xrDevice)){
++            throw new AtumVRException("Tried to register VRDevice that is not an instance of XRDevice! Id: "+device.getId());
++        }
++        devices.put(device.getId(), xrDevice);
++    }
++
++
++    /**
++     * Converts an OpenXR path string to a path handle
++     *
++     * @param pathString the path string (e.g., "/user/hand/left")
++     * @return the OpenXR path handle
++     * @throws AtumVRException if the path format is invalid
++     */
++    public long convertStringToXrPath(@NotNull String pathString) {
++        return paths.computeIfAbsent(pathString, s -> {
++            try (MemoryStack ignored = stackPush()) {
++                LongBuffer buf = stackCallocLong(1);
++                int xrResult = XR10.xrStringToPath(
++                        vrProvider.getSession().getInstance().getHandle(),
++                        pathString, buf
++                );
++                if (xrResult == XR10.XR_ERROR_PATH_FORMAT_INVALID) {
++                    throw new AtumVRException("Invalid path:\"" + pathString + "\"");
++                } else {
++                    vrProvider.checkXRError(xrResult, "xrStringToPath");
++                }
++                return buf.get();
++            }
++        });
++    }
++
++    /**
++     * Converts an OpenXR path handle back to its path string
++     *
++     * @param path the OpenXR path handle
++     * @return the path string, or null if the handle could not be resolved
++     */
++    public @Nullable String convertXrPathToString(long path) {
++        XrInstance xrInstance = vrProvider.getSession().getInstance().getHandle();
++        try (MemoryStack stack = stackPush()) {
++            var sizeBuf = stack.callocInt(1);
++
++            int xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, null);
++            if (xrResult < 0) {
++                vrProvider.checkXRError(false, xrResult, "xrPathToString", "size");
++                return null;
++            }
++
++            int size = sizeBuf.get(0);
++            var valueBuf = stack.calloc(size);
++            xrResult = XR10.xrPathToString(xrInstance, path, sizeBuf, valueBuf);
++            if (xrResult < 0) {
++                vrProvider.checkXRError(false, xrResult, "xrPathToString", "value");
++                return null;
++            }
++
++            return memUTF8(valueBuf, size - 1);
++        }
++    }
++
++
++    /**
++     * Get the interaction profile the runtime currently has bound to a top level user path.
++     *
++     * <p>
++     *     Requires action sets to be attached, returns null before that
++     * </p>
++     *
++     * @param userPath top level user path, e.g. {@link XRAction#LEFT_HAND_PATH}
++     * @return the interaction profile path, or null if nothing is bound
++     */
++    public @Nullable String getCurrentInteractionProfilePath(@NotNull String userPath){
++        try (MemoryStack stack = stackPush()) {
++            var state = XrInteractionProfileState.calloc(stack)
++                    .type(XR10.XR_TYPE_INTERACTION_PROFILE_STATE);
++
++            int result = XR10.xrGetCurrentInteractionProfile(
++                    vrProvider.getSession().getHandle(),
++                    convertStringToXrPath(userPath),
++                    state
++            );
++            if (result < 0) {
++                vrProvider.checkXRError(false, result, "xrGetCurrentInteractionProfile", userPath);
++                return null;
++            }
++
++            long profilePath = state.interactionProfile();
++            return profilePath == XR10.XR_NULL_PATH
++                    ? null
++                    : convertXrPathToString(profilePath);
++        }
++    }
++
++    /**
++     * Log the interaction profile bound to each hand.
++     *
++     * <p>
++     *     Reports profiles the runtime picked that this app suggested no bindings for -
++     *     those leave every action inactive, which reads as dead controllers
++     * </p>
++     */
++    public void logCurrentInteractionProfiles(){
++        for (String userPath : List.of(XRAction.LEFT_HAND_PATH, XRAction.RIGHT_HAND_PATH)) {
++            String profilePath = getCurrentInteractionProfilePath(userPath);
++            String key = profilePath == null ? "" : profilePath;
++
++            // The runtime can fire this event repeatedly, only log actual changes
++            if (key.equals(lastLoggedInteractionProfile.put(userPath, key))) {
++                continue;
++            }
++
++            if (profilePath == null) {
++                vrProvider.getLogger().logInfo(
++                        "Interaction profile for " + userPath + ": none (controller off or not bound)"
++                );
++                continue;
++            }
++
++            var type = VRInteractionProfileType.fromXRPath(profilePath);
++            if (type == null) {
++                vrProvider.getLogger().logWarn(
++                        "Interaction profile for " + userPath + ": " + profilePath
++                                + " - UNSUPPORTED, no bindings were suggested for it,"
++                                + " input from this controller will stay inactive"
++                );
++                continue;
++            }
++
++            vrProvider.getLogger().logInfo(
++                    "Interaction profile for " + userPath + ": " + profilePath + " (" + type + ")"
++            );
++        }
++    }
++
++    @Override
++    public @NotNull List<VRInteractionProfileType> getSupportedProfileTypes(){
++        List<VRInteractionProfileType> list = new ArrayList<>();
++        XRInstance instance = vrProvider.getSession().getInstance();
++
++        list.add(OCULUS_TOUCH);
++        list.add(VALVE_INDEX);
++        list.add(WINDOWS_MOTION);
++        list.add(VIVE);
++
++        if(instance.getHandle().getCapabilities().XR_EXT_hp_mixed_reality_controller){
++            list.add(HP_MIXED_REALITY);
++        }
++        if(instance.getHandle().getCapabilities().XR_HTC_vive_cosmos_controller_interaction){
++            list.add(VIVE_COSMOS);
++        }
++        if(instance.getHandle().getCapabilities().XR_HTCX_vive_tracker_interaction){
++            list.add(VIVE_TRACKER);
++        }
++
++        return list;
++    }
++
++    /**
++     * Get supported interaction profiles by the user's hardware
++     */
++    public @NotNull List<XRInteractionProfile> getSupportedProfiles(){
++        var out = new ArrayList<XRInteractionProfile>();
++        var supported = getSupportedProfileTypes();
++        if(supported.contains(VALVE_INDEX)) out.add(new ValveIndexXRProfile(vrProvider));
++
++        if(supported.contains(OCULUS_TOUCH)) out.add(new OculusTouchXRProfile(vrProvider));
++
++        if(supported.contains(WINDOWS_MOTION)) out.add(new WindowsMotionXRProfile(vrProvider));
++
++        if(supported.contains(HP_MIXED_REALITY)) out.add(new HpMixedRealityXRProfile(vrProvider));
++
++        if(supported.contains(VIVE)) out.add(new ViveXRProfile(vrProvider));
++
++        if(supported.contains(VIVE_COSMOS)) out.add(new ViveCosmosXRProfile(vrProvider));
++
++        return out;
++    }
++
++    // -------- DESTROY --------
++
++    @Override
++    public void destroy() {
++        initialized = false;
++        stopActiveHaptics();
++
++        for (XRTrackerProvider provider : trackerProviders) {
++            destroySafely(provider, provider::destroy);
++        }
++        if (handsProvider != null) {
++            destroySafely(handsProvider, handsProvider::destroy);
++            handsProvider = null;
++        }
++        if (treadmillProvider != null) {
++            destroySafely(treadmillProvider, treadmillProvider::destroy);
++            treadmillProvider = null;
++        }
++        if (bodyHapticsProvider != null) {
++            destroySafely(bodyHapticsProvider, bodyHapticsProvider::destroy);
++            bodyHapticsProvider = null;
++        }
++        trackerProviders.clear();
++        bodyViewSources.clear();
++        treadmillCandidates = List.of();
++        bodyHapticsCandidates = List.of();
++        treadmillResolved = false;
++        bodyHapticsResolved = false;
++        vrBody.clearSources();
++
++        actionSets.values().forEach(XRActionSet::destroy);
++        actionSets.clear();
++        appActionSets.clear();
++        activeActionSets.clear();
++        devices.clear();
++        paths.clear();
++        lastLoggedInteractionProfile.clear();
++    }
++
++    private void destroySafely(@NotNull Object provider, @NotNull Runnable destroy) {
++        try {
++            destroy.run();
++        } catch (Throwable t) {
++            vrProvider.getLogger().logError(
++                    provider.getClass().getSimpleName() + ".destroy() failed: " + t.getMessage()
++            );
++        }
++    }
++
++    public void stopActiveHaptics() {
++        if (vrProvider.getSession().getHandle() == null) {
++            return;
++        }
++        for (XRActionSet actionSet : actionSets.values()) {
++            for (XRAction action : actionSet.getActions()) {
++                if (action instanceof HapticPulseAction haptic) {
++                    try {
++                        haptic.stop();
++                    } catch (Throwable ignored) {
++
++                    }
++                }
++            }
++        }
++    }
++}
++
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
+index 66f81918c7d0b477e4e22b5637a6931893b1abc1..d97b15a2cc1a8e8173fb8f7b195bd006213622d2 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
+@@ -1,320 +1,341 @@
+-package me.phoenixra.atumvr.core.session;
+-
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.exceptions.AtumVRException;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
+-import org.jetbrains.annotations.NotNull;
+-import org.lwjgl.PointerBuffer;
+-import org.lwjgl.opengl.GL;
+-import org.lwjgl.opengl.GL11;
+-import org.lwjgl.openxr.*;
+-import org.lwjgl.system.MemoryStack;
+-
+-import java.nio.ByteBuffer;
+-import java.util.ArrayList;
+-import java.util.HashSet;
+-import java.util.LinkedHashSet;
+-import java.util.List;
+-import java.util.Locale;
+-import java.util.Set;
+-
+-/**
+- * XR session instance (low-level OpenXR stuff)
+- */
+-public class XRInstance {
+-
+-    private final XRProvider vrProvider;
+-
+-    @Getter
+-    protected XrInstance handle;
+-
+-    @Getter
+-    protected final XrEventDataBuffer xrEventBuffer;
+-
+-    @Getter
+-    private String runtimeName;
+-    @Getter
+-    private long runtimeVersion;
+-    @Getter
+-    private String runtimeVersionString;
+-
+-
+-    @Getter
+-    private Set<String> availableExtensions = Set.of();
+-    @Getter
+-    private Set<String> enabledExtensions = Set.of();
+-
+-    @Getter
+-    private XRGraphicsApi graphicsApi;
+-
+-    private XrDebugUtilsMessengerEXT debugMessenger;
+-
+-    public XRInstance(@NotNull XRProvider vrProvider){
+-        this.vrProvider = vrProvider;
+-        this.xrEventBuffer = XrEventDataBuffer.calloc();
+-    }
+-
+-    public void init() {
+-        try (MemoryStack stack = MemoryStack.stackPush()) {
+-
+-            var extensionsPointer = setupExtensions(
+-                    vrProvider, stack
+-            );
+-
+-            // 1) Fill XrApplicationInfo
+-            var appInfo = XrApplicationInfo.calloc(stack)
+-                    .applicationName(stack.UTF8(vrProvider.getAppName()))
+-                    .applicationVersion(1)
+-                    .engineName(stack.UTF8("AtumEngine"))
+-                    .engineVersion(1)
+-                    .apiVersion(XR10.XR_MAKE_VERSION(1, 0, 40));
+-
+-            // 2) Create XrInstanceCreateInfo
+-            var instInfo = XrInstanceCreateInfo.calloc(stack)
+-                    .type(XR10.XR_TYPE_INSTANCE_CREATE_INFO)
+-                    .next(0)
+-                    .applicationInfo(appInfo)
+-                    .enabledExtensionNames(extensionsPointer)
+-                    .enabledApiLayerNames(null);
+-
+-            // 3) Create the instance and handle errors
+-            var instancePointer = stack.callocPointer(1);
+-            int result = XR10.xrCreateInstance(instInfo, instancePointer);
+-            if (result == XR10.XR_ERROR_RUNTIME_FAILURE) {
+-                throw new AtumVRException("Failed to create XrInstance: runtime failure (is headset connected?)");
+-            } else if (result == XR10.XR_ERROR_INSTANCE_LOST) {
+-                throw new AtumVRException("Failed to create XrInstance: instance lost during creation");
+-            } else if (result != XR10.XR_SUCCESS) {
+-                vrProvider.checkXRError(result, "xrCreateInstance", "Failed to create XrInstance");
+-            }
+-
+-            this.handle = new XrInstance(instancePointer.get(0), instInfo);
+-
+-            if(handle.getCapabilities().XR_EXT_debug_utils) {
+-                setupDebugMessenger(vrProvider, stack);
+-            }
+-
+-            var properties = XrInstanceProperties.calloc(stack).type$Default();
+-            vrProvider.checkXRError(
+-                    XR10.xrGetInstanceProperties(handle, properties),
+-                    "xrGetInstanceProperties"
+-            );
+-            runtimeName = properties.runtimeNameString();
+-            runtimeVersion = properties.runtimeVersion();
+-            runtimeVersionString = XR10.XR_VERSION_MAJOR(runtimeVersion)
+-                    + "." + XR10.XR_VERSION_MINOR(runtimeVersion)
+-                    + "." + XR10.XR_VERSION_PATCH(runtimeVersion);
+-        }
+-    }
+-
+-    private PointerBuffer setupExtensions(XRProvider vrProvider, MemoryStack stack){
+-
+-
+-        // 1) Enumerate available instance extensions
+-        var extCountBuf = stack.callocInt(1);
+-        vrProvider.checkXRError(
+-                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
+-                "xrEnumerateInstanceExtensionProperties", "count"
+-        );
+-
+-        int extCount = extCountBuf.get(0);
+-        var extProperties = XrExtensionProperties
+-                .calloc(extCount, stack);
+-        extProperties.forEach(
+-                prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES)
+-        );
+-
+-        vrProvider.checkXRError(
+-                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, extProperties),
+-                "xrEnumerateInstanceExtensionProperties", "properties"
+-        );
+-
+-        // Collect supported extension names
+-        Set<String> available = new HashSet<>(extCount);
+-        for (XrExtensionProperties prop : extProperties) {
+-            available.add(prop.extensionNameString());
+-        }
+-        availableExtensions = Set.copyOf(available);
+-
+-
++package me.phoenixra.atumvr.core.session;
++
++import lombok.Getter;
++import me.phoenixra.atumvr.api.exceptions.AtumVRException;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import org.jetbrains.annotations.NotNull;
++import org.lwjgl.PointerBuffer;
++import org.lwjgl.opengl.GL;
++import org.lwjgl.opengl.GL11;
++import org.lwjgl.openxr.*;
++import org.lwjgl.system.MemoryStack;
++
++import java.nio.ByteBuffer;
++import java.util.ArrayList;
++import java.util.HashSet;
++import java.util.LinkedHashSet;
++import java.util.List;
++import java.util.Locale;
++import java.util.Set;
++
++/**
++ * XR session instance (low-level OpenXR stuff)
++ */
++public class XRInstance {
++
++    private final XRProvider vrProvider;
++
++    @Getter
++    protected XrInstance handle;
++
++    @Getter
++    protected final XrEventDataBuffer xrEventBuffer;
++
++    @Getter
++    private String runtimeName;
++    @Getter
++    private long runtimeVersion;
++    @Getter
++    private String runtimeVersionString;
++
++
++    @Getter
++    private Set<String> availableExtensions = Set.of();
++    @Getter
++    private Set<String> enabledExtensions = Set.of();
++
++    @Getter
++    private XRGraphicsApi graphicsApi;
++
++    private XrDebugUtilsMessengerEXT debugMessenger;
++
++    public XRInstance(@NotNull XRProvider vrProvider){
++        this.vrProvider = vrProvider;
++        this.xrEventBuffer = XrEventDataBuffer.calloc();
++    }
++
++    public void init() {
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++
++            XRPlatform.get().initializeLoader(stack);
++
++            var extensionsPointer = setupExtensions(
++                    vrProvider, stack
++            );
++
++            // 1) Fill XrApplicationInfo
++            var appInfo = XrApplicationInfo.calloc(stack)
++                    .applicationName(stack.UTF8(vrProvider.getAppName()))
++                    .applicationVersion(1)
++                    .engineName(stack.UTF8("AtumEngine"))
++                    .engineVersion(1)
++                    .apiVersion(XR10.XR_MAKE_VERSION(1, 0, 40));
++
++            // 2) Create XrInstanceCreateInfo
++            var instInfo = XrInstanceCreateInfo.calloc(stack)
++                    .type(XR10.XR_TYPE_INSTANCE_CREATE_INFO)
++                    .next(XRPlatform.get().getInstanceCreateInfo(stack))
++                    .applicationInfo(appInfo)
++                    .enabledExtensionNames(extensionsPointer)
++                    .enabledApiLayerNames(null);
++
++            // 3) Create the instance and handle errors
++            var instancePointer = stack.callocPointer(1);
++            int result = XR10.xrCreateInstance(instInfo, instancePointer);
++            if (result == XR10.XR_ERROR_RUNTIME_FAILURE) {
++                throw new AtumVRException("Failed to create XrInstance: runtime failure (is headset connected?)");
++            } else if (result == XR10.XR_ERROR_INSTANCE_LOST) {
++                throw new AtumVRException("Failed to create XrInstance: instance lost during creation");
++            } else if (result != XR10.XR_SUCCESS) {
++                vrProvider.checkXRError(result, "xrCreateInstance", "Failed to create XrInstance");
++            }
++
++            this.handle = new XrInstance(instancePointer.get(0), instInfo);
++
++            if(handle.getCapabilities().XR_EXT_debug_utils) {
++                setupDebugMessenger(vrProvider, stack);
++            }
++
++            var properties = XrInstanceProperties.calloc(stack).type$Default();
++            vrProvider.checkXRError(
++                    XR10.xrGetInstanceProperties(handle, properties),
++                    "xrGetInstanceProperties"
++            );
++            runtimeName = properties.runtimeNameString();
++            runtimeVersion = properties.runtimeVersion();
++            runtimeVersionString = XR10.XR_VERSION_MAJOR(runtimeVersion)
++                    + "." + XR10.XR_VERSION_MINOR(runtimeVersion)
++                    + "." + XR10.XR_VERSION_PATCH(runtimeVersion);
++        }
++    }
++
++    private PointerBuffer setupExtensions(XRProvider vrProvider, MemoryStack stack){
++
++
++        // 1) Enumerate available instance extensions
++        var extCountBuf = stack.callocInt(1);
++        vrProvider.checkXRError(
++                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, null),
++                "xrEnumerateInstanceExtensionProperties", "count"
++        );
++
++        int extCount = extCountBuf.get(0);
++        var extProperties = XrExtensionProperties
++                .calloc(extCount, stack);
++        extProperties.forEach(
++                prop -> prop.type(XR10.XR_TYPE_EXTENSION_PROPERTIES)
++        );
++
++        vrProvider.checkXRError(
++                XR10.xrEnumerateInstanceExtensionProperties((ByteBuffer)null, extCountBuf, extProperties),
++                "xrEnumerateInstanceExtensionProperties", "properties"
++        );
++
++        // Collect supported extension names
++        Set<String> available = new HashSet<>(extCount);
++        for (XrExtensionProperties prop : extProperties) {
++            available.add(prop.extensionNameString());
++        }
++        availableExtensions = Set.copyOf(available);
++
++
+         graphicsApi = resolveGraphicsApi();
+-
+-        // 2) Define desired extensions in priority order
+-        List<String> desiredExtensions = new ArrayList<>(List.of(
+-                graphicsApi.getExtensionName(),
+-
+-                EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
+-                FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
+-                KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
+-        ));
++        String graphicsExtension = XRPlatform.isAndroid()
++                ? XRPlatform.get().getGraphicsExtension() : graphicsApi.getExtensionName();
++
++        // 2) Define desired extensions in priority order
++        List<String> desiredExtensions = new ArrayList<>(List.of(
++                graphicsExtension,
++
++                EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
++                FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
++                KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
++        ));
+         desiredExtensions.addAll(vrProvider.getXRAppExtensions());
+-
+-        // Keep only what the runtime offers, preserving priority order and dropping duplicates
+-        Set<String> enabled = new LinkedHashSet<>();
+-        List<String> skipped = new ArrayList<>();
+-        for (String extName : desiredExtensions) {
+-            if (availableExtensions.contains(extName)) {
+-                enabled.add(extName);
+-            } else if (!skipped.contains(extName)) {
+-                skipped.add(extName);
++        if (XRPlatform.isAndroid()) {
++            String androidExtension = KHRAndroidCreateInstance.XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME;
++            if (!availableExtensions.contains(androidExtension)) {
++                throw new AtumVRException("Android OpenXR runtime is missing " + androidExtension);
+             }
++            desiredExtensions.add(androidExtension);
++            desiredExtensions.add("XR_BD_controller_interaction");
+         }
+-        enabledExtensions = Set.copyOf(enabled);
+-
+-        if (!skipped.isEmpty()) {
+-            vrProvider.getLogger().logDebug(
+-                    "Requested XR extensions unsupported by the runtime, skipping: " + skipped
+-            );
+-        }
+-
+-        var extensionsPointer = stack.mallocPointer(enabled.size());
+-        for (String extName : enabled) {
+-            extensionsPointer.put(stack.UTF8(extName));
+-        }
+-        extensionsPointer.flip();
+-        return extensionsPointer;
+-    }
+-
+-
++
++        // Keep only what the runtime offers, preserving priority order and dropping duplicates
++        Set<String> enabled = new LinkedHashSet<>();
++        List<String> skipped = new ArrayList<>();
++        for (String extName : desiredExtensions) {
++            if (availableExtensions.contains(extName)) {
++                enabled.add(extName);
++            } else if (!skipped.contains(extName)) {
++                skipped.add(extName);
++            }
++        }
++        enabledExtensions = Set.copyOf(enabled);
++
++        if (!skipped.isEmpty()) {
++            vrProvider.getLogger().logDebug(
++                    "Requested XR extensions unsupported by the runtime, skipping: " + skipped
++            );
++        }
++
++        var extensionsPointer = stack.mallocPointer(enabled.size());
++        for (String extName : enabled) {
++            extensionsPointer.put(stack.UTF8(extName));
++        }
++        extensionsPointer.flip();
++        return extensionsPointer;
++    }
++
++
+     private XRGraphicsApi resolveGraphicsApi() {
+-        XRGraphicsApi forced = vrProvider.getGraphicsApiPreference();
+-        if (forced != null) {
+-            if (!availableExtensions.contains(forced.getExtensionName())) {
+-                throw new AtumVRException(
+-                        "Forced graphics API " + forced + " requires " + forced.getExtensionName()
+-                                + " which the runtime does not support"
+-                );
+-            }
+-            vrProvider.getLogger().logInfo("Graphics API forced to " + forced);
+-            return forced;
+-        }
+-        boolean openglSupported = availableExtensions.contains(XRGraphicsApi.OPENGL.getExtensionName());
+-        boolean vulkanSupported = availableExtensions.contains(XRGraphicsApi.VULKAN.getExtensionName());
+-        if (openglSupported) {
+-            String arcRenderer = detectIntelArcRenderer();
+-            if (arcRenderer != null) {
+-                if (vulkanSupported) {
+-                    vrProvider.getLogger().logInfo(
+-                            "Intel Arc GPU detected [" + arcRenderer
+-                                    + "], using the Vulkan bridge"
+-                    );
+-                    return XRGraphicsApi.VULKAN;
+-                }
+-                vrProvider.getLogger().logInfo(
+-                        "Intel Arc GPU detected [" + arcRenderer + "] but the runtime lacks "
+-                                + XRGraphicsApi.VULKAN.getExtensionName() + ", staying on OpenGL"
+-                );
++        if (XRPlatform.isAndroid()) {
++            String extension = XRPlatform.get().getGraphicsExtension();
++            if (!availableExtensions.contains(extension)) {
++                throw new AtumVRException("Android OpenXR runtime is missing " + extension);
+             }
++            // Pojlib owns an EGL/OpenGL ES context. Desktop Vulkan interop is unavailable.
+             return XRGraphicsApi.OPENGL;
+         }
+-        if (vulkanSupported) {
+-            vrProvider.getLogger().logInfo(
+-                    "Runtime lacks " + XRGraphicsApi.OPENGL.getExtensionName()
+-                            + ", using the Vulkan presentation bridge"
+-            );
+-            return XRGraphicsApi.VULKAN;
+-        }
+-        throw new AtumVRException(
+-                "Runtime supports neither " + XRGraphicsApi.OPENGL.getExtensionName()
+-                        + " nor " + XRGraphicsApi.VULKAN.getExtensionName()
+-        );
+-    }
+-
+-    /**
+-     * @return the GL renderer string if the current GPU is an Intel Arc, otherwise null
+-     */
+-    private String detectIntelArcRenderer() {
+-        try {
+-            GL.getCapabilities();
+-        } catch (IllegalStateException noContext) {
+-            vrProvider.getLogger().logDebug(
+-                    "No current GL context while resolving the graphics API, skipping GPU detection"
+-            );
+-            return null;
+-        }
+-        String renderer = GL11.glGetString(GL11.GL_RENDERER);
+-        if (renderer == null) {
+-            return null;
+-        }
+-        String lower = renderer.toLowerCase(Locale.ROOT);
+-        return lower.contains("intel") && lower.contains("arc") ? renderer : null;
+-    }
+-
+-    public boolean isExtensionEnabled(@NotNull String extensionName){
+-        return enabledExtensions.contains(extensionName);
+-    }
+-
+-
+-    public boolean isExtensionAvailable(@NotNull String extensionName){
+-        return availableExtensions.contains(extensionName);
+-    }
+-
+-    private void setupDebugMessenger(XRProvider vrProvider, MemoryStack stack) {
+-        var createInfo = XrDebugUtilsMessengerCreateInfoEXT
+-                .calloc(stack)
+-                .type$Default()  // XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT :contentReference[oaicite:0]{index=0}
+-                .messageSeverities(
+-                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
+-                )
+-                // catch every message type:
+-                .messageTypes(
+-                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
+-                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT
+-                );
+-
+-
+-        XrDebugUtilsMessengerCallbackEXTI debugCallback = (messageSeverity, messageTypes, pCallbackData, pUserData) -> {
+-
+-            var data = XrDebugUtilsMessengerCallbackDataEXT.create(pCallbackData);
+-
+-            vrProvider.getLogger().logDebug(
+-                    String.format(
+-                            "[OpenXR][%s] %s%n",
+-                            data.functionNameString(),
+-                            data.messageString()
+-                    )
+-            );
+-            return XR10.XR_FALSE; // don't abort the call that triggered this
+-        };
+-
+-        createInfo
+-                .userCallback(debugCallback)
+-                .userData(0);
+-
+-        PointerBuffer pMessenger = stack.callocPointer(1);
+-        int err = EXTDebugUtils.xrCreateDebugUtilsMessengerEXT(
+-                handle, createInfo, pMessenger
+-        );
+-        vrProvider.checkXRError(
+-                err, "xrCreateDebugUtilsMessengerEXT", ""
+-        );
+-        debugMessenger = new XrDebugUtilsMessengerEXT(pMessenger.get(0), handle);
+-    }
+-
+-
+-    public void destroy(){
+-        if (debugMessenger != null) {
+-            vrProvider.checkXRError(
+-                    false,
+-                    EXTDebugUtils.xrDestroyDebugUtilsMessengerEXT(debugMessenger),
+-                    "xrDestroyDebugUtilsMessengerEXT",
+-                    ""
+-            );
+-        }
+-        if (handle != null) {
+-            vrProvider.checkXRError(
+-                    false,
+-                    XR10.xrDestroyInstance(handle),
+-                    "xrDestroyInstance",
+-                    ""
+-            );
+-        }
+-        xrEventBuffer.close();
+-    }
+-}
++        XRGraphicsApi forced = vrProvider.getGraphicsApiPreference();
++        if (forced != null) {
++            if (!availableExtensions.contains(forced.getExtensionName())) {
++                throw new AtumVRException(
++                        "Forced graphics API " + forced + " requires " + forced.getExtensionName()
++                                + " which the runtime does not support"
++                );
++            }
++            vrProvider.getLogger().logInfo("Graphics API forced to " + forced);
++            return forced;
++        }
++        boolean openglSupported = availableExtensions.contains(XRGraphicsApi.OPENGL.getExtensionName());
++        boolean vulkanSupported = availableExtensions.contains(XRGraphicsApi.VULKAN.getExtensionName());
++        if (openglSupported) {
++            String arcRenderer = detectIntelArcRenderer();
++            if (arcRenderer != null) {
++                if (vulkanSupported) {
++                    vrProvider.getLogger().logInfo(
++                            "Intel Arc GPU detected [" + arcRenderer
++                                    + "], using the Vulkan bridge"
++                    );
++                    return XRGraphicsApi.VULKAN;
++                }
++                vrProvider.getLogger().logInfo(
++                        "Intel Arc GPU detected [" + arcRenderer + "] but the runtime lacks "
++                                + XRGraphicsApi.VULKAN.getExtensionName() + ", staying on OpenGL"
++                );
++            }
++            return XRGraphicsApi.OPENGL;
++        }
++        if (vulkanSupported) {
++            vrProvider.getLogger().logInfo(
++                    "Runtime lacks " + XRGraphicsApi.OPENGL.getExtensionName()
++                            + ", using the Vulkan presentation bridge"
++            );
++            return XRGraphicsApi.VULKAN;
++        }
++        throw new AtumVRException(
++                "Runtime supports neither " + XRGraphicsApi.OPENGL.getExtensionName()
++                        + " nor " + XRGraphicsApi.VULKAN.getExtensionName()
++        );
++    }
++
++    /**
++     * @return the GL renderer string if the current GPU is an Intel Arc, otherwise null
++     */
++    private String detectIntelArcRenderer() {
++        try {
++            GL.getCapabilities();
++        } catch (IllegalStateException noContext) {
++            vrProvider.getLogger().logDebug(
++                    "No current GL context while resolving the graphics API, skipping GPU detection"
++            );
++            return null;
++        }
++        String renderer = GL11.glGetString(GL11.GL_RENDERER);
++        if (renderer == null) {
++            return null;
++        }
++        String lower = renderer.toLowerCase(Locale.ROOT);
++        return lower.contains("intel") && lower.contains("arc") ? renderer : null;
++    }
++
++    public boolean isExtensionEnabled(@NotNull String extensionName){
++        return enabledExtensions.contains(extensionName);
++    }
++
++
++    public boolean isExtensionAvailable(@NotNull String extensionName){
++        return availableExtensions.contains(extensionName);
++    }
++
++    private void setupDebugMessenger(XRProvider vrProvider, MemoryStack stack) {
++        var createInfo = XrDebugUtilsMessengerCreateInfoEXT
++                .calloc(stack)
++                .type$Default()  // XR_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT :contentReference[oaicite:0]{index=0}
++                .messageSeverities(
++                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_INFO_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT
++                )
++                // catch every message type:
++                .messageTypes(
++                        EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT
++                                | EXTDebugUtils.XR_DEBUG_UTILS_MESSAGE_TYPE_CONFORMANCE_BIT_EXT
++                );
++
++
++        XrDebugUtilsMessengerCallbackEXTI debugCallback = (messageSeverity, messageTypes, pCallbackData, pUserData) -> {
++
++            var data = XrDebugUtilsMessengerCallbackDataEXT.create(pCallbackData);
++
++            vrProvider.getLogger().logDebug(
++                    String.format(
++                            "[OpenXR][%s] %s%n",
++                            data.functionNameString(),
++                            data.messageString()
++                    )
++            );
++            return XR10.XR_FALSE; // don't abort the call that triggered this
++        };
++
++        createInfo
++                .userCallback(debugCallback)
++                .userData(0);
++
++        PointerBuffer pMessenger = stack.callocPointer(1);
++        int err = EXTDebugUtils.xrCreateDebugUtilsMessengerEXT(
++                handle, createInfo, pMessenger
++        );
++        vrProvider.checkXRError(
++                err, "xrCreateDebugUtilsMessengerEXT", ""
++        );
++        debugMessenger = new XrDebugUtilsMessengerEXT(pMessenger.get(0), handle);
++    }
++
++
++    public void destroy(){
++        if (debugMessenger != null) {
++            vrProvider.checkXRError(
++                    false,
++                    EXTDebugUtils.xrDestroyDebugUtilsMessengerEXT(debugMessenger),
++                    "xrDestroyDebugUtilsMessengerEXT",
++                    ""
++            );
++        }
++        if (handle != null) {
++            vrProvider.checkXRError(
++                    false,
++                    XR10.xrDestroyInstance(handle),
++                    "xrDestroyInstance",
++                    ""
++            );
++        }
++        xrEventBuffer.close();
++    }
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
+index 1f40de65a5da86bc225d46b88553d044770f7879..ffa12b727413d87368aa355b427d6ed4322627d2 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
+@@ -1,219 +1,215 @@
+-package me.phoenixra.atumvr.core.session;
+-
+-import lombok.Getter;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
+-import org.jetbrains.annotations.NotNull;
+-import org.lwjgl.PointerBuffer;
+-import org.lwjgl.openxr.*;
+-import org.lwjgl.system.MemoryStack;
+-
+-import java.nio.IntBuffer;
+-import java.nio.LongBuffer;
+-import java.util.List;
+-
+-import static org.lwjgl.openxr.XR10.*;
+-import static org.lwjgl.system.MemoryUtil.NULL;
+-
+-/**
+- * XR session SwapChain (low-level OpenXR stuff)
+- */
+-public class XRSwapChain {
+-
+-
+-    private static final int VIEW_TYPE = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+-
+-
+-    private final XRProvider vrProvider;
+-
+-    private final List<Integer> desiredSwapChainFormats;
+-
+-
+-
+-    private XrSwapchain[] handles;
+-
+-    @Getter
+-    private XrView.Buffer xrViewBuffer;
+-
+-    @Getter
+-    private int eyeWidth, eyeHeight;
+-
+-    public XRSwapChain(@NotNull XRProvider vrProvider) {
+-        this.vrProvider = vrProvider;
+-        desiredSwapChainFormats = vrProvider.getSwapChainFormats();
+-    }
+-
+-
+-
+-    public void init() {
+-
+-        try (MemoryStack stack = MemoryStack.stackPush()) {
+-
+-            XrInstance    instance = vrProvider.getSession().getInstance().getHandle();
+-            XrSession     session  = vrProvider.getSession().getHandle();
+-            long          systemId = vrProvider.getSession().getSystem().getSystemId();
+-
+-            int viewCount = enumerateViewCount(instance, systemId, stack);
+-
+-            var viewConfigs = enumerateViewConfigs(instance, systemId, viewCount, stack);
+-
+-            long chosenFormat = pickSwapchainFormat(session, stack);
+-
+-            this.handles = new XrSwapchain[viewCount];
+-            for (int i = 0; i < viewCount; i++) {
+-                handles[i] = createSwapchain(session, viewConfigs.get(i), chosenFormat, stack);
+-            }
+-            this.eyeWidth = viewConfigs.get(0).recommendedImageRectWidth();
+-            this.eyeHeight = viewConfigs.get(0).recommendedImageRectHeight();
+-
+-            // persistent view buffer on heap
+-            this.xrViewBuffer = XrView.calloc(viewCount);
+-            for (int i = 0; i < viewCount; i++) {
+-                xrViewBuffer.get(i).type(XR_TYPE_VIEW).next(NULL);
+-            }
+-
+-            vrProvider.getLogger().logInfo(String.format("Swapchains created: %s × %s×%s pixels, format 0x%s",
+-                    viewCount, eyeWidth, eyeHeight, Long.toHexString(chosenFormat))
+-            );
+-        }
+-
+-    }
+-
+-    /**
+-     * Get swapchain handle of the specified eye
+-     *
+-     * @param eyeIndex the eye index (0 - left, 1 - right)
+-     * @return the swapchain handle
+-     */
+-    public XrSwapchain getHandle(int eyeIndex) {
+-        return handles[eyeIndex];
+-    }
+-
+-    private int enumerateViewCount(XrInstance instance, long systemId, MemoryStack stack) {
+-        IntBuffer countBuf = stack.callocInt(1);
+-        vrProvider.checkXRError(
+-                xrEnumerateViewConfigurationViews(
+-                        instance, systemId, VIEW_TYPE, countBuf, null
+-                ),
+-                "xrEnumerateViewConfigurationViews",
+-                "count"
+-        );
+-        return countBuf.get(0);
+-    }
+-
+-    private XrViewConfigurationView.Buffer enumerateViewConfigs(
+-            XrInstance instance,
+-            long systemId,
+-            int viewCount,
+-            MemoryStack stack)
+-    {
+-        XrViewConfigurationView.Buffer configs = XrViewConfigurationView.calloc(viewCount, stack);
+-        for (int i = 0; i < viewCount; i++) {
+-            configs.get(i).type(XR_TYPE_VIEW_CONFIGURATION_VIEW).next(NULL);
+-        }
+-        IntBuffer countBuf = stack.ints(viewCount);
+-        int err = xrEnumerateViewConfigurationViews(instance, systemId, VIEW_TYPE, countBuf, configs);
+-        vrProvider.checkXRError(err, "xrEnumerateViewConfigurationViews", "views");
+-        return configs;
+-    }
+-
+-    private long pickSwapchainFormat(XrSession session, MemoryStack stack) {
+-        IntBuffer fmtCount = stack.callocInt(1);
+-        vrProvider.checkXRError(
+-                xrEnumerateSwapchainFormats(session, fmtCount, null),
+-                "xrEnumerateSwapchainFormats", "count"
+-        );
+-
+-        LongBuffer available = stack.callocLong(fmtCount.get(0));
+-        vrProvider.checkXRError(
+-                xrEnumerateSwapchainFormats(session, fmtCount, available),
+-                "xrEnumerateSwapchainFormats", "values"
+-        );
+-
+-        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
+-            return vrProvider.getSession().getVulkanBridge().pickSwapchainFormat(available);
+-        }
+-
+-        for (long want : desiredSwapChainFormats) {
+-            for (int i = 0; i < available.capacity(); i++) {
+-                if (available.get(i) == want) {
+-                    vrProvider.getLogger().logDebug(String.format(
+-                            "Selected swapchain format: 0x%s", Long.toHexString(want)
+-                    ));
+-                    return want;
+-                }
+-            }
+-        }
+-
+-        throw new IllegalStateException("No compatible swapchain format found: " + available);
+-    }
+-
+-    private XrSwapchain createSwapchain(
+-            XrSession session,
+-            XrViewConfigurationView viewConfig,
+-            long format,
+-            MemoryStack stack)
+-    {
+-        long usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
+-        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
+-            //the bridge copies into the swapchain image instead of rendering to it
+-            usageFlags |= XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT;
+-        }
+-        XrSwapchainCreateInfo info = XrSwapchainCreateInfo.calloc(stack)
+-                .type(XR_TYPE_SWAPCHAIN_CREATE_INFO)
+-                .next(NULL)
+-                .usageFlags(usageFlags)
+-                .format(format)
+-                .sampleCount(1)
+-                .width(viewConfig.recommendedImageRectWidth())
+-                .height(viewConfig.recommendedImageRectHeight())
+-                .faceCount(1)
+-                .arraySize(1)
+-                .mipCount(1);
+-
+-        PointerBuffer handlePtr = stack.callocPointer(1);
+-        vrProvider.checkXRError(
+-                xrCreateSwapchain(session, info, handlePtr),
+-                "xrCreateSwapchain", "format: "+Long.toHexString(format)
+-        );
+-        return new XrSwapchain(handlePtr.get(0), session);
+-    }
+-
+-
+-
+-    public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
+-        var swapchainImageBuffer = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
+-        for (XrSwapchainImageOpenGLKHR image : swapchainImageBuffer) {
+-            image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
+-        }
+-
+-        return swapchainImageBuffer;
+-    }
+-
+-
+-
+-    public void destroy() {
+-        destroySwapchainQuietly();
+-        destroyViewBuffer();
+-    }
+-
+-    private void destroySwapchainQuietly() {
+-        if (handles == null) return;
+-        for (int i = 0; i < handles.length; i++) {
+-            if (handles[i] == null) continue;
+-            int err = xrDestroySwapchain(handles[i]);
+-            vrProvider.checkXRError(false, err, "xrDestroySwapchain", "eye " + i);
+-            handles[i] = null;
+-        }
+-        handles = null;
+-        vrProvider.getLogger().logDebug("Swapchains destroyed");
+-    }
+-
+-    private void destroyViewBuffer() {
+-        if (xrViewBuffer != null) {
+-            xrViewBuffer.close();
+-            xrViewBuffer = null;
+-            vrProvider.getLogger().logDebug("View buffer destroyed");
+-        }
+-    }
+-}
++package me.phoenixra.atumvr.core.session;
++
++import lombok.Getter;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import org.jetbrains.annotations.NotNull;
++import org.lwjgl.PointerBuffer;
++import org.lwjgl.openxr.*;
++import org.lwjgl.system.MemoryStack;
++
++import java.nio.IntBuffer;
++import java.nio.LongBuffer;
++import java.util.List;
++
++import static org.lwjgl.openxr.XR10.*;
++import static org.lwjgl.system.MemoryUtil.NULL;
++
++/**
++ * XR session SwapChain (low-level OpenXR stuff)
++ */
++public class XRSwapChain {
++
++
++    private static final int VIEW_TYPE = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
++
++
++    private final XRProvider vrProvider;
++
++    private final List<Integer> desiredSwapChainFormats;
++
++
++
++    private XrSwapchain[] handles;
++
++    @Getter
++    private XrView.Buffer xrViewBuffer;
++
++    @Getter
++    private int eyeWidth, eyeHeight;
++
++    public XRSwapChain(@NotNull XRProvider vrProvider) {
++        this.vrProvider = vrProvider;
++        desiredSwapChainFormats = vrProvider.getSwapChainFormats();
++    }
++
++
++
++    public void init() {
++
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++
++            XrInstance    instance = vrProvider.getSession().getInstance().getHandle();
++            XrSession     session  = vrProvider.getSession().getHandle();
++            long          systemId = vrProvider.getSession().getSystem().getSystemId();
++
++            int viewCount = enumerateViewCount(instance, systemId, stack);
++
++            var viewConfigs = enumerateViewConfigs(instance, systemId, viewCount, stack);
++
++            long chosenFormat = pickSwapchainFormat(session, stack);
++
++            this.handles = new XrSwapchain[viewCount];
++            for (int i = 0; i < viewCount; i++) {
++                handles[i] = createSwapchain(session, viewConfigs.get(i), chosenFormat, stack);
++            }
++            this.eyeWidth = viewConfigs.get(0).recommendedImageRectWidth();
++            this.eyeHeight = viewConfigs.get(0).recommendedImageRectHeight();
++
++            // persistent view buffer on heap
++            this.xrViewBuffer = XrView.calloc(viewCount);
++            for (int i = 0; i < viewCount; i++) {
++                xrViewBuffer.get(i).type(XR_TYPE_VIEW).next(NULL);
++            }
++
++            vrProvider.getLogger().logInfo(String.format("Swapchains created: %s × %s×%s pixels, format 0x%s",
++                    viewCount, eyeWidth, eyeHeight, Long.toHexString(chosenFormat))
++            );
++        }
++
++    }
++
++    /**
++     * Get swapchain handle of the specified eye
++     *
++     * @param eyeIndex the eye index (0 - left, 1 - right)
++     * @return the swapchain handle
++     */
++    public XrSwapchain getHandle(int eyeIndex) {
++        return handles[eyeIndex];
++    }
++
++    private int enumerateViewCount(XrInstance instance, long systemId, MemoryStack stack) {
++        IntBuffer countBuf = stack.callocInt(1);
++        vrProvider.checkXRError(
++                xrEnumerateViewConfigurationViews(
++                        instance, systemId, VIEW_TYPE, countBuf, null
++                ),
++                "xrEnumerateViewConfigurationViews",
++                "count"
++        );
++        return countBuf.get(0);
++    }
++
++    private XrViewConfigurationView.Buffer enumerateViewConfigs(
++            XrInstance instance,
++            long systemId,
++            int viewCount,
++            MemoryStack stack)
++    {
++        XrViewConfigurationView.Buffer configs = XrViewConfigurationView.calloc(viewCount, stack);
++        for (int i = 0; i < viewCount; i++) {
++            configs.get(i).type(XR_TYPE_VIEW_CONFIGURATION_VIEW).next(NULL);
++        }
++        IntBuffer countBuf = stack.ints(viewCount);
++        int err = xrEnumerateViewConfigurationViews(instance, systemId, VIEW_TYPE, countBuf, configs);
++        vrProvider.checkXRError(err, "xrEnumerateViewConfigurationViews", "views");
++        return configs;
++    }
++
++    private long pickSwapchainFormat(XrSession session, MemoryStack stack) {
++        IntBuffer fmtCount = stack.callocInt(1);
++        vrProvider.checkXRError(
++                xrEnumerateSwapchainFormats(session, fmtCount, null),
++                "xrEnumerateSwapchainFormats", "count"
++        );
++
++        LongBuffer available = stack.callocLong(fmtCount.get(0));
++        vrProvider.checkXRError(
++                xrEnumerateSwapchainFormats(session, fmtCount, available),
++                "xrEnumerateSwapchainFormats", "values"
++        );
++
++        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
++            return vrProvider.getSession().getVulkanBridge().pickSwapchainFormat(available);
++        }
++
++        for (long want : desiredSwapChainFormats) {
++            for (int i = 0; i < available.capacity(); i++) {
++                if (available.get(i) == want) {
++                    vrProvider.getLogger().logDebug(String.format(
++                            "Selected swapchain format: 0x%s", Long.toHexString(want)
++                    ));
++                    return want;
++                }
++            }
++        }
++
++        throw new IllegalStateException("No compatible swapchain format found: " + available);
++    }
++
++    private XrSwapchain createSwapchain(
++            XrSession session,
++            XrViewConfigurationView viewConfig,
++            long format,
++            MemoryStack stack)
++    {
++        long usageFlags = XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT;
++        if (vrProvider.getSession().getGraphicsApi() == XRGraphicsApi.VULKAN) {
++            //the bridge copies into the swapchain image instead of rendering to it
++            usageFlags |= XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT;
++        }
++        XrSwapchainCreateInfo info = XrSwapchainCreateInfo.calloc(stack)
++                .type(XR_TYPE_SWAPCHAIN_CREATE_INFO)
++                .next(NULL)
++                .usageFlags(usageFlags)
++                .format(format)
++                .sampleCount(1)
++                .width(viewConfig.recommendedImageRectWidth())
++                .height(viewConfig.recommendedImageRectHeight())
++                .faceCount(1)
++                .arraySize(1)
++                .mipCount(1);
++
++        PointerBuffer handlePtr = stack.callocPointer(1);
++        vrProvider.checkXRError(
++                xrCreateSwapchain(session, info, handlePtr),
++                "xrCreateSwapchain", "format: "+Long.toHexString(format)
++        );
++        return new XrSwapchain(handlePtr.get(0), session);
++    }
++
++
++
++    public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
++        return XRPlatform.get().createImageBuffers(imageCount, stack);
++    }
++
++
++
++    public void destroy() {
++        destroySwapchainQuietly();
++        destroyViewBuffer();
++    }
++
++    private void destroySwapchainQuietly() {
++        if (handles == null) return;
++        for (int i = 0; i < handles.length; i++) {
++            if (handles[i] == null) continue;
++            int err = xrDestroySwapchain(handles[i]);
++            vrProvider.checkXRError(false, err, "xrDestroySwapchain", "eye " + i);
++            handles[i] = null;
++        }
++        handles = null;
++        vrProvider.getLogger().logDebug("Swapchains destroyed");
++    }
++
++    private void destroyViewBuffer() {
++        if (xrViewBuffer != null) {
++            xrViewBuffer.close();
++            xrViewBuffer = null;
++            vrProvider.getLogger().logDebug("View buffer destroyed");
++        }
++    }
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
+index fb867487da852b63fcb41966786cfc5d4de99522..fca76a81a33a32043a9a4f35106dcf2a903309bc 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
+@@ -1,146 +1,97 @@
+-package me.phoenixra.atumvr.core.session;
+-
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.exceptions.AtumVRException;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import org.jetbrains.annotations.NotNull;
+-import org.lwjgl.PointerBuffer;
+-import org.lwjgl.glfw.GLFWNativeGLX;
+-import org.lwjgl.glfw.GLFWNativeWGL;
+-import org.lwjgl.glfw.GLFWNativeWin32;
+-import org.lwjgl.glfw.GLFWNativeX11;
+-import org.lwjgl.openxr.*;
+-import org.lwjgl.system.MemoryStack;
+-import org.lwjgl.system.Platform;
+-import org.lwjgl.system.Struct;
+-import org.lwjgl.system.linux.X11;
+-import org.lwjgl.system.windows.User32;
+-
+-import java.nio.LongBuffer;
+-import java.util.Objects;
+-
+-import static org.lwjgl.opengl.GLX13.*;
+-import static org.lwjgl.system.MemoryStack.stackInts;
+-import static org.lwjgl.system.MemoryUtil.*;
+-
+-/**
+- * XR session system (low-level OpenXR stuff)
+- */
+-public class XRSystem {
+-    private final XRProvider vrProvider;
+-
+-    @Getter
+-    private long systemId;
+-
+-    public XRSystem(@NotNull XRProvider vrProvider){
+-        this.vrProvider = vrProvider;
+-
+-    }
+-
+-    public void init(){
+-        try (MemoryStack stack = MemoryStack.stackPush()) {
+-
+-
+-            // 1) Acquire system ID for HMD
+-            var sysGetInfo = XrSystemGetInfo.calloc(stack)
+-                    .type(XR10.XR_TYPE_SYSTEM_GET_INFO)
+-                    .next(NULL)
+-                    .formFactor(XR10.XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY);
+-
+-            LongBuffer sysIdBuf = stack.callocLong(1);
+-            vrProvider.checkXRError(
+-                    XR10.xrGetSystem(
+-                            vrProvider.getSession().getInstance().getHandle(),
+-                            sysGetInfo,
+-                            sysIdBuf
+-                    ),
+-                    "xrGetSystem", "fetch HMD system ID"
+-            );
+-
+-            systemId = sysIdBuf.get(0);
+-            if (systemId == XR10.XR_NULL_SYSTEM_ID) {
+-                throw new AtumVRException("No compatible HMD detected (system ID == 0)");
+-            }
+-
+-            // 2) Query system properties
+-            var sysProps = XrSystemProperties.calloc(stack)
+-                    .type(XR10.XR_TYPE_SYSTEM_PROPERTIES);
+-            vrProvider.checkXRError(
+-                    XR10.xrGetSystemProperties(
+-                            vrProvider.getSession().getInstance().getHandle(),
+-                            systemId,
+-                            sysProps
+-                    ),
+-                    "xrGetSystemProperties", "id=" + systemId
+-            );
+-
+-            String name = memUTF8(memAddress(sysProps.systemName()));
+-            var track = sysProps.trackingProperties();
+-            var gfx = sysProps.graphicsProperties();
+-
+-            vrProvider.getLogger().logInfo(
+-                    String.format(
+-                            "Found HMD [%s] (vendor=%d): orientTrack=%b, posTrack=%b, maxRes=%dx%d, maxLayers=%d",
+-                            name,
+-                            sysProps.vendorId(),
+-                            track.orientationTracking(),
+-                            track.positionTracking(),
+-                            gfx.maxSwapchainImageWidth(),
+-                            gfx.maxSwapchainImageHeight(),
+-                            gfx.maxLayerCount()
+-                    )
+-            );
+-        }
+-    }
+-
+-    public Struct<?> createGraphicsBinding(MemoryStack stack,
+-                                            XrInstance instance,
+-                                            long systemID,
+-                                            long windowHandle) {
+-
+-        var graphicsRequirements = XrGraphicsRequirementsOpenGLKHR.calloc(stack)
+-                .type(KHROpenGLEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR);
+-        KHROpenGLEnable.xrGetOpenGLGraphicsRequirementsKHR(
+-                instance, systemID, graphicsRequirements
+-        );
+-        //Bind the OpenGL context to the OpenXR instance and create the session
+-        if (Platform.get() == Platform.WINDOWS) {
+-            return XrGraphicsBindingOpenGLWin32KHR.calloc(stack).set(
+-                    KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR,
+-                    NULL,
+-                    User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle)),
+-                    GLFWNativeWGL.glfwGetWGLContext(windowHandle)
+-            );
+-        } else if (Platform.get() == Platform.LINUX) {
+-            long xDisplay = GLFWNativeX11.glfwGetX11Display();
+-
+-            long glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
+-            long glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
+-
+-            int fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
+-            PointerBuffer fbConfigBuf = glXChooseFBConfig(
+-                    xDisplay, X11.XDefaultScreen(xDisplay),
+-                    stackInts(GLX_FBCONFIG_ID, fbXID, 0)
+-            );
+-            if (fbConfigBuf == null) {
+-                throw new AtumVRException("Framebuffer config is null");
+-            }
+-            long fbConfig = fbConfigBuf.get();
+-
+-            return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
+-                    KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
+-                    NULL,
+-                    xDisplay,
+-                    (int) Objects.requireNonNull(glXGetVisualFromFBConfig(xDisplay, fbConfig)).visualid(),
+-                    fbConfig,
+-                    glXWindowHandle,
+-                    glXContext
+-            );
+-        } else {
+-            throw new AtumVRException("MacOS not supported");
+-        }
+-    }
+-    public void destroy(){
+-
+-    }
+-}
++package me.phoenixra.atumvr.core.session;
++
++import lombok.Getter;
++import me.phoenixra.atumvr.api.exceptions.AtumVRException;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import org.jetbrains.annotations.NotNull;
++import org.lwjgl.openxr.*;
++import org.lwjgl.system.MemoryStack;
++import org.lwjgl.system.Struct;
++
++import java.nio.LongBuffer;
++
++import static org.lwjgl.system.MemoryUtil.NULL;
++import static org.lwjgl.system.MemoryUtil.memAddress;
++import static org.lwjgl.system.MemoryUtil.memUTF8;
++
++/**
++ * XR session system (low-level OpenXR stuff)
++ */
++public class XRSystem {
++    private final XRProvider vrProvider;
++
++    @Getter
++    private long systemId;
++
++    public XRSystem(@NotNull XRProvider vrProvider){
++        this.vrProvider = vrProvider;
++
++    }
++
++    public void init(){
++        try (MemoryStack stack = MemoryStack.stackPush()) {
++
++
++            // 1) Acquire system ID for HMD
++            var sysGetInfo = XrSystemGetInfo.calloc(stack)
++                    .type(XR10.XR_TYPE_SYSTEM_GET_INFO)
++                    .next(NULL)
++                    .formFactor(XR10.XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY);
++
++            LongBuffer sysIdBuf = stack.callocLong(1);
++            vrProvider.checkXRError(
++                    XR10.xrGetSystem(
++                            vrProvider.getSession().getInstance().getHandle(),
++                            sysGetInfo,
++                            sysIdBuf
++                    ),
++                    "xrGetSystem", "fetch HMD system ID"
++            );
++
++            systemId = sysIdBuf.get(0);
++            if (systemId == XR10.XR_NULL_SYSTEM_ID) {
++                throw new AtumVRException("No compatible HMD detected (system ID == 0)");
++            }
++
++            // 2) Query system properties
++            var sysProps = XrSystemProperties.calloc(stack)
++                    .type(XR10.XR_TYPE_SYSTEM_PROPERTIES);
++            vrProvider.checkXRError(
++                    XR10.xrGetSystemProperties(
++                            vrProvider.getSession().getInstance().getHandle(),
++                            systemId,
++                            sysProps
++                    ),
++                    "xrGetSystemProperties", "id=" + systemId
++            );
++
++            String name = memUTF8(memAddress(sysProps.systemName()));
++            var track = sysProps.trackingProperties();
++            var gfx = sysProps.graphicsProperties();
++
++            vrProvider.getLogger().logInfo(
++                    String.format(
++                            "Found HMD [%s] (vendor=%d): orientTrack=%b, posTrack=%b, maxRes=%dx%d, maxLayers=%d",
++                            name,
++                            sysProps.vendorId(),
++                            track.orientationTracking(),
++                            track.positionTracking(),
++                            gfx.maxSwapchainImageWidth(),
++                            gfx.maxSwapchainImageHeight(),
++                            gfx.maxLayerCount()
++                    )
++            );
++        }
++    }
++
++    public Struct<?> createGraphicsBinding(MemoryStack stack,
++                                            XrInstance instance,
++                                            long systemID,
++                                            long windowHandle) {
++        return XRPlatform.get().createGraphicsBinding(stack, instance, systemID, windowHandle);
++    }
++    public void destroy(){
++
++    }
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..96bfd07c08a64536d918e10add5c75a82c572c12
+--- /dev/null
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java
+@@ -0,0 +1,10 @@
++package me.phoenixra.atumvr.core.session.platform;
++
++public interface AndroidXRBridge {
++    long getEGLDisplay();
++    long getEGLContext();
++    long getEGLConfig();
++    long getDalvikVM();
++    long getDalvikActivity();
++    void setupAndroid();
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..af476c231392773c5e55e321c06c9830606bedff
+--- /dev/null
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java
+@@ -0,0 +1,214 @@
++package me.phoenixra.atumvr.core.session.platform;
++
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLESAndroidKHR;
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLWin32KHR;
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLXlibKHR;
++import org.lwjgl.openxr.XrGraphicsRequirementsOpenGLESKHR;
++import org.lwjgl.openxr.XrGraphicsRequirementsOpenGLKHR;
++import org.lwjgl.openxr.XrInstance;
++import org.lwjgl.openxr.XrInstanceCreateInfoAndroidKHR;
++import org.lwjgl.openxr.XrLoaderInitInfoAndroidKHR;
++import org.lwjgl.openxr.XrLoaderInitInfoBaseHeaderKHR;
++import org.lwjgl.openxr.XrSwapchainImageOpenGLKHR;
++import org.lwjgl.PointerBuffer;
++import org.lwjgl.glfw.GLFWNativeGLX;
++import org.lwjgl.glfw.GLFWNativeWGL;
++import org.lwjgl.glfw.GLFWNativeWin32;
++import org.lwjgl.glfw.GLFWNativeX11;
++import org.lwjgl.openxr.KHRAndroidCreateInstance;
++import org.lwjgl.openxr.KHRLoaderInit;
++import org.lwjgl.openxr.KHRLoaderInitAndroid;
++import org.lwjgl.openxr.KHROpenGLEnable;
++import org.lwjgl.openxr.KHROpenGLESEnable;
++import org.lwjgl.system.MemoryStack;
++import org.lwjgl.system.Platform;
++import org.lwjgl.system.Struct;
++import org.lwjgl.system.linux.X11;
++import org.lwjgl.system.windows.User32;
++
++import java.util.Objects;
++
++import static org.lwjgl.opengl.GLX13.GLX_FBCONFIG_ID;
++import static org.lwjgl.opengl.GLX13.glXChooseFBConfig;
++import static org.lwjgl.opengl.GLX13.glXGetVisualFromFBConfig;
++import static org.lwjgl.opengl.GLX13.glXQueryDrawable;
++import static org.lwjgl.system.MemoryStack.stackInts;
++import static org.lwjgl.system.MemoryUtil.NULL;
++
++public interface XRPlatform {
++    void initializeLoader(MemoryStack stack);
++    long getInstanceCreateInfo(MemoryStack stack);
++    String getGraphicsExtension();
++    Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle);
++    XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack);
++
++    static XRPlatform get() {
++        if (isAndroid()) {
++            Holder.discoverAndroidBridge();
++        }
++        return Holder.platform;
++    }
++
++    static void setAndroidBridge(AndroidXRBridge bridge) {
++        Holder.bridge = bridge;
++        if (isAndroid()) {
++            Holder.platform = new Android(bridge);
++        }
++    }
++
++    static boolean isAndroid() {
++        return System.getProperty("os.version", "").contains("Android");
++    }
++
++    class Holder {
++        private static volatile AndroidXRBridge bridge;
++        private static volatile XRPlatform platform = new Desktop();
++
++        private static synchronized void discoverAndroidBridge() {
++            if (bridge != null) return;
++            AndroidXRBridge selected = null;
++            for (AndroidXRBridge candidate : java.util.ServiceLoader.load(
++                    AndroidXRBridge.class, AndroidXRBridge.class.getClassLoader())) {
++                if (selected != null) {
++                    throw new IllegalStateException("Multiple Android XR bridges installed; keep exactly one");
++                }
++                selected = candidate;
++            }
++            if (selected == null) {
++                throw new IllegalStateException("No Android XR bridge installed. Install the launcher-compatible Android bridge mod.");
++            }
++            XRPlatform.setAndroidBridge(selected);
++        }
++    }
++
++    class Desktop implements XRPlatform {
++        @Override
++        public void initializeLoader(MemoryStack stack) {
++        }
++
++        @Override
++        public long getInstanceCreateInfo(MemoryStack stack) {
++            return NULL;
++        }
++
++        @Override
++        public String getGraphicsExtension() {
++            return KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
++        }
++
++        @Override
++        public Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle) {
++            XrGraphicsRequirementsOpenGLKHR requirements = XrGraphicsRequirementsOpenGLKHR.calloc(stack)
++                    .type(KHROpenGLEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR);
++            KHROpenGLEnable.xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, requirements);
++
++            if (Platform.get() == Platform.WINDOWS) {
++                return XrGraphicsBindingOpenGLWin32KHR.calloc(stack).set(
++                        KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR,
++                        NULL,
++                        User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle)),
++                        GLFWNativeWGL.glfwGetWGLContext(windowHandle)
++                );
++            }
++
++            if (Platform.get() == Platform.LINUX) {
++                long display = GLFWNativeX11.glfwGetX11Display();
++                long context = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
++                long drawable = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
++                int fbConfigId = glXQueryDrawable(display, drawable, GLX_FBCONFIG_ID);
++                PointerBuffer configs = glXChooseFBConfig(display, X11.XDefaultScreen(display), stackInts(GLX_FBCONFIG_ID, fbConfigId, 0));
++                if (configs == null) {
++                    throw new IllegalStateException("Framebuffer config is null");
++                }
++                long config = configs.get();
++                return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
++                        KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
++                        NULL,
++                        display,
++                        (int) Objects.requireNonNull(glXGetVisualFromFBConfig(display, config)).visualid(),
++                        config,
++                        drawable,
++                        context
++                );
++            }
++
++            throw new IllegalStateException("Unsupported desktop platform");
++        }
++
++        @Override
++        public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
++            XrSwapchainImageOpenGLKHR.Buffer images = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
++            for (XrSwapchainImageOpenGLKHR image : images) {
++                image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
++            }
++            return images;
++        }
++    }
++
++    class Android implements XRPlatform {
++        private final AndroidXRBridge bridge;
++
++        Android(AndroidXRBridge bridge) {
++            if (bridge == null) {
++                throw new IllegalStateException("Android OpenXR bridge is not configured");
++            }
++            this.bridge = bridge;
++        }
++
++        @Override
++        public void initializeLoader(MemoryStack stack) {
++            bridge.setupAndroid();
++            try {
++                Thread.sleep(5000L);
++            } catch (InterruptedException exception) {
++                Thread.currentThread().interrupt();
++                throw new IllegalStateException(exception);
++            }
++            XrLoaderInitInfoAndroidKHR info = XrLoaderInitInfoAndroidKHR.calloc(stack).set(
++                    KHRLoaderInitAndroid.XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR,
++                    NULL,
++                    bridge.getDalvikVM(),
++                    bridge.getDalvikActivity()
++            );
++            KHRLoaderInit.xrInitializeLoaderKHR(XrLoaderInitInfoBaseHeaderKHR.create(info.address()));
++        }
++
++        @Override
++        public long getInstanceCreateInfo(MemoryStack stack) {
++            return XrInstanceCreateInfoAndroidKHR.calloc(stack).set(
++                    KHRAndroidCreateInstance.XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR,
++                    NULL,
++                    bridge.getDalvikVM(),
++                    bridge.getDalvikActivity()
++            ).address();
++        }
++
++        @Override
++        public String getGraphicsExtension() {
++            return KHROpenGLESEnable.XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
++        }
++
++        @Override
++        public Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle) {
++            XrGraphicsRequirementsOpenGLESKHR requirements = XrGraphicsRequirementsOpenGLESKHR.calloc(stack)
++                    .type(KHROpenGLESEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR);
++            KHROpenGLESEnable.xrGetOpenGLESGraphicsRequirementsKHR(instance, systemId, requirements);
++            return XrGraphicsBindingOpenGLESAndroidKHR.calloc(stack).set(
++                    KHROpenGLESEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
++                    NULL,
++                    bridge.getEGLDisplay(),
++                    bridge.getEGLConfig(),
++                    bridge.getEGLContext()
++            );
++        }
++
++        @Override
++        public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
++            XrSwapchainImageOpenGLKHR.Buffer images = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
++            for (XrSwapchainImageOpenGLKHR image : images) {
++                image.type(KHROpenGLESEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR);
++            }
++            return images;
++        }
++    }
++}

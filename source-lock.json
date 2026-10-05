@@ -1,0 +1,11 @@
+{
+  "schemaVersion": 1,
+  "components": [
+    {"directory":"Visor-0.5.0","repository":"https://github.com/VisorModStudio/Visor.git","commit":"3d56cd0a75c0e1ba5e73e3b10d64165b1b3e0bef","patch":"source-patches/visor-0.5.0.patch"},
+    {"directory":"Visor-0.6.0","repository":"https://github.com/VisorModStudio/Visor.git","commit":"1b4387b511d96c421da6bfd27e0cb138722773c0","patch":"source-patches/visor-0.6.0.patch"},
+    {"directory":"AtumVR-upgrade","repository":"https://github.com/Phoenix-Ra/AtumVR.git","commit":"f0aeed50acb5c83f5143a89aed5b8a0327b9935c","patch":"source-patches/atumvr.patch"},
+    {"directory":"Pojlib","repository":"https://github.com/coah80/Pojlib.git","commit":"2b211783ff6bb3419ab1f519f17d4d8afa4ef957","patch":"source-patches/pojlib.patch"},
+    {"directory":"QCXR-XR-Wrapper","repository":"https://github.com/coah80/QCXR-XR-Wrapper.git","commit":"c9d110bab8a24801351107a220802befbf43428c","patch":"source-patches/unity-wrapper.patch"}
+  ],
+  "androidBindings": {"repository":"https://github.com/coah80/Visor.git","commit":"32c80265594ae76f7f420cc69001c077a9283009","path":"libs/lwjgl-openxr-quest-3.3.3.jar"}
+}

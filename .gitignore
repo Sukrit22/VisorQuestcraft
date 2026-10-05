@@ -6,3 +6,13 @@
 *.log
 gradle-thread-dump.txt
 /logs/
+/user-logs/
+/.idea/
+__pycache__/
+*.pyc
+/*.zip
+*.keystore
+*.jks
+*.p12
+.env
+.env.*

@@ -1,0 +1,524 @@
+diff --git a/atumvr-api/build.gradle b/atumvr-api/build.gradle
+index 9f3e473..91dd62f 100644
+--- a/atumvr-api/build.gradle
++++ b/atumvr-api/build.gradle
+@@ -15,7 +15,7 @@ dependencies {
+     api("org.lwjgl:lwjgl")
+     api("org.lwjgl:lwjgl-opengl")
+     api("org.lwjgl:lwjgl-glfw")
+-    api("org.lwjgl:lwjgl-openxr")
++    api files("${rootDir}/../Visor/libs/lwjgl-openxr-quest-3.3.3.jar")
+     api("org.lwjgl:lwjgl-vulkan")
+ 
+     api("org.lwjgl:lwjgl::natives-windows")
+@@ -46,4 +46,4 @@ publishing {
+             artifact javadocJar
+         }
+     }
+-}
+\ No newline at end of file
++}
+diff --git a/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java b/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
+index 9bac251..8ce0391 100644
+--- a/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
++++ b/atumvr-api/src/main/java/me/phoenixra/atumvr/api/input/profile/VRInteractionProfileType.java
+@@ -51,6 +51,10 @@ public enum VRInteractionProfileType {
+             }
+         }
+         valuesControllers = list.toArray(new VRInteractionProfileType[0]);
++        // Pico uses the same logical buttons and axes as our Touch action layout.
++        // Preserve that layout when the runtime reports its native Pico profile.
++        values.put("/interaction_profiles/bytedance/pico4_controller", OCULUS_TOUCH);
++        values.put("/interaction_profiles/bytedance/pico4s_controller", OCULUS_TOUCH);
+     }
+ 
+     VRInteractionProfileType(String xrPath, Kind kind){
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
+index 1b0ef2d..b3c03bc 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/enums/XREvent.java
+@@ -14,15 +14,15 @@ public enum XREvent {
+ 
+     EVENTS_LOST(XR10.XR_TYPE_EVENT_DATA_EVENTS_LOST),
+ 
+-    EYE_CALIBRATION_CHANGED_ML(MLUserCalibration.XR_TYPE_EVENT_DATA_EYE_CALIBRATION_CHANGED_ML),
++    EYE_CALIBRATION_CHANGED_ML(1000472001),
+ 
+-    HEADSET_FIT_CHANGED_ML(MLUserCalibration.XR_TYPE_EVENT_DATA_HEADSET_FIT_CHANGED_ML),
++    HEADSET_FIT_CHANGED_ML(1000472000),
+ 
+     INSTANCE_LOSS_PENDING(XR10.XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING),
+ 
+     INTERACTION_PROFILE_CHANGED(XR10.XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED),
+ 
+-    LOCALIZATION_CHANGED_ML(MLLocalizationMap.XR_TYPE_EVENT_DATA_LOCALIZATION_CHANGED_ML),
++    LOCALIZATION_CHANGED_ML(1000139001),
+ 
+     MAIN_SESSION_VISIBILITY_CHANGED_EXTX(EXTXOverlay.XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX),
+ 
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
+index 3faeb36..5f95d97 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/input/XRInputHandler.java
+@@ -429,6 +429,12 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
+             }
+             if(bindingsSet.isEmpty()) continue;
+ 
++            if (profileType == OCULUS_TOUCH && vrProvider.getSession().getInstance()
++                    .isExtensionEnabled("XR_BD_controller_interaction")) {
++                suggestPicoBindings(xrInstance, "/interaction_profiles/bytedance/pico4_controller", bindingsSet);
++                suggestPicoBindings(xrInstance, "/interaction_profiles/bytedance/pico4s_controller", bindingsSet);
++            }
++
+             // Suggest whole bindings set
+             int result = trySuggestBindings(xrInstance, profileType.getXrPath(), bindingsSet);
+             if (result == XR10.XR_SUCCESS) {
+@@ -468,6 +474,29 @@ public abstract class XRInputHandler implements AtumVRInputHandler {
+     }
+ 
+ 
++    private void suggestPicoBindings(XrInstance instance, String profilePath,
++                                     List<PairRecord<XRAction, String>> bindings) {
++        int result = trySuggestBindings(instance, profilePath, bindings);
++        if (result == XR_SUCCESS) return;
++        if (result != XR_ERROR_PATH_UNSUPPORTED) {
++            vrProvider.checkXRError(result, "xrSuggestInteractionProfileBindings", profilePath);
++            return;
++        }
++        // Some Pico runtime versions do not expose every Touch capacitive input.
++        List<PairRecord<XRAction, String>> supported = new ArrayList<>();
++        for (var binding : bindings) {
++            if (trySuggestBindings(instance, profilePath, List.of(binding)) == XR_SUCCESS) {
++                supported.add(binding);
++            }
++        }
++        if (!supported.isEmpty()) {
++            vrProvider.checkXRError(trySuggestBindings(instance, profilePath, supported),
++                    "xrSuggestInteractionProfileBindings", profilePath);
++        } else {
++            vrProvider.getLogger().logWarn("Pico interaction profile unavailable: " + profilePath);
++        }
++    }
++
+     private int trySuggestBindings(@NotNull XrInstance xrInstance,
+                                    @NotNull String profilePath,
+                                    @NotNull List<PairRecord<XRAction, String>> bindingsSet) {
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
+index 66f8191..e6c6080 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRInstance.java
+@@ -4,6 +4,7 @@ import lombok.Getter;
+ import me.phoenixra.atumvr.api.exceptions.AtumVRException;
+ import me.phoenixra.atumvr.core.XRProvider;
+ import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
+ import org.jetbrains.annotations.NotNull;
+ import org.lwjgl.PointerBuffer;
+ import org.lwjgl.opengl.GL;
+@@ -58,6 +59,8 @@ public class XRInstance {
+     public void init() {
+         try (MemoryStack stack = MemoryStack.stackPush()) {
+ 
++            XRPlatform.get().initializeLoader(stack);
++
+             var extensionsPointer = setupExtensions(
+                     vrProvider, stack
+             );
+@@ -73,7 +76,7 @@ public class XRInstance {
+             // 2) Create XrInstanceCreateInfo
+             var instInfo = XrInstanceCreateInfo.calloc(stack)
+                     .type(XR10.XR_TYPE_INSTANCE_CREATE_INFO)
+-                    .next(0)
++                    .next(XRPlatform.get().getInstanceCreateInfo(stack))
+                     .applicationInfo(appInfo)
+                     .enabledExtensionNames(extensionsPointer)
+                     .enabledApiLayerNames(null);
+@@ -139,16 +142,26 @@ public class XRInstance {
+ 
+ 
+         graphicsApi = resolveGraphicsApi();
++        String graphicsExtension = XRPlatform.isAndroid()
++                ? XRPlatform.get().getGraphicsExtension() : graphicsApi.getExtensionName();
+ 
+         // 2) Define desired extensions in priority order
+         List<String> desiredExtensions = new ArrayList<>(List.of(
+-                graphicsApi.getExtensionName(),
++                graphicsExtension,
+ 
+                 EXTDebugUtils.XR_EXT_DEBUG_UTILS_EXTENSION_NAME,
+                 FBDisplayRefreshRate.XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME,
+                 KHRVisibilityMask.XR_KHR_VISIBILITY_MASK_EXTENSION_NAME //@TODO test mask for performance improvements
+         ));
+         desiredExtensions.addAll(vrProvider.getXRAppExtensions());
++        if (XRPlatform.isAndroid()) {
++            String androidExtension = KHRAndroidCreateInstance.XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME;
++            if (!availableExtensions.contains(androidExtension)) {
++                throw new AtumVRException("Android OpenXR runtime is missing " + androidExtension);
++            }
++            desiredExtensions.add(androidExtension);
++            desiredExtensions.add("XR_BD_controller_interaction");
++        }
+ 
+         // Keep only what the runtime offers, preserving priority order and dropping duplicates
+         Set<String> enabled = new LinkedHashSet<>();
+@@ -178,6 +191,14 @@ public class XRInstance {
+ 
+ 
+     private XRGraphicsApi resolveGraphicsApi() {
++        if (XRPlatform.isAndroid()) {
++            String extension = XRPlatform.get().getGraphicsExtension();
++            if (!availableExtensions.contains(extension)) {
++                throw new AtumVRException("Android OpenXR runtime is missing " + extension);
++            }
++            // Pojlib owns an EGL/OpenGL ES context. Desktop Vulkan interop is unavailable.
++            return XRGraphicsApi.OPENGL;
++        }
+         XRGraphicsApi forced = vrProvider.getGraphicsApiPreference();
+         if (forced != null) {
+             if (!availableExtensions.contains(forced.getExtensionName())) {
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
+index 1f40de6..d071598 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSwapChain.java
+@@ -3,6 +3,7 @@ package me.phoenixra.atumvr.core.session;
+ import lombok.Getter;
+ import me.phoenixra.atumvr.core.XRProvider;
+ import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
+ import org.jetbrains.annotations.NotNull;
+ import org.lwjgl.PointerBuffer;
+ import org.lwjgl.openxr.*;
+@@ -182,12 +183,7 @@ public class XRSwapChain {
+ 
+ 
+     public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
+-        var swapchainImageBuffer = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
+-        for (XrSwapchainImageOpenGLKHR image : swapchainImageBuffer) {
+-            image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
+-        }
+-
+-        return swapchainImageBuffer;
++        return XRPlatform.get().createImageBuffers(imageCount, stack);
+     }
+ 
+ 
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
+index fb86748..317b9be 100644
+--- a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/XRSystem.java
+@@ -3,25 +3,17 @@ package me.phoenixra.atumvr.core.session;
+ import lombok.Getter;
+ import me.phoenixra.atumvr.api.exceptions.AtumVRException;
+ import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
+ import org.jetbrains.annotations.NotNull;
+-import org.lwjgl.PointerBuffer;
+-import org.lwjgl.glfw.GLFWNativeGLX;
+-import org.lwjgl.glfw.GLFWNativeWGL;
+-import org.lwjgl.glfw.GLFWNativeWin32;
+-import org.lwjgl.glfw.GLFWNativeX11;
+ import org.lwjgl.openxr.*;
+ import org.lwjgl.system.MemoryStack;
+-import org.lwjgl.system.Platform;
+ import org.lwjgl.system.Struct;
+-import org.lwjgl.system.linux.X11;
+-import org.lwjgl.system.windows.User32;
+ 
+ import java.nio.LongBuffer;
+-import java.util.Objects;
+ 
+-import static org.lwjgl.opengl.GLX13.*;
+-import static org.lwjgl.system.MemoryStack.stackInts;
+-import static org.lwjgl.system.MemoryUtil.*;
++import static org.lwjgl.system.MemoryUtil.NULL;
++import static org.lwjgl.system.MemoryUtil.memAddress;
++import static org.lwjgl.system.MemoryUtil.memUTF8;
+ 
+ /**
+  * XR session system (low-level OpenXR stuff)
+@@ -97,48 +89,7 @@ public class XRSystem {
+                                             XrInstance instance,
+                                             long systemID,
+                                             long windowHandle) {
+-
+-        var graphicsRequirements = XrGraphicsRequirementsOpenGLKHR.calloc(stack)
+-                .type(KHROpenGLEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR);
+-        KHROpenGLEnable.xrGetOpenGLGraphicsRequirementsKHR(
+-                instance, systemID, graphicsRequirements
+-        );
+-        //Bind the OpenGL context to the OpenXR instance and create the session
+-        if (Platform.get() == Platform.WINDOWS) {
+-            return XrGraphicsBindingOpenGLWin32KHR.calloc(stack).set(
+-                    KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR,
+-                    NULL,
+-                    User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle)),
+-                    GLFWNativeWGL.glfwGetWGLContext(windowHandle)
+-            );
+-        } else if (Platform.get() == Platform.LINUX) {
+-            long xDisplay = GLFWNativeX11.glfwGetX11Display();
+-
+-            long glXContext = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
+-            long glXWindowHandle = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
+-
+-            int fbXID = glXQueryDrawable(xDisplay, glXWindowHandle, GLX_FBCONFIG_ID);
+-            PointerBuffer fbConfigBuf = glXChooseFBConfig(
+-                    xDisplay, X11.XDefaultScreen(xDisplay),
+-                    stackInts(GLX_FBCONFIG_ID, fbXID, 0)
+-            );
+-            if (fbConfigBuf == null) {
+-                throw new AtumVRException("Framebuffer config is null");
+-            }
+-            long fbConfig = fbConfigBuf.get();
+-
+-            return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
+-                    KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
+-                    NULL,
+-                    xDisplay,
+-                    (int) Objects.requireNonNull(glXGetVisualFromFBConfig(xDisplay, fbConfig)).visualid(),
+-                    fbConfig,
+-                    glXWindowHandle,
+-                    glXContext
+-            );
+-        } else {
+-            throw new AtumVRException("MacOS not supported");
+-        }
++        return XRPlatform.get().createGraphicsBinding(stack, instance, systemID, windowHandle);
+     }
+     public void destroy(){
+ 
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java
+new file mode 100644
+index 0000000..8191ca2
+--- /dev/null
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/AndroidXRBridge.java
+@@ -0,0 +1,10 @@
++package me.phoenixra.atumvr.core.session.platform;
++
++public interface AndroidXRBridge {
++    long getEGLDisplay();
++    long getEGLContext();
++    long getEGLConfig();
++    long getDalvikVM();
++    long getDalvikActivity();
++    void setupAndroid();
++}
+diff --git a/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java
+new file mode 100644
+index 0000000..c85d0ad
+--- /dev/null
++++ b/atumvr-core/src/main/java/me/phoenixra/atumvr/core/session/platform/XRPlatform.java
+@@ -0,0 +1,214 @@
++package me.phoenixra.atumvr.core.session.platform;
++
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLESAndroidKHR;
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLWin32KHR;
++import org.lwjgl.openxr.XrGraphicsBindingOpenGLXlibKHR;
++import org.lwjgl.openxr.XrGraphicsRequirementsOpenGLESKHR;
++import org.lwjgl.openxr.XrGraphicsRequirementsOpenGLKHR;
++import org.lwjgl.openxr.XrInstance;
++import org.lwjgl.openxr.XrInstanceCreateInfoAndroidKHR;
++import org.lwjgl.openxr.XrLoaderInitInfoAndroidKHR;
++import org.lwjgl.openxr.XrLoaderInitInfoBaseHeaderKHR;
++import org.lwjgl.openxr.XrSwapchainImageOpenGLKHR;
++import org.lwjgl.PointerBuffer;
++import org.lwjgl.glfw.GLFWNativeGLX;
++import org.lwjgl.glfw.GLFWNativeWGL;
++import org.lwjgl.glfw.GLFWNativeWin32;
++import org.lwjgl.glfw.GLFWNativeX11;
++import org.lwjgl.openxr.KHRAndroidCreateInstance;
++import org.lwjgl.openxr.KHRLoaderInit;
++import org.lwjgl.openxr.KHRLoaderInitAndroid;
++import org.lwjgl.openxr.KHROpenGLEnable;
++import org.lwjgl.openxr.KHROpenGLESEnable;
++import org.lwjgl.system.MemoryStack;
++import org.lwjgl.system.Platform;
++import org.lwjgl.system.Struct;
++import org.lwjgl.system.linux.X11;
++import org.lwjgl.system.windows.User32;
++
++import java.util.Objects;
++
++import static org.lwjgl.opengl.GLX13.GLX_FBCONFIG_ID;
++import static org.lwjgl.opengl.GLX13.glXChooseFBConfig;
++import static org.lwjgl.opengl.GLX13.glXGetVisualFromFBConfig;
++import static org.lwjgl.opengl.GLX13.glXQueryDrawable;
++import static org.lwjgl.system.MemoryStack.stackInts;
++import static org.lwjgl.system.MemoryUtil.NULL;
++
++public interface XRPlatform {
++    void initializeLoader(MemoryStack stack);
++    long getInstanceCreateInfo(MemoryStack stack);
++    String getGraphicsExtension();
++    Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle);
++    XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack);
++
++    static XRPlatform get() {
++        if (isAndroid()) {
++            Holder.discoverAndroidBridge();
++        }
++        return Holder.platform;
++    }
++
++    static void setAndroidBridge(AndroidXRBridge bridge) {
++        Holder.bridge = bridge;
++        if (isAndroid()) {
++            Holder.platform = new Android(bridge);
++        }
++    }
++
++    static boolean isAndroid() {
++        return System.getProperty("os.version", "").contains("Android");
++    }
++
++    class Holder {
++        private static volatile AndroidXRBridge bridge;
++        private static volatile XRPlatform platform = new Desktop();
++
++        private static synchronized void discoverAndroidBridge() {
++            if (bridge != null) return;
++            AndroidXRBridge selected = null;
++            for (AndroidXRBridge candidate : java.util.ServiceLoader.load(
++                    AndroidXRBridge.class, AndroidXRBridge.class.getClassLoader())) {
++                if (selected != null) {
++                    throw new IllegalStateException("Multiple Android XR bridges installed; keep exactly one");
++                }
++                selected = candidate;
++            }
++            if (selected == null) {
++                throw new IllegalStateException("No Android XR bridge installed. Install the launcher-compatible Android bridge mod.");
++            }
++            XRPlatform.setAndroidBridge(selected);
++        }
++    }
++
++    class Desktop implements XRPlatform {
++        @Override
++        public void initializeLoader(MemoryStack stack) {
++        }
++
++        @Override
++        public long getInstanceCreateInfo(MemoryStack stack) {
++            return NULL;
++        }
++
++        @Override
++        public String getGraphicsExtension() {
++            return KHROpenGLEnable.XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
++        }
++
++        @Override
++        public Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle) {
++            XrGraphicsRequirementsOpenGLKHR requirements = XrGraphicsRequirementsOpenGLKHR.calloc(stack)
++                    .type(KHROpenGLEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR);
++            KHROpenGLEnable.xrGetOpenGLGraphicsRequirementsKHR(instance, systemId, requirements);
++
++            if (Platform.get() == Platform.WINDOWS) {
++                return XrGraphicsBindingOpenGLWin32KHR.calloc(stack).set(
++                        KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR,
++                        NULL,
++                        User32.GetDC(GLFWNativeWin32.glfwGetWin32Window(windowHandle)),
++                        GLFWNativeWGL.glfwGetWGLContext(windowHandle)
++                );
++            }
++
++            if (Platform.get() == Platform.LINUX) {
++                long display = GLFWNativeX11.glfwGetX11Display();
++                long context = GLFWNativeGLX.glfwGetGLXContext(windowHandle);
++                long drawable = GLFWNativeGLX.glfwGetGLXWindow(windowHandle);
++                int fbConfigId = glXQueryDrawable(display, drawable, GLX_FBCONFIG_ID);
++                PointerBuffer configs = glXChooseFBConfig(display, X11.XDefaultScreen(display), stackInts(GLX_FBCONFIG_ID, fbConfigId, 0));
++                if (configs == null) {
++                    throw new IllegalStateException("Framebuffer config is null");
++                }
++                long config = configs.get();
++                return XrGraphicsBindingOpenGLXlibKHR.calloc(stack).set(
++                        KHROpenGLEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
++                        NULL,
++                        display,
++                        (int) Objects.requireNonNull(glXGetVisualFromFBConfig(display, config)).visualid(),
++                        config,
++                        drawable,
++                        context
++                );
++            }
++
++            throw new IllegalStateException("Unsupported desktop platform");
++        }
++
++        @Override
++        public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
++            XrSwapchainImageOpenGLKHR.Buffer images = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
++            for (XrSwapchainImageOpenGLKHR image : images) {
++                image.type(KHROpenGLEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR);
++            }
++            return images;
++        }
++    }
++
++    class Android implements XRPlatform {
++        private final AndroidXRBridge bridge;
++
++        Android(AndroidXRBridge bridge) {
++            if (bridge == null) {
++                throw new IllegalStateException("Android OpenXR bridge is not configured");
++            }
++            this.bridge = bridge;
++        }
++
++        @Override
++        public void initializeLoader(MemoryStack stack) {
++            bridge.setupAndroid();
++            try {
++                Thread.sleep(5000L);
++            } catch (InterruptedException exception) {
++                Thread.currentThread().interrupt();
++                throw new IllegalStateException(exception);
++            }
++            XrLoaderInitInfoAndroidKHR info = XrLoaderInitInfoAndroidKHR.calloc(stack).set(
++                    KHRLoaderInitAndroid.XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR,
++                    NULL,
++                    bridge.getDalvikVM(),
++                    bridge.getDalvikActivity()
++            );
++            KHRLoaderInit.xrInitializeLoaderKHR(XrLoaderInitInfoBaseHeaderKHR.create(info.address()));
++        }
++
++        @Override
++        public long getInstanceCreateInfo(MemoryStack stack) {
++            return XrInstanceCreateInfoAndroidKHR.calloc(stack).set(
++                    KHRAndroidCreateInstance.XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR,
++                    NULL,
++                    bridge.getDalvikVM(),
++                    bridge.getDalvikActivity()
++            ).address();
++        }
++
++        @Override
++        public String getGraphicsExtension() {
++            return KHROpenGLESEnable.XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME;
++        }
++
++        @Override
++        public Struct<?> createGraphicsBinding(MemoryStack stack, XrInstance instance, long systemId, long windowHandle) {
++            XrGraphicsRequirementsOpenGLESKHR requirements = XrGraphicsRequirementsOpenGLESKHR.calloc(stack)
++                    .type(KHROpenGLESEnable.XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR);
++            KHROpenGLESEnable.xrGetOpenGLESGraphicsRequirementsKHR(instance, systemId, requirements);
++            return XrGraphicsBindingOpenGLESAndroidKHR.calloc(stack).set(
++                    KHROpenGLESEnable.XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR,
++                    NULL,
++                    bridge.getEGLDisplay(),
++                    bridge.getEGLConfig(),
++                    bridge.getEGLContext()
++            );
++        }
++
++        @Override
++        public XrSwapchainImageOpenGLKHR.Buffer createImageBuffers(int imageCount, MemoryStack stack) {
++            XrSwapchainImageOpenGLKHR.Buffer images = XrSwapchainImageOpenGLKHR.calloc(imageCount, stack);
++            for (XrSwapchainImageOpenGLKHR image : images) {
++                image.type(KHROpenGLESEnable.XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR);
++            }
++            return images;
++        }
++    }
++}

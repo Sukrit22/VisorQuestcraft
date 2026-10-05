@@ -228,3 +228,9 @@ Alpha.5 verification completed: APK signature valid, versionCode 5, ARM64-only; 
 Alpha.5 device log confirms Forge 47.4.20 and the modded world running. Changing graphics was followed by GL error 1285 (GL_OUT_OF_MEMORY) reported before depth overlay rendering. This location is where the GL error was detected, not proof of which allocation caused it. The process remained alive at about 4.0 GiB PSS; world-save completion was logged before recovery.
 
 Backed up forge - mods/options.txt and Visor/settings.yml locally under logs/graphics-*. Stopped the stuck app, changed only graphicsMode 1->0 (Fast), renderDistance 9->4, simulationDistance 9->5 and mipmapLevels 4->0, verified the settings readback hash and writable mode, and reopened the launcher. VR remained ENABLED. User must relaunch the instance to validate recovery. No mods, worlds or calibration settings were removed.
+
+## 22. Separate Quest and Pico targets (alpha.6)
+
+See HEADSET-BUILDS.md for architecture, build commands, target boundaries and validation procedure. One shared Visor/AtumVR/Pojlib implementation feeds separate Unity XR profiles and application IDs. The shared AAR now seeds earlyWindowControl=false for a new Forge config; existing configs remain unchanged. No APK is installed automatically. Quest 3 controller testing is the first hardware target.
+
+The previous Build-PicoApk.ps1 / Verify-PicoApk.ps1 commands are maintained as wrappers. New generic commands are Build-AndroidApk.ps1 -Target Quest|Pico and Verify-AndroidApk.ps1 -Target Quest|Pico. Unity editor menu: QuestCraft > Build > Quest APK / Pico APK. Release numbers and app IDs are centralized in build-targets/android.json.

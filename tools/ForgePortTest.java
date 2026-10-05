@@ -81,7 +81,26 @@ public class ForgePortTest {
                 paths.sorted(Comparator.reverseOrder()).forEach(p -> { try { Files.delete(p); } catch (IOException e) { throw new UncheckedIOException(e); } });
             }
         }
-        System.out.println("Passed " + checks + " Forge parser/mod preflight checks");
+        Path fabricMods = Files.createTempDirectory("fabric-mods-test-");
+        try {
+            fails(() -> pojlib.install.FabricMods.validate(fabricMods.toFile()), "exactly one");
+            jar(fabricMods.resolve("visor.jar"), "fabric.mod.json", "{\"id\":\"visor\"}");
+            jar(fabricMods.resolve("addon.jar"), "fabric.mod.json", "{\"id\":\"addon\",\"depends\":{\"visor\":\"0.5.0\"}}");
+            pojlib.install.FabricMods.validate(fabricMods.toFile()); checks++;
+            jar(fabricMods.resolve("duplicate.jar"), "fabric.mod.json", "{\"id\":\"visor\"}");
+            fails(() -> pojlib.install.FabricMods.validate(fabricMods.toFile()), "found 2");
+            Files.delete(fabricMods.resolve("duplicate.jar"));
+            jar(fabricMods.resolve("wrong-loader.jar"), "META-INF/mods.toml", "[[mods]]\nmodId='example'\n");
+            fails(() -> pojlib.install.FabricMods.validate(fabricMods.toFile()), "Forge-only");
+            Files.delete(fabricMods.resolve("wrong-loader.jar"));
+            jar(fabricMods.resolve("other.jar"), "fabric.mod.json", "{\"id\":\"vivecraft\"}");
+            fails(() -> pojlib.install.FabricMods.validate(fabricMods.toFile()), "Vivecraft");
+        } finally {
+            try (java.util.stream.Stream<Path> paths = Files.walk(fabricMods)) {
+                paths.sorted(Comparator.reverseOrder()).forEach(p -> { try { Files.delete(p); } catch (IOException e) { throw new UncheckedIOException(e); } });
+            }
+        }
+        System.out.println("Passed " + checks + " Forge/Fabric parser/mod preflight checks");
     }
     interface Action { void run() throws Exception; }
     static void fails(Action action, String part) throws Exception {

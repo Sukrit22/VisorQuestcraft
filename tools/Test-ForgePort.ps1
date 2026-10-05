@@ -6,7 +6,7 @@ if (!$gson) { throw 'A Gson jar is required in the local Gradle cache' }
 $output = Join-Path $workspace 'build/forge-tests'
 New-Item -ItemType Directory -Force $output | Out-Null
 $source = Join-Path $workspace 'sources/Pojlib/src/main/java/pojlib/install'
-& "$JavaHome/bin/javac.exe" --release 8 -cp $gson.FullName -d $output "$source/ForgeProfile.java" "$source/ForgeMods.java" "$PSScriptRoot/ForgePortTest.java"
+& "$JavaHome/bin/javac.exe" --release 8 -cp $gson.FullName -d $output "$source/ForgeProfile.java" "$source/ForgeMods.java" "$source/FabricMods.java" "$PSScriptRoot/ForgePortTest.java"
 if ($LASTEXITCODE -ne 0) { throw 'Forge test compilation failed' }
 & "$JavaHome/bin/java.exe" -cp "$output;$($gson.FullName)" ForgePortTest "$workspace/downloads/forge-1.20.1-47.4.20-installer.jar"
 if ($LASTEXITCODE -ne 0) { throw 'Forge port tests failed' }

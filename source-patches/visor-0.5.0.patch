@@ -1,0 +1,1871 @@
+diff --git a/version.properties b/version.properties
+index b8e26db725b5847ecea6c4f10dd2cfd24e504704..8fc44bb087da2bbbb5fa6d205a6c795e6aca9e3b 100644
+--- a/version.properties
++++ b/version.properties
+@@ -1,8 +1,9 @@
+-version.snapshot=false
+-#Leave empty if release stage
+-version.stage=
+-
+-version.major=0
+-version.minor=5
+-version.patch=0
+-version.build=0
++version.snapshot=false
++#Leave empty if release stage
++version.stage=
++
++version.major=0
++version.minor=5
++version.patch=0
++version.build=0
++
+diff --git a/visor-api/build.gradle b/visor-api/build.gradle
+index 1d863b48d5d72396a33066b731b9b561363be913..1b0bf9beb7e9831403cd172bdd8b80443bf36e25 100644
+--- a/visor-api/build.gradle
++++ b/visor-api/build.gradle
+@@ -1,22 +1,22 @@
+-architectury {
+-
+-    common(rootProject.enabled_platforms.split(","))
+-}
+-loom{
+-    accessWidenerPath = file("src/main/resources/visor.accesswidener")
+-}
+-dependencies {
+-    // @Environment annotation and mixin extras
+-    compileOnly(libs.fabric.loader)
+-
+-    // ---- LOCAL DEPENDENCY
+-    modApi name: 'atumvr-api-1.14.0beta-snapshot#23'
+-    modApi name: 'atumvr-core-1.14.0beta-snapshot#23'
+-    // ----
+-    //api(libs.atumvr.api)
+-    //api(libs.atumvr.core)
+-    api(libs.atumvr.config)
+-
+-    compileOnly(libs.bundles.annotations)
+-    annotationProcessor(libs.bundles.annotations)
++architectury {
++
++    common(rootProject.enabled_platforms.split(","))
++}
++loom{
++    accessWidenerPath = file("src/main/resources/visor.accesswidener")
++}
++dependencies {
++    // @Environment annotation and mixin extras
++    compileOnly(libs.fabric.loader)
++
++    // ---- LOCAL DEPENDENCY
++    modApi name: 'atumvr-api-pico'
++    modApi name: 'atumvr-core-pico'
++    // ----
++    //api(libs.atumvr.api)
++    //api(libs.atumvr.core)
++    api(libs.atumvr.config)
++
++    compileOnly(libs.bundles.annotations)
++    annotationProcessor(libs.bundles.annotations)
+ }
+\ No newline at end of file
+diff --git a/visor-api/fabric/build.gradle b/visor-api/fabric/build.gradle
+index 87fce20cf11cdb5be6637f24da83ad886b64ebdb..925b95e002d8c0ec5eafc380ae47b0a7d204d403 100644
+--- a/visor-api/fabric/build.gradle
++++ b/visor-api/fabric/build.gradle
+@@ -1,100 +1,100 @@
+-plugins {
+-    id "maven-publish"
+-    alias(libs.plugins.shadow)
+-}
+-
+-architectury {
+-    platformSetupLoomIde()
+-    fabric()
+-}
+-
+-loom {
+-    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
+-}
+-
+-configurations {
+-    common
+-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+-    compileClasspath.extendsFrom common
+-    runtimeClasspath.extendsFrom common
+-    developmentFabric.extendsFrom common
+-}
+-version = version+"+mc"+libs.versions.minecraftVersion.get()+"-api-fabric"
+-
+-dependencies {
+-    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
+-
+-    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
+-    common(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
+-
+-
+-
+-
+-    modImplementation(libs.fabric.loader)
+-
+-
+-
+-
+-    // ---- LOCAL DEPENDENCY
+-    // modCompileOnly: flatDir jars have no maven coordinates, so they must stay out of the published POM (bundled via shadowCommon instead)
+-    shadowCommon(modCompileOnly(name: 'atumvr-api-1.14.0beta-snapshot#23')) { transitive = false }
+-    shadowCommon(modCompileOnly(name: 'atumvr-core-1.14.0beta-snapshot#23')) { transitive = false }
+-    // ----
+-    //shadowCommon(libs.atumvr.api) { transitive = false }
+-    //shadowCommon(libs.atumvr.core) { transitive = false }
+-    shadowCommon(libs.atumvr.config)
+-
+-
+-}
+-
+-processResources {
+-    inputs.property "version", parent.version
+-
+-    filesMatching("fabric.mod.json") {
+-        expand "version": parent.version
+-    }
+-}
+-
+-
+-shadowJar {
+-    exclude "architectury.common.json"
+-    exclude "org.joml"
+-    exclude "org.lwjgl"
+-    exclude "org.slf4j"
+-
+-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+-    configurations = [
+-            project.configurations.shadowCommon
+-    ]
+-    archiveClassifier.set("dev")
+-
+-    relocate("org.yaml","${project.group}.libs.org.yaml")
+-    relocate("org.tomlj","${project.group}.libs.org.tomlj")
+-    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
+-    relocate("org.antlr","${project.group}.libs.org.antlr")
+-
+-    relocate("com.google.gson","${project.group}.libs.com.google.gson")
+-    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
+-
+-}
+-
+-remapJar {
+-    injectAccessWidener = true
+-    input.set shadowJar.archiveFile
+-    dependsOn shadowJar
+-    archiveClassifier.set('')
+-}
+-
+-sourcesJar {
+-    def commonSources = project(":visor-api").sourcesJar
+-    dependsOn commonSources
+-    from commonSources.archiveFile.map { zipTree(it) }
+-}
+-
+-publishing {
+-    publications {
+-        mavenJava(MavenPublication) {
+-            from components.java
+-        }
+-    }
++plugins {
++    id "maven-publish"
++    alias(libs.plugins.shadow)
++}
++
++architectury {
++    platformSetupLoomIde()
++    fabric()
++}
++
++loom {
++    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
++}
++
++configurations {
++    common
++    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
++    compileClasspath.extendsFrom common
++    runtimeClasspath.extendsFrom common
++    developmentFabric.extendsFrom common
++}
++version = version+"+mc"+libs.versions.minecraftVersion.get()+"-api-fabric"
++
++dependencies {
++    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
++
++    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
++    common(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
++
++
++
++
++    modImplementation(libs.fabric.loader)
++
++
++
++
++    // ---- LOCAL DEPENDENCY
++    // modCompileOnly: flatDir jars have no maven coordinates, so they must stay out of the published POM (bundled via shadowCommon instead)
++    shadowCommon(modCompileOnly(name: 'atumvr-api-pico')) { transitive = false }
++    shadowCommon(modCompileOnly(name: 'atumvr-core-pico')) { transitive = false }
++    // ----
++    //shadowCommon(libs.atumvr.api) { transitive = false }
++    //shadowCommon(libs.atumvr.core) { transitive = false }
++    shadowCommon(libs.atumvr.config)
++
++
++}
++
++processResources {
++    inputs.property "version", parent.version
++
++    filesMatching("fabric.mod.json") {
++        expand "version": parent.version
++    }
++}
++
++
++shadowJar {
++    exclude "architectury.common.json"
++    exclude "org.joml"
++    exclude "org.lwjgl"
++    exclude "org.slf4j"
++
++    duplicatesStrategy DuplicatesStrategy.EXCLUDE
++    configurations = [
++            project.configurations.shadowCommon
++    ]
++    archiveClassifier.set("dev")
++
++    relocate("org.yaml","${project.group}.libs.org.yaml")
++    relocate("org.tomlj","${project.group}.libs.org.tomlj")
++    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
++    relocate("org.antlr","${project.group}.libs.org.antlr")
++
++    relocate("com.google.gson","${project.group}.libs.com.google.gson")
++    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
++
++}
++
++remapJar {
++    injectAccessWidener = true
++    input.set shadowJar.archiveFile
++    dependsOn shadowJar
++    archiveClassifier.set('')
++}
++
++sourcesJar {
++    def commonSources = project(":visor-api").sourcesJar
++    dependsOn commonSources
++    from commonSources.archiveFile.map { zipTree(it) }
++}
++
++publishing {
++    publications {
++        mavenJava(MavenPublication) {
++            from components.java
++        }
++    }
+ }
+\ No newline at end of file
+diff --git a/visor-api/forge/build.gradle b/visor-api/forge/build.gradle
+index a6f0c50fee60673118a781d22d593fa699e2a8f2..c499549bfe32685b32e3b7fa5d5090a553993f2b 100644
+--- a/visor-api/forge/build.gradle
++++ b/visor-api/forge/build.gradle
+@@ -1,115 +1,115 @@
+-plugins {
+-    id "maven-publish"
+-    alias(libs.plugins.shadow)
+-}
+-
+-architectury {
+-    platformSetupLoomIde()
+-    forge()
+-}
+-loom {
+-    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
+-
+-    forge {
+-        convertAccessWideners = true
+-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+-
+-        mixinConfig "visor.mixins.json"
+-        mixinConfig "visor.mixins.forge.json"
+-    }
+-}
+-
+-configurations {
+-    common
+-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+-    bundle {
+-        // bundle command, to copy jar contents with the shadow plugin
+-        canBeResolved = true
+-        canBeConsumed = false
+-    }
+-    compileClasspath.extendsFrom common
+-    runtimeClasspath.extendsFrom common
+-    developmentForge.extendsFrom common
+-}
+-
+-version = version+"+mc"+libs.versions.minecraftVersion.get()+"-api-forge"
+-
+-dependencies {
+-
+-    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive = false }
+-    common(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
+-
+-
+-    //
+-    String forgeVersion = "${libs.versions.minecraftVersion.get()}-${libs.versions.forgeVersion.get()}"
+-
+-    forge "net.minecraftforge:forge:$forgeVersion"
+-    //mixin extras
+-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinExtras.get()}"))
+-    implementation(include("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinExtras.get()}"))
+-
+-
+-    // ---- LOCAL DEPENDENCY
+-    // modCompileOnly: flatDir jars have no maven coordinates, so they must stay out of the published POM (bundled via shadowCommon instead)
+-    shadowCommon(modCompileOnly(name: 'atumvr-api-1.14.0beta-snapshot#23')) { transitive = false }
+-    shadowCommon(modCompileOnly(name: 'atumvr-core-1.14.0beta-snapshot#23')) { transitive = false }
+-    // ----
+-    //shadowCommon(libs.atumvr.api) { transitive = false }
+-    //shadowCommon(libs.atumvr.core) { transitive = false }
+-    shadowCommon(libs.atumvr.config)
+-
+-
+-}
+-
+-processResources {
+-    inputs.property "version", parent.version
+-
+-    filesMatching("META-INF/mods.toml") {
+-        expand "version": parent.version
+-    }
+-}
+-
+-shadowJar {
+-    exclude "fabric.mod.json"
+-    exclude "architectury.common.json"
+-    exclude "org.joml"
+-    exclude "org.lwjgl"
+-    exclude "org.slf4j"
+-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+-    configurations = [
+-            project.configurations.shadowCommon,
+-            project.configurations.bundle
+-    ]
+-    archiveClassifier.set("dev")
+-
+-    relocate("org.yaml","${project.group}.libs.org.yaml")
+-    relocate("org.tomlj","${project.group}.libs.org.tomlj")
+-    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
+-    relocate("org.antlr","${project.group}.libs.org.antlr")
+-
+-    relocate("com.google.gson","${project.group}.libs.com.google.gson")
+-    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
+-
+-
+-
+-}
+-
+-remapJar {
+-    input.set shadowJar.archiveFile
+-    dependsOn shadowJar
+-    archiveClassifier.set('')
+-}
+-
+-sourcesJar {
+-    def apiSources = project(":visor-api").sourcesJar
+-    dependsOn apiSources
+-    from apiSources.archiveFile.map { zipTree(it) }
+-}
+-
+-publishing {
+-    publications {
+-        mavenJava(MavenPublication) {
+-            from components.java
+-        }
+-    }
++plugins {
++    id "maven-publish"
++    alias(libs.plugins.shadow)
++}
++
++architectury {
++    platformSetupLoomIde()
++    forge()
++}
++loom {
++    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
++
++    forge {
++        convertAccessWideners = true
++        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
++
++        mixinConfig "visor.mixins.json"
++        mixinConfig "visor.mixins.forge.json"
++    }
++}
++
++configurations {
++    common
++    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
++    bundle {
++        // bundle command, to copy jar contents with the shadow plugin
++        canBeResolved = true
++        canBeConsumed = false
++    }
++    compileClasspath.extendsFrom common
++    runtimeClasspath.extendsFrom common
++    developmentForge.extendsFrom common
++}
++
++version = version+"+mc"+libs.versions.minecraftVersion.get()+"-api-forge"
++
++dependencies {
++
++    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive = false }
++    common(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
++
++
++    //
++    String forgeVersion = "${libs.versions.minecraftVersion.get()}-${libs.versions.forgeVersion.get()}"
++
++    forge "net.minecraftforge:forge:$forgeVersion"
++    //mixin extras
++    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinExtras.get()}"))
++    implementation(include("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinExtras.get()}"))
++
++
++    // ---- LOCAL DEPENDENCY
++    // modCompileOnly: flatDir jars have no maven coordinates, so they must stay out of the published POM (bundled via shadowCommon instead)
++    shadowCommon(modCompileOnly(name: 'atumvr-api-pico')) { transitive = false }
++    shadowCommon(modCompileOnly(name: 'atumvr-core-pico')) { transitive = false }
++    // ----
++    //shadowCommon(libs.atumvr.api) { transitive = false }
++    //shadowCommon(libs.atumvr.core) { transitive = false }
++    shadowCommon(libs.atumvr.config)
++
++
++}
++
++processResources {
++    inputs.property "version", parent.version
++
++    filesMatching("META-INF/mods.toml") {
++        expand "version": parent.version
++    }
++}
++
++shadowJar {
++    exclude "fabric.mod.json"
++    exclude "architectury.common.json"
++    exclude "org.joml"
++    exclude "org.lwjgl"
++    exclude "org.slf4j"
++    duplicatesStrategy DuplicatesStrategy.EXCLUDE
++    configurations = [
++            project.configurations.shadowCommon,
++            project.configurations.bundle
++    ]
++    archiveClassifier.set("dev")
++
++    relocate("org.yaml","${project.group}.libs.org.yaml")
++    relocate("org.tomlj","${project.group}.libs.org.tomlj")
++    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
++    relocate("org.antlr","${project.group}.libs.org.antlr")
++
++    relocate("com.google.gson","${project.group}.libs.com.google.gson")
++    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
++
++
++
++}
++
++remapJar {
++    input.set shadowJar.archiveFile
++    dependsOn shadowJar
++    archiveClassifier.set('')
++}
++
++sourcesJar {
++    def apiSources = project(":visor-api").sourcesJar
++    dependsOn apiSources
++    from apiSources.archiveFile.map { zipTree(it) }
++}
++
++publishing {
++    publications {
++        mavenJava(MavenPublication) {
++            from components.java
++        }
++    }
+ }
+\ No newline at end of file
+diff --git a/visor-core/build.gradle b/visor-core/build.gradle
+index 9f92b155bbe011ac6fe527859338d78f3ec84434..e2e398b2f5765dbc0b389ca80da772d323527778 100644
+--- a/visor-core/build.gradle
++++ b/visor-core/build.gradle
+@@ -1,37 +1,37 @@
+-architectury {
+-
+-    common(rootProject.enabled_platforms.split(","))
+-}
+-
+-loom{
+-    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
+-}
+-
+-dependencies {
+-    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
+-
+-    compileOnly(project(path: ':visor-core:stubs', configuration: 'namedElements'))
+-
+-    // @Environment annotation and mixin extras
+-    modImplementation(libs.fabric.loader)
+-
+-
+-    // ---- LOCAL DEPENDENCY
+-    modApi name: 'atumvr-core-1.14.0beta-snapshot#23'
+-    // ----
+-    //api(libs.atumvr.core)
+-
+-    //Other mods
+-    modCompileOnly(libs.mod.sodium)
+-    modCompileOnly(libs.mod.iris) { transitive = false }
+-
+-
+-    testImplementation(platform('org.junit:junit-bom:5.10.2'))
+-    testImplementation('org.junit.jupiter:junit-jupiter')
+-    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
+-    testImplementation('org.joml:joml:1.10.5')
+-}
+-
+-test {
+-    useJUnitPlatform()
+-}
++architectury {
++
++    common(rootProject.enabled_platforms.split(","))
++}
++
++loom{
++    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
++}
++
++dependencies {
++    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
++
++    compileOnly(project(path: ':visor-core:stubs', configuration: 'namedElements'))
++
++    // @Environment annotation and mixin extras
++    modImplementation(libs.fabric.loader)
++
++
++    // ---- LOCAL DEPENDENCY
++    modApi name: 'atumvr-core-pico'
++    // ----
++    //api(libs.atumvr.core)
++
++    //Other mods
++    modCompileOnly(libs.mod.sodium)
++    modCompileOnly(libs.mod.iris) { transitive = false }
++
++
++    testImplementation(platform('org.junit:junit-bom:5.10.2'))
++    testImplementation('org.junit.jupiter:junit-jupiter')
++    testRuntimeOnly('org.junit.platform:junit-platform-launcher')
++    testImplementation('org.joml:joml:1.10.5')
++}
++
++test {
++    useJUnitPlatform()
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
+index 2d921975ba9c6c48105e55fd46d17a028b28da97..d28465f094272c166a5be57b5e37586564a7937b 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/VisorScene.java
+@@ -1,220 +1,222 @@
+-package org.vmstudio.visor.core.client.provider;
+-
+-import com.mojang.blaze3d.pipeline.RenderTarget;
+-import com.mojang.blaze3d.systems.RenderSystem;
+-import com.mojang.blaze3d.vertex.PoseStack;
+-import com.mojang.blaze3d.vertex.VertexSorting;
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.enums.EyeType;
+-import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
+-import me.phoenixra.atumvr.api.rendering.AtumVRScene;
+-import me.phoenixra.atumvr.api.utils.GLUtils;
+-import org.vmstudio.visor.api.client.render.VRRenderPass;
+-import org.vmstudio.visor.api.client.render.VRRenderer;
+-import org.vmstudio.visor.core.client.render.context.RenderContext;
+-import org.vmstudio.visor.core.client.ClientContext;
+-import org.vmstudio.visor.core.client.render.VRShaders;
+-import org.vmstudio.visor.core.client.render.VRRenderState;
+-import org.vmstudio.visor.compatibility.ShaderCompatHelper;
+-import org.vmstudio.visor.core.client.render.helpers.MirrorHelper;
+-import org.vmstudio.visor.api.client.settings.VRClientSettings;
+-import org.vmstudio.visor.core.client.utils.ClientUtils;
+-import net.minecraft.client.Minecraft;
+-import net.minecraft.client.gui.GuiGraphics;
+-import org.joml.Matrix4f;
+-import org.jetbrains.annotations.NotNull;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.*;
+-
+-
+-public class VisorScene implements AtumVRScene {
+-
+-    @Getter
+-    private VRRenderer renderer;
+-
+-
+-    public VisorScene(VRRenderer renderer) {
+-        this.renderer = renderer;
+-    }
+-
+-    @Override
+-    public void init() {
+-
+-    }
+-
+-    @Override
+-    public void render(@NotNull AtumVRRenderContext context) {
+-
+-        var renderContext = (RenderContext) context;
+-        var profiler =  renderContext.profiler();
+-
+-        // pop pose pushed in onGameRenderStart method
+-        RenderSystem.getModelViewStack().popPose();
+-
+-
+-        RenderSystem.depthMask(true);
+-        RenderSystem.applyModelViewMatrix();
+-
+-
+-        profiler.push("prepare VROverlays and cursor");
+-        ClientContext.overlayManager.prepareOverlaysAndCursor(
+-                context.partialTicks()
+-        );
+-        profiler.pop();
+-
+-        profiler.push("VROverlay texturing");
+-        GuiGraphics guiGraphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
+-        ClientContext.overlayManager.renderOverlayTextures(
+-                MC.getProfiler(),
+-                guiGraphics,
+-                renderContext.partialTicks()
+-        );
+-        profiler.pop();
+-        GLUtils.checkGLError("post VR Overlays texturing");
+-
+-        ShaderCompatHelper.bridge().beginFrame(
+-                renderContext.partialTicks(),
+-                renderContext.nanoTime()
+-        );
+-
+-        for (VRRenderPass renderPass : VRRenderState.getActivePasses()) {
+-            profiler.push("VR render pass: "+renderPass.name());
+-
+-            renderPass(
+-                    renderPass,
+-                    renderContext
+-            );
+-            GLUtils.checkGLError("post VR render pass: " + renderPass.name());
+-
+-
+-            if (ClientContext.renderer.isAskedForScreenShot()) {
+-                takeScreenshot(renderPass);
+-            }
+-            profiler.pop();
++package org.vmstudio.visor.core.client.provider;
++
++import com.mojang.blaze3d.pipeline.RenderTarget;
++import com.mojang.blaze3d.systems.RenderSystem;
++import com.mojang.blaze3d.vertex.PoseStack;
++import com.mojang.blaze3d.vertex.VertexSorting;
++import lombok.Getter;
++import me.phoenixra.atumvr.api.enums.EyeType;
++import me.phoenixra.atumvr.api.rendering.AtumVRRenderContext;
++import me.phoenixra.atumvr.api.rendering.AtumVRScene;
++import me.phoenixra.atumvr.api.utils.GLUtils;
++import org.vmstudio.visor.api.client.render.VRRenderPass;
++import org.vmstudio.visor.api.client.render.VRRenderer;
++import org.vmstudio.visor.core.client.render.context.RenderContext;
++import org.vmstudio.visor.core.client.ClientContext;
++import org.vmstudio.visor.core.client.render.VRShaders;
++import org.vmstudio.visor.core.client.render.VRRenderState;
++import org.vmstudio.visor.compatibility.ShaderCompatHelper;
++import org.vmstudio.visor.core.client.render.helpers.MirrorHelper;
++import org.vmstudio.visor.api.client.settings.VRClientSettings;
++import org.vmstudio.visor.core.client.utils.ClientUtils;
++import net.minecraft.client.Minecraft;
++import net.minecraft.client.gui.GuiGraphics;
++import org.joml.Matrix4f;
++import org.jetbrains.annotations.NotNull;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.*;
++
++
++public class VisorScene implements AtumVRScene {
++
++    @Getter
++    private VRRenderer renderer;
++
++
++    public VisorScene(VRRenderer renderer) {
++        this.renderer = renderer;
++    }
++
++    @Override
++    public void init() {
++
++    }
++
++    @Override
++    public void render(@NotNull AtumVRRenderContext context) {
++
++        var renderContext = (RenderContext) context;
++        var profiler =  renderContext.profiler();
++
++        // pop pose pushed in onGameRenderStart method
++        RenderSystem.getModelViewStack().popPose();
++
++
++        RenderSystem.depthMask(true);
++        RenderSystem.applyModelViewMatrix();
++
++
++        profiler.push("prepare VROverlays and cursor");
++        ClientContext.overlayManager.prepareOverlaysAndCursor(
++                context.partialTicks()
++        );
++        profiler.pop();
++
++        profiler.push("VROverlay texturing");
++        GuiGraphics guiGraphics = new GuiGraphics(MC, MC.renderBuffers().bufferSource());
++        ClientContext.overlayManager.renderOverlayTextures(
++                MC.getProfiler(),
++                guiGraphics,
++                renderContext.partialTicks()
++        );
++        profiler.pop();
++        GLUtils.checkGLError("post VR Overlays texturing");
++
++        ShaderCompatHelper.bridge().beginFrame(
++                renderContext.partialTicks(),
++                renderContext.nanoTime()
++        );
++
++        for (VRRenderPass renderPass : VRRenderState.getActivePasses()) {
++            profiler.push("VR render pass: "+renderPass.name());
++
++            renderPass(
++                    renderPass,
++                    renderContext
++            );
++            GLUtils.checkGLError("post VR render pass: " + renderPass.name());
++
++
++            if (ClientContext.renderer.isAskedForScreenShot()) {
++                takeScreenshot(renderPass);
++            }
++            profiler.pop();
++        }
++
++
++        ShaderCompatHelper.bridge().endFrame();
++
++        profiler.push("VR mirror");
++        VRRenderState.startVRMirrorPhase();
++        MC.mainRenderTarget.bindWrite(true);
++        if (!me.phoenixra.atumvr.core.session.platform.XRPlatform.isAndroid()) {
++            MirrorHelper.drawMirror();
+         }
+-
+-
+-        ShaderCompatHelper.bridge().endFrame();
+-
+-        profiler.push("VR mirror");
+-        VRRenderState.startVRMirrorPhase();
+-        MC.mainRenderTarget.bindWrite(true);
+-        MirrorHelper.drawMirror();
+-        profiler.pop();
+-        GLUtils.checkGLError("post mirror");
+-
+-
+-    }
+-
+-    private void renderOverlaysAfterPostProcessing(RenderContext context) {
+-        PoseStack modelView = RenderSystem.getModelViewStack();
+-        modelView.pushPose();
+-        modelView.setIdentity();
+-        RenderSystem.applyModelViewMatrix();
+-
+-        Matrix4f projection = RenderSystem.getProjectionMatrix();
+-        VertexSorting vertexSorting = RenderSystem.getVertexSorting();
+-        try{
+-            ClientContext.decorationRenderer.renderAfterPostProcessing(new PoseStack(), context.partialTicks());
+-        } finally {
+-            RenderSystem.setProjectionMatrix(projection, vertexSorting);
+-            modelView.popPose();
+-            RenderSystem.applyModelViewMatrix();
+-        }
+-
+-        GLUtils.checkGLError("post VROverlays skipping post processing");
+-    }
+-
+-    private void takeScreenshot(VRRenderPass currentStage) {
+-
+-        boolean flag;
+-        if (currentStage == VRRenderPass.CENTER) {
+-            flag = true;
+-        } else {
+-            flag = VRClientSettings.getMirrorEye() == EyeType.LEFT ?
+-                    currentStage == VRRenderPass.EYE_LEFT
+-                    : currentStage == VRRenderPass.EYE_RIGHT;
+-        }
+-
+-        if (flag) {
+-            RenderTarget rendertarget = MC.mainRenderTarget;
+-
+-            MC.mainRenderTarget.unbindWrite();
+-            ClientUtils.takeScreenshot(rendertarget);
+-            MC.getWindow().updateDisplay();
+-            ClientContext.renderer.setAskedForScreenShot(false);
+-        }
+-    }
+-
+-    @Override
+-    public void destroy() {
+-
+-    }
+-
+-    private void renderPass(VRRenderPass renderPass,
+-                            RenderContext context
+-    ) {
+-        VRRenderState.startVRWorldPhase(renderPass);
+-
+-        if (MC.mainRenderTarget == null) {
+-            LOGGER.warn("Visor: no render target for pass {}; requesting renderer reinit.", renderPass);
+-            VRRenderState.startVanillaPhase();
+-            ClientContext.renderer.prepareReinit("Missing target for pass " + renderPass);
+-            return;
+-        }
+-
+-        MC.mainRenderTarget.bindWrite(true);
+-        RenderSystem.clearColor(0.0F, 0.0F, 0.0F, 1.0F);
+-        RenderSystem.clear(16384, Minecraft.ON_OSX);
+-        RenderSystem.enableDepthTest();
+-
+-        ShaderCompatHelper.bridge().beginEye(renderPass.getEyeOrLeft());
+-
+-        if (ShaderCompatHelper.isShaderActive()) {
+-            RenderSystem.setShaderTexture(0, 0);
+-            RenderSystem.setShaderTexture(1, 0);
+-            RenderSystem.setShaderTexture(2, 0);
+-        }
+-
+-        MC.gameRenderer.render(
+-                context.partialTicks(),
+-                context.nanoTime(),
+-                context.renderLevel()
+-        );
+-
+-        if (ShaderCompatHelper.isShaderActive()) {
+-            MC.mainRenderTarget.bindWrite(true);
+-            PoseStack modelView = RenderSystem.getModelViewStack();
+-            modelView.pushPose();
+-            modelView.setIdentity();
+-            RenderSystem.applyModelViewMatrix();
+-            ClientContext.decorationRenderer.renderShaderUi(new PoseStack(), context.partialTicks());
+-            modelView.popPose();
+-            RenderSystem.applyModelViewMatrix();
+-        }
+-
+-        if (renderPass.isEye()) {
+-            if (renderPass == VRRenderPass.EYE_LEFT) {
+-                ClientContext.renderer.getTextureLeftEye()
+-                        .getRenderTarget().bindWrite(true);
+-            } else {
+-                ClientContext.renderer.getTextureRightEye()
+-                        .getRenderTarget().bindWrite(true);
+-            }
+-
+-            VRShaders.getPostProcess().finishEye(
+-                    renderPass == VRRenderPass.EYE_LEFT
+-                            ? EyeType.LEFT : EyeType.RIGHT,
+-                    MC.mainRenderTarget,
+-                    context.partialTicks()
+-            );
+-        }
+-
+-        renderOverlaysAfterPostProcessing(context);
+-
+-        ShaderCompatHelper.bridge().endEye();
+-    }
+-
+-
+-
+-}
++        profiler.pop();
++        GLUtils.checkGLError("post mirror");
++
++
++    }
++
++    private void renderOverlaysAfterPostProcessing(RenderContext context) {
++        PoseStack modelView = RenderSystem.getModelViewStack();
++        modelView.pushPose();
++        modelView.setIdentity();
++        RenderSystem.applyModelViewMatrix();
++
++        Matrix4f projection = RenderSystem.getProjectionMatrix();
++        VertexSorting vertexSorting = RenderSystem.getVertexSorting();
++        try{
++            ClientContext.decorationRenderer.renderAfterPostProcessing(new PoseStack(), context.partialTicks());
++        } finally {
++            RenderSystem.setProjectionMatrix(projection, vertexSorting);
++            modelView.popPose();
++            RenderSystem.applyModelViewMatrix();
++        }
++
++        GLUtils.checkGLError("post VROverlays skipping post processing");
++    }
++
++    private void takeScreenshot(VRRenderPass currentStage) {
++
++        boolean flag;
++        if (currentStage == VRRenderPass.CENTER) {
++            flag = true;
++        } else {
++            flag = VRClientSettings.getMirrorEye() == EyeType.LEFT ?
++                    currentStage == VRRenderPass.EYE_LEFT
++                    : currentStage == VRRenderPass.EYE_RIGHT;
++        }
++
++        if (flag) {
++            RenderTarget rendertarget = MC.mainRenderTarget;
++
++            MC.mainRenderTarget.unbindWrite();
++            ClientUtils.takeScreenshot(rendertarget);
++            MC.getWindow().updateDisplay();
++            ClientContext.renderer.setAskedForScreenShot(false);
++        }
++    }
++
++    @Override
++    public void destroy() {
++
++    }
++
++    private void renderPass(VRRenderPass renderPass,
++                            RenderContext context
++    ) {
++        VRRenderState.startVRWorldPhase(renderPass);
++
++        if (MC.mainRenderTarget == null) {
++            LOGGER.warn("Visor: no render target for pass {}; requesting renderer reinit.", renderPass);
++            VRRenderState.startVanillaPhase();
++            ClientContext.renderer.prepareReinit("Missing target for pass " + renderPass);
++            return;
++        }
++
++        MC.mainRenderTarget.bindWrite(true);
++        RenderSystem.clearColor(0.0F, 0.0F, 0.0F, 1.0F);
++        RenderSystem.clear(16384, Minecraft.ON_OSX);
++        RenderSystem.enableDepthTest();
++
++        ShaderCompatHelper.bridge().beginEye(renderPass.getEyeOrLeft());
++
++        if (ShaderCompatHelper.isShaderActive()) {
++            RenderSystem.setShaderTexture(0, 0);
++            RenderSystem.setShaderTexture(1, 0);
++            RenderSystem.setShaderTexture(2, 0);
++        }
++
++        MC.gameRenderer.render(
++                context.partialTicks(),
++                context.nanoTime(),
++                context.renderLevel()
++        );
++
++        if (ShaderCompatHelper.isShaderActive()) {
++            MC.mainRenderTarget.bindWrite(true);
++            PoseStack modelView = RenderSystem.getModelViewStack();
++            modelView.pushPose();
++            modelView.setIdentity();
++            RenderSystem.applyModelViewMatrix();
++            ClientContext.decorationRenderer.renderShaderUi(new PoseStack(), context.partialTicks());
++            modelView.popPose();
++            RenderSystem.applyModelViewMatrix();
++        }
++
++        if (renderPass.isEye()) {
++            if (renderPass == VRRenderPass.EYE_LEFT) {
++                ClientContext.renderer.getTextureLeftEye()
++                        .getRenderTarget().bindWrite(true);
++            } else {
++                ClientContext.renderer.getTextureRightEye()
++                        .getRenderTarget().bindWrite(true);
++            }
++
++            VRShaders.getPostProcess().finishEye(
++                    renderPass == VRRenderPass.EYE_LEFT
++                            ? EyeType.LEFT : EyeType.RIGHT,
++                    MC.mainRenderTarget,
++                    context.partialTicks()
++            );
++        }
++
++        renderOverlaysAfterPostProcessing(context);
++
++        ShaderCompatHelper.bridge().endEye();
++    }
++
++
++
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
+index d1e05863cb3c363b72116145998243d6bee90585..632cd5ac9a5d79c3d8426361267207606131f115 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/provider/openxr/XrProvider.java
+@@ -1,81 +1,81 @@
+-package org.vmstudio.visor.core.client.provider.openxr;
+-
+-import me.phoenixra.atumvr.api.AtumVRLogger;
+-import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
+-import me.phoenixra.atumvr.core.XRProvider;
+-import me.phoenixra.atumvr.core.XRState;
+-import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
++package org.vmstudio.visor.core.client.provider.openxr;
++
++import me.phoenixra.atumvr.api.AtumVRLogger;
++import me.phoenixra.atumvr.api.rendering.AtumVRRenderer;
++import me.phoenixra.atumvr.core.XRProvider;
++import me.phoenixra.atumvr.core.XRState;
++import me.phoenixra.atumvr.core.enums.XRGraphicsApi;
+ import me.phoenixra.atumvr.core.enums.XRSessionState;
+-import org.vmstudio.visor.api.client.settings.VRClientSettings;
+-import org.vmstudio.visor.core.client.ClientContext;
+-import org.vmstudio.visor.core.client.VisorClientImpl;
+-import org.vmstudio.visor.core.client.provider.openxr.render.XrRenderer;
+-import org.jetbrains.annotations.NotNull;
+-import org.jetbrains.annotations.Nullable;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
+-
+-public class XrProvider extends XRProvider {
+-
+-    public XrProvider(@NotNull String appName, @NotNull AtumVRLogger logger) {
++import org.vmstudio.visor.api.client.settings.VRClientSettings;
++import org.vmstudio.visor.core.client.ClientContext;
++import org.vmstudio.visor.core.client.VisorClientImpl;
++import org.vmstudio.visor.core.client.provider.openxr.render.XrRenderer;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
++
++public class XrProvider extends XRProvider {
++
++    public XrProvider(@NotNull String appName, @NotNull AtumVRLogger logger) {
+         super(appName, logger);
+ 
+-        ClientContext.rawPoseHandler = new XrRawPoseHandler(this);
+-        ClientContext.inputProvider = inputHandler;
+-    }
+-
+-    @Override
+-    public void initializeVR() throws Throwable {
+-
+-        super.initializeVR();
+-
+-        ClientContext.rawPoseHandler.getTrackersData().setTracking(
+-                !getInputHandler().getTrackerProviders().isEmpty()
+-        );
+-        ClientContext.rawPoseHandler.getHandsData().setTracking(
+-                getInputHandler().getHandsProvider() != null
+-        );
+-
+-        ClientContext.settingsManager.loadOptions();
+-
+-        VisorClientImpl.LOGGER.info("OpenXR initialized");
+-    }
+-
+-    @Override
+-    public void startFrame() {
+-        super.startFrame();
+-        ClientContext.rawPoseHandler.updatePose();
+-    }
+-
+-    @Override
+-    public @Nullable XRGraphicsApi getGraphicsApiPreference() {
+-        return VRClientSettings.getGraphicsApi().toPreference();
+-    }
+-
+-    @Override
+-    public @NotNull XRState createStateHandler() {
+-        return new XRState(this);
+-    }
+-
+-    @Override
+-    public @NotNull XrInputHandler createInputHandler() {
+-        return new XrInputHandler(this);
+-    }
+-
+-    @Override
+-    public @NotNull AtumVRRenderer createRenderer() {
+-        return new XrRenderer(this);
+-    }
+-
+-    @Override
+-    public void onStateChanged(XRSessionState state) {
+-        if(state == XRSessionState.EXITING){
+-            MC.stop();
+-        }
+-    }
+-
+-    @Override
+-    public @NotNull XrInputHandler getInputHandler() {
+-        return (XrInputHandler) super.getInputHandler();
+-    }
+-}
++        ClientContext.rawPoseHandler = new XrRawPoseHandler(this);
++        ClientContext.inputProvider = inputHandler;
++    }
++
++    @Override
++    public void initializeVR() throws Throwable {
++
++        super.initializeVR();
++
++        ClientContext.rawPoseHandler.getTrackersData().setTracking(
++                !getInputHandler().getTrackerProviders().isEmpty()
++        );
++        ClientContext.rawPoseHandler.getHandsData().setTracking(
++                getInputHandler().getHandsProvider() != null
++        );
++
++        ClientContext.settingsManager.loadOptions();
++
++        VisorClientImpl.LOGGER.info("OpenXR initialized");
++    }
++
++    @Override
++    public void startFrame() {
++        super.startFrame();
++        ClientContext.rawPoseHandler.updatePose();
++    }
++
++    @Override
++    public @Nullable XRGraphicsApi getGraphicsApiPreference() {
++        return VRClientSettings.getGraphicsApi().toPreference();
++    }
++
++    @Override
++    public @NotNull XRState createStateHandler() {
++        return new XRState(this);
++    }
++
++    @Override
++    public @NotNull XrInputHandler createInputHandler() {
++        return new XrInputHandler(this);
++    }
++
++    @Override
++    public @NotNull AtumVRRenderer createRenderer() {
++        return new XrRenderer(this);
++    }
++
++    @Override
++    public void onStateChanged(XRSessionState state) {
++        if(state == XRSessionState.EXITING){
++            MC.stop();
++        }
++    }
++
++    @Override
++    public @NotNull XrInputHandler getInputHandler() {
++        return (XrInputHandler) super.getInputHandler();
++    }
++}
+diff --git a/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java b/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
+index da2f62805d6a6516b61987bed22312999b93e449..6f736a794acd9be90387950058134c9ae0b0f85e 100644
+--- a/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
++++ b/visor-core/src/main/java/org/vmstudio/visor/core/client/render/target/types/RenderTargetMain.java
+@@ -1,77 +1,78 @@
+-package org.vmstudio.visor.core.client.render.target.types;
+-
+-import com.mojang.blaze3d.pipeline.RenderTarget;
+-import lombok.Getter;
+-import me.phoenixra.atumvr.api.utils.GLUtils;
+-import org.vmstudio.visor.core.client.VisorClientImpl;
+-import org.vmstudio.visor.extensions.client.WindowExtension;
+-import org.vmstudio.visor.extensions.client.render.RenderTargetExtension;
+-import org.vmstudio.visor.core.client.render.target.RenderTargetHolder;
+-import org.vmstudio.visor.core.client.render.target.VRRenderTarget;
+-import net.minecraft.client.Minecraft;
+-
+-import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
+-
+-
+-public class RenderTargetMain implements RenderTargetHolder {
+-    @Getter
+-    private RenderTarget target;
+-    @Getter
+-    private RenderTarget mirrorTarget;
+-
+-    @Override
+-    public void init(int width, int height) throws Exception {
+-        target = new VRRenderTarget(
+-                "Main VR",
+-                width, height,
+-                true,
+-                () -> -1,
+-                 true,
+-                true
+-        );
+-        GLUtils.checkGLError("Main VR target setup");
+-        VisorClientImpl.LOGGER.info(this.target.toString());
+-
+-        var mcWindow = (WindowExtension) (Object) MC.getWindow();
+-        this.mirrorTarget = new VRRenderTarget(
+-                "Mirror",
+-                mcWindow.visor$mcScreenWidth(),
+-                mcWindow.visor$mcScreenHeight(),
+-                true, () -> -1,
+-                false, false
+-        );
+-        GLUtils.checkGLError("Mirror VR target setup");
+-        VisorClientImpl.LOGGER.info(this.mirrorTarget.toString());
+-
+-
+-
+-
+-    }
+-
+-    @Override
+-    public void resize(int width, int height) throws Exception {
+-        ((RenderTargetExtension) target).visor$setUseStencil(
+-                true
+-        );
+-        target.resize(width, height, Minecraft.ON_OSX);
+-        var mcWindow = (WindowExtension) (Object) MC.getWindow();
+-        this.mirrorTarget.resize(
+-                Math.max(1, mcWindow.visor$mcScreenWidth()),
+-                Math.max(1, mcWindow.visor$mcScreenHeight()),
+-                Minecraft.ON_OSX
+-        );
+-
+-    }
+-
+-    @Override
+-    public void destroy() {
+-        if(target != null) {
+-            target.destroyBuffers();
+-            target = null;
+-        }
+-        if(mirrorTarget != null) {
+-            mirrorTarget.destroyBuffers();
+-            mirrorTarget = null;
+-        }
+-    }
+-}
++package org.vmstudio.visor.core.client.render.target.types;
++
++import com.mojang.blaze3d.pipeline.RenderTarget;
++import lombok.Getter;
++import me.phoenixra.atumvr.core.session.platform.XRPlatform;
++import me.phoenixra.atumvr.api.utils.GLUtils;
++import org.vmstudio.visor.core.client.VisorClientImpl;
++import org.vmstudio.visor.extensions.client.WindowExtension;
++import org.vmstudio.visor.extensions.client.render.RenderTargetExtension;
++import org.vmstudio.visor.core.client.render.target.RenderTargetHolder;
++import org.vmstudio.visor.core.client.render.target.VRRenderTarget;
++import net.minecraft.client.Minecraft;
++
++import static org.vmstudio.visor.core.client.VisorClientImpl.MC;
++
++
++public class RenderTargetMain implements RenderTargetHolder {
++    @Getter
++    private RenderTarget target;
++    @Getter
++    private RenderTarget mirrorTarget;
++
++    @Override
++    public void init(int width, int height) throws Exception {
++        target = new VRRenderTarget(
++                "Main VR",
++                width, height,
++                true,
++                () -> -1,
++                 true,
++                true
++        );
++        GLUtils.checkGLError("Main VR target setup");
++        VisorClientImpl.LOGGER.info(this.target.toString());
++
++        var mcWindow = (WindowExtension) (Object) MC.getWindow();
++        this.mirrorTarget = new VRRenderTarget(
++                "Mirror",
++                XRPlatform.isAndroid() ? 1 : mcWindow.visor$mcScreenWidth(),
++                XRPlatform.isAndroid() ? 1 : mcWindow.visor$mcScreenHeight(),
++                true, () -> -1,
++                false, false
++        );
++        GLUtils.checkGLError("Mirror VR target setup");
++        VisorClientImpl.LOGGER.info(this.mirrorTarget.toString());
++
++
++
++
++    }
++
++    @Override
++    public void resize(int width, int height) throws Exception {
++        ((RenderTargetExtension) target).visor$setUseStencil(
++                true
++        );
++        target.resize(width, height, Minecraft.ON_OSX);
++        var mcWindow = (WindowExtension) (Object) MC.getWindow();
++        this.mirrorTarget.resize(
++                XRPlatform.isAndroid() ? 1 : Math.max(1, mcWindow.visor$mcScreenWidth()),
++                XRPlatform.isAndroid() ? 1 : Math.max(1, mcWindow.visor$mcScreenHeight()),
++                Minecraft.ON_OSX
++        );
++
++    }
++
++    @Override
++    public void destroy() {
++        if(target != null) {
++            target.destroyBuffers();
++            target = null;
++        }
++        if(mirrorTarget != null) {
++            mirrorTarget.destroyBuffers();
++            mirrorTarget = null;
++        }
++    }
++}
+diff --git a/visor-fabric/build.gradle b/visor-fabric/build.gradle
+index fe82fbbf7cc238f5a689fa66b0463709dcc767f3..dac6ac6266589d03124b16223bfa15290cd0ca7b 100644
+--- a/visor-fabric/build.gradle
++++ b/visor-fabric/build.gradle
+@@ -1,115 +1,111 @@
+-plugins {
+-    alias(libs.plugins.shadow)
+-}
+-
+-architectury {
+-    platformSetupLoomIde()
+-    fabric()
+-}
+-
+-loom {
+-    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
+-}
+-
+-configurations {
+-    common
+-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+-    compileClasspath.extendsFrom common
+-    runtimeClasspath.extendsFrom common
+-    developmentFabric.extendsFrom common
+-}
+-version = version+"+mc"+libs.versions.minecraftVersion.get()+"-fabric"
+-dependencies {
+-    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
+-
+-    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
+-    shadowCommon(project(path: ":visor-core", configuration: "transformProductionFabric")) { transitive false }
+-    common(project(path: ":visor-core", configuration: "namedElements")) { transitive false }
+-
+-
+-
+-    String lwjglVersion = "${libs.versions.lwjgl.get()}"
+-    String fabricApiVersion = "${libs.versions.fabric.api.get()}+${libs.versions.minecraftVersion.get()}";
+-
+-    modImplementation(libs.fabric.loader)
+-    modApi "net.fabricmc.fabric-api:fabric-api:$fabricApiVersion"
+-
+-
+-    // ---- LOCAL DEPENDENCY
+-    shadowCommon(modApi(name: 'atumvr-api-1.14.0beta-snapshot#23')) { transitive = false }
+-    shadowCommon(modApi(name: 'atumvr-core-1.14.0beta-snapshot#23')) { transitive = false }
+-    // ----
+-    //shadowCommon(libs.atumvr.api) { transitive = false }
+-    //shadowCommon(libs.atumvr.core) { transitive = false }
+-    shadowCommon(libs.atumvr.config)
+-
+-
+-
+-    include(implementation(libs.lwjgl.openxr.get()))
+-    include(implementation("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-linux"))
+-    include(implementation("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-windows"))
+-
+-    //vulkan bridge rail; no natives jar - lwjgl-vulkan loads the system loader
+-    include(implementation(libs.lwjgl.vulkan.get()))
+-
+-
+-
+-    include(modImplementation(fabricApi.module("fabric-resource-loader-v0",  fabricApiVersion)))
+-
+-    include(modImplementation(fabricApi.module("fabric-api-base",  fabricApiVersion)))
+-    include(modImplementation(fabricApi.module("fabric-command-api-v2",  fabricApiVersion)))
+-
+-
+-}
+-
+-processResources {
+-    inputs.property "version", parent.version
+-
+-    filesMatching("fabric.mod.json") {
+-        expand "version": parent.version
+-    }
+-}
+-
+-
+-shadowJar {
+-    exclude "architectury.common.json"
+-    exclude "org.joml"
+-    exclude "org.lwjgl"
+-    exclude "org.slf4j"
+-
+-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+-    configurations = [
+-            project.configurations.shadowCommon
+-    ]
+-    archiveClassifier.set("dev")
+-
+-    relocate("org.yaml","${project.group}.libs.org.yaml")
+-    relocate("org.tomlj","${project.group}.libs.org.tomlj")
+-    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
+-    relocate("org.antlr","${project.group}.libs.org.antlr")
+-
+-    relocate("com.google.gson","${project.group}.libs.com.google.gson")
+-    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
+-
+-}
+-
+-remapJar {
+-    injectAccessWidener = true
+-    input.set shadowJar.archiveFile
+-    dependsOn shadowJar
+-    archiveClassifier.set('')
+-}
+-
+-sourcesJar {
+-    def commonSources = project(":visor-core").sourcesJar
+-    def apiSources = project(":visor-api").sourcesJar
+-    dependsOn commonSources, apiSources
+-    from commonSources.archiveFile.map { zipTree(it) }
+-    from apiSources.archiveFile.map { zipTree(it) }
+-}
+-
+-components.java {
+-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+-        skip()
+-    }
+-}
+\ No newline at end of file
++plugins {
++    alias(libs.plugins.shadow)
++}
++
++architectury {
++    platformSetupLoomIde()
++    fabric()
++}
++
++loom {
++    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
++}
++
++configurations {
++    common
++    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
++    compileClasspath.extendsFrom common
++    runtimeClasspath.extendsFrom common
++    developmentFabric.extendsFrom common
++}
++version = version+"+mc"+libs.versions.minecraftVersion.get()+"-fabric"
++dependencies {
++    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
++
++    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive false }
++    shadowCommon(project(path: ":visor-core", configuration: "transformProductionFabric")) { transitive false }
++    common(project(path: ":visor-core", configuration: "namedElements")) { transitive false }
++
++
++
++    String lwjglVersion = "${libs.versions.lwjgl.get()}"
++    String fabricApiVersion = "${libs.versions.fabric.api.get()}+${libs.versions.minecraftVersion.get()}";
++
++    modImplementation(libs.fabric.loader)
++    // Fresh launcher instances must include networking/rendering API modules too.
++    include(modApi("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion"))
++
++
++    // ---- LOCAL DEPENDENCY
++    shadowCommon(modApi(name: 'atumvr-api-pico')) { transitive = false }
++    shadowCommon(modApi(name: 'atumvr-core-pico')) { transitive = false }
++    // ----
++    //shadowCommon(libs.atumvr.api) { transitive = false }
++    //shadowCommon(libs.atumvr.core) { transitive = false }
++    shadowCommon(libs.atumvr.config)
++
++
++
++    // QuestCraft supplies ARM64 natives. Bundle Android OpenXR Java bindings only.
++    shadowCommon files(rootProject.file('libs/lwjgl-openxr-quest-3.3.3.jar'))
++
++    //vulkan bridge rail; no natives jar - lwjgl-vulkan loads the system loader
++    include(implementation(libs.lwjgl.vulkan.get()))
++
++
++
++
++
++}
++
++processResources {
++    inputs.property "version", parent.version
++
++    filesMatching("fabric.mod.json") {
++        expand "version": parent.version
++    }
++}
++
++
++shadowJar {
++    exclude "architectury.common.json"
++    exclude "org.joml"
++    exclude "org.lwjgl"
++    exclude "org.slf4j"
++
++    duplicatesStrategy DuplicatesStrategy.EXCLUDE
++    configurations = [
++            project.configurations.shadowCommon
++    ]
++    archiveClassifier.set("dev")
++
++    relocate("org.yaml","${project.group}.libs.org.yaml")
++    relocate("org.tomlj","${project.group}.libs.org.tomlj")
++    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
++    relocate("org.antlr","${project.group}.libs.org.antlr")
++
++    relocate("com.google.gson","${project.group}.libs.com.google.gson")
++    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
++
++}
++
++remapJar {
++    injectAccessWidener = true
++    input.set shadowJar.archiveFile
++    dependsOn shadowJar
++    archiveClassifier.set('')
++}
++
++sourcesJar {
++    def commonSources = project(":visor-core").sourcesJar
++    def apiSources = project(":visor-api").sourcesJar
++    dependsOn commonSources, apiSources
++    from commonSources.archiveFile.map { zipTree(it) }
++    from apiSources.archiveFile.map { zipTree(it) }
++}
++
++components.java {
++    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
++        skip()
++    }
++}
+diff --git a/visor-forge/build.gradle b/visor-forge/build.gradle
+index d83b617945dbf4c403498972da97dac5f6f5ebce..8b9f472225ed45140b1ae6cca79e7d87cf9c74dd 100644
+--- a/visor-forge/build.gradle
++++ b/visor-forge/build.gradle
+@@ -1,139 +1,135 @@
+-plugins {
+-    alias(libs.plugins.shadow)
+-}
+-
+-architectury {
+-    platformSetupLoomIde()
+-    forge()
+-}
+-loom {
+-    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
+-
+-    forge {
+-        convertAccessWideners = true
+-        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
+-
+-        mixinConfig "visor.mixins.json"
+-        mixinConfig "visor.sodium.mixins.json"
+-        mixinConfig "visor.replaymod.mixins.json"
+-        mixinConfig "visor.flashback.mixins.json"
+-        mixinConfig "visor.dh.mixins.json"
+-        mixinConfig "visor.dynamicfps.mixins.json"
+-        mixinConfig "visor.iris.mixins.json"
+-        mixinConfig "visor.blur.mixins.json"
+-        mixinConfig "visor.mixins.forge.json"
+-    }
+-}
+-
+-configurations {
+-    common
+-    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
+-    bundle {
+-        // bundle command, to copy jar contents with the shadow plugin
+-        canBeResolved = true
+-        canBeConsumed = false
+-    }
+-    compileClasspath.extendsFrom common
+-    runtimeClasspath.extendsFrom common
+-    developmentForge.extendsFrom common
+-}
+-
+-version = version+"+mc"+libs.versions.minecraftVersion.get()+"-forge"
+-
+-dependencies {
+-    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
+-
+-    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive = false }
+-    shadowCommon(project(path: ":visor-core", configuration: "transformProductionForge")) { transitive = false }
+-    common(project(path: ":visor-core", configuration: "namedElements")) { transitive false }
+-
+-
+-    //
+-    String lwjglVersion = "${libs.versions.lwjgl.get()}"
+-    String forgeVersion = "${libs.versions.minecraftVersion.get()}-${libs.versions.forgeVersion.get()}"
+-
+-    forge "net.minecraftforge:forge:$forgeVersion"
+-    //mixin extras
+-    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinExtras.get()}"))
+-    implementation(include("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinExtras.get()}"))
+-
+-
+-
+-    // ---- LOCAL DEPENDENCY
+-    shadowCommon(modApi(name: 'atumvr-api-1.14.0beta-snapshot#23')) { transitive = false }
+-    shadowCommon(modApi(name: 'atumvr-core-1.14.0beta-snapshot#23')) { transitive = false }
+-    // ----
+-    //shadowCommon(libs.atumvr.api) { transitive = false }
+-    //shadowCommon(libs.atumvr.core) { transitive = false }
+-    shadowCommon(libs.atumvr.config)
+-
+-
+-
+-    forgeRuntimeLibrary(libs.lwjgl.openxr)
+-    forgeRuntimeLibrary("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-linux")
+-    forgeRuntimeLibrary("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-windows")
+-
+-    //vulkan bridge rail; no natives jar - lwjgl-vulkan loads the system loader
+-    forgeRuntimeLibrary(libs.lwjgl.vulkan)
+-
+-    // shadow the natives
+-    bundle(libs.lwjgl.openxr) { transitive = false }
+-    bundle("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-linux") { transitive = false }
+-    bundle("org.lwjgl:lwjgl-openxr:$lwjglVersion:natives-windows") { transitive = false }
+-    bundle(libs.lwjgl.vulkan) { transitive = false }
+-
+-}
+-
+-processResources {
+-    inputs.property "version", parent.version
+-
+-    filesMatching("META-INF/mods.toml") {
+-        expand "version": parent.version
+-    }
+-}
+-
+-shadowJar {
+-    exclude "fabric.mod.json"
+-    exclude "architectury.common.json"
+-    exclude "org.joml"
+-    exclude "org.lwjgl"
+-    exclude "org.slf4j"
+-
+-    duplicatesStrategy DuplicatesStrategy.EXCLUDE
+-    configurations = [
+-            project.configurations.shadowCommon,
+-            project.configurations.bundle
+-    ]
+-    archiveClassifier.set("dev")
+-
+-    relocate("org.yaml","${project.group}.libs.org.yaml")
+-    relocate("org.tomlj","${project.group}.libs.org.tomlj")
+-    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
+-    relocate("org.antlr","${project.group}.libs.org.antlr")
+-
+-    relocate("com.google.gson","${project.group}.libs.com.google.gson")
+-    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
+-
+-
+-}
+-
+-remapJar {
+-    input.set shadowJar.archiveFile
+-    dependsOn shadowJar
+-    archiveClassifier.set('')
+-}
+-
+-sourcesJar {
+-    def commonSources = project(":visor-core").sourcesJar
+-    def apiSources = project(":visor-api").sourcesJar
+-    dependsOn commonSources, apiSources
+-    from commonSources.archiveFile.map { zipTree(it) }
+-    from apiSources.archiveFile.map { zipTree(it) }
+-}
+-
+-
+-components.java {
+-    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
+-        skip()
+-    }
++plugins {
++    alias(libs.plugins.shadow)
++}
++
++architectury {
++    platformSetupLoomIde()
++    forge()
++}
++loom {
++    accessWidenerPath = project(":visor-api").file("src/main/resources/visor.accesswidener")
++
++    forge {
++        convertAccessWideners = true
++        extraAccessWideners.add loom.accessWidenerPath.get().asFile.name
++
++        mixinConfig "visor.mixins.json"
++        mixinConfig "visor.sodium.mixins.json"
++        mixinConfig "visor.replaymod.mixins.json"
++        mixinConfig "visor.flashback.mixins.json"
++        mixinConfig "visor.dh.mixins.json"
++        mixinConfig "visor.dynamicfps.mixins.json"
++        mixinConfig "visor.iris.mixins.json"
++        mixinConfig "visor.blur.mixins.json"
++        mixinConfig "visor.mixins.forge.json"
++    }
++}
++
++configurations {
++    common
++    shadowCommon // Don't use shadow from the shadow plugin because we don't want IDEA to index this.
++    bundle {
++        // bundle command, to copy jar contents with the shadow plugin
++        canBeResolved = true
++        canBeConsumed = false
++    }
++    compileClasspath.extendsFrom common
++    runtimeClasspath.extendsFrom common
++    developmentForge.extendsFrom common
++}
++
++version = version+"+mc"+libs.versions.minecraftVersion.get()+"-forge"
++
++dependencies {
++    compileOnly(project(path: ':visor-api', configuration: 'namedElements'))
++
++    shadowCommon(project(path: ":visor-api", configuration: "namedElements")) { transitive = false }
++    shadowCommon(project(path: ":visor-core", configuration: "transformProductionForge")) { transitive = false }
++    common(project(path: ":visor-core", configuration: "namedElements")) { transitive false }
++
++
++    //
++    String lwjglVersion = "${libs.versions.lwjgl.get()}"
++    String forgeVersion = "${libs.versions.minecraftVersion.get()}-${libs.versions.forgeVersion.get()}"
++
++    forge "net.minecraftforge:forge:$forgeVersion"
++    //mixin extras
++    compileOnly(annotationProcessor("io.github.llamalad7:mixinextras-common:${libs.versions.mixinExtras.get()}"))
++    implementation(include("io.github.llamalad7:mixinextras-forge:${libs.versions.mixinExtras.get()}"))
++
++
++
++    // ---- LOCAL DEPENDENCY
++    shadowCommon(modApi(name: 'atumvr-api-pico')) { transitive = false }
++    shadowCommon(modApi(name: 'atumvr-core-pico')) { transitive = false }
++    // ----
++    //shadowCommon(libs.atumvr.api) { transitive = false }
++    //shadowCommon(libs.atumvr.core) { transitive = false }
++    shadowCommon(libs.atumvr.config)
++
++
++
++    forgeRuntimeLibrary files(rootProject.file('libs/lwjgl-openxr-quest-3.3.3.jar'))
++
++    //vulkan bridge rail; no natives jar - lwjgl-vulkan loads the system loader
++    forgeRuntimeLibrary(libs.lwjgl.vulkan)
++
++    // shadow the natives
++    bundle files(rootProject.file('libs/lwjgl-openxr-quest-3.3.3.jar'))
++    bundle(libs.lwjgl.vulkan) { transitive = false }
++
++}
++
++processResources {
++    inputs.property "version", parent.version
++
++    filesMatching("META-INF/mods.toml") {
++        expand "version": parent.version
++    }
++}
++
++shadowJar {
++    exclude "fabric.mod.json"
++    exclude "architectury.common.json"
++    exclude "org.joml"
++    exclude "org.lwjgl"
++    exclude "org.slf4j"
++
++    duplicatesStrategy DuplicatesStrategy.EXCLUDE
++    configurations = [
++            project.configurations.shadowCommon,
++            project.configurations.bundle
++    ]
++    archiveClassifier.set("dev")
++
++    relocate("org.yaml","${project.group}.libs.org.yaml")
++    relocate("org.tomlj","${project.group}.libs.org.tomlj")
++    relocate("org.checkerframework","${project.group}.libs.org.checkerframework")
++    relocate("org.antlr","${project.group}.libs.org.antlr")
++
++    relocate("com.google.gson","${project.group}.libs.com.google.gson")
++    relocate("redempt.crunch","${project.group}.libs.redempt.crunch")
++
++
++}
++
++remapJar {
++    input.set shadowJar.archiveFile
++    dependsOn shadowJar
++    archiveClassifier.set('')
++}
++
++sourcesJar {
++    def commonSources = project(":visor-core").sourcesJar
++    def apiSources = project(":visor-api").sourcesJar
++    dependsOn commonSources, apiSources
++    from commonSources.archiveFile.map { zipTree(it) }
++    from apiSources.archiveFile.map { zipTree(it) }
++}
++
++
++components.java {
++    withVariantsFromConfiguration(project.configurations.shadowRuntimeElements) {
++        skip()
++    }
+ }
+\ No newline at end of file

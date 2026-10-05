@@ -1,0 +1,15 @@
+{
+  "release": "alpha.13",
+  "versionCode": 13,
+  "minecraft": "1.20.1",
+  "forge": "1.20.1-47.4.20",
+  "visorAsset": "Visor-0.5.0-android-forge.1.jar",
+  "visorBuild": "Visor-0.5.0+mc1.20.1-forge.jar",
+  "fabricVisorAsset": "Visor-0.5.0-android-fabric.1.jar",
+  "fabricVisorBuild": "Visor-0.5.0+mc1.20.1-fabric.jar",
+  "bridgeAsset": "Visor-Android-Bridge-0.1.1.jar",
+  "targets": [
+    { "name": "Pico", "applicationId": "com.qcxr.qcxr.visor.forge.pico", "productName": "Visor Forge Pico (Experimental)", "method": "QuestCraftAndroidBuild.BuildPico" },
+    { "name": "Quest", "applicationId": "com.qcxr.qcxr.visor.forge.quest", "productName": "Visor Forge Quest (Experimental)", "method": "QuestCraftAndroidBuild.BuildQuest" }
+  ]
+}

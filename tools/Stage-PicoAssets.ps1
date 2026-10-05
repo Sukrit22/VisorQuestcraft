@@ -1,25 +1,26 @@
+param([switch]$Offline)
 $ErrorActionPreference = 'Stop'
 $workspace = Split-Path $PSScriptRoot -Parent
-$visor = Get-ChildItem "$workspace/sources/Visor-0.5.0/visor-forge/build/libs" -Filter 'Visor-0.5.0+mc1.20.1-forge.jar' | Select-Object -First 1
-if (!$visor) { throw 'Build the Visor 0.5.0 Pico Forge jar before staging assets.' }
-Add-Type -AssemblyName System.IO.Compression.FileSystem
-$archive = [IO.Compression.ZipFile]::OpenRead($visor.FullName)
-try {
-    foreach ($entry in @('META-INF/mods.toml','org/vmstudio/visor/core/client/provider/openxr/QuestAndroidXRBridge.class','me/phoenixra/atumvr/core/session/platform/XRPlatform.class','org/lwjgl/openxr/XrGraphicsBindingOpenGLESAndroidKHR.class')) {
-        if (!$archive.GetEntry($entry)) { throw "Missing Android/Forge component: $entry" }
-    }
-    $reader = [IO.StreamReader]::new($archive.GetEntry('META-INF/mods.toml').Open())
-    $metadata = $reader.ReadToEnd()
-    $reader.Dispose()
-    if ($metadata -notmatch '(?m)^version\s*=\s*"0\.5\.0"\s*$') { throw 'Unexpected Visor version in Forge metadata' }
-} finally { $archive.Dispose() }
-$runtime = "$workspace/prepared/forge/1.20.1-47.4.20"
+. "$PSScriptRoot/Visor-DownloadManifest.ps1"
+$config = Get-Content "$workspace/build-targets/android.json" -Raw | ConvertFrom-Json
+$manifest = Get-VisorManifest $workspace
+$runtime = Join-Path $workspace "prepared/forge/$($config.forge)"
 if (!(Test-Path "$runtime/profile.json")) { throw 'Run Prepare-Forge.ps1 first.' }
-$assets = "$workspace/sources/Pojlib/src/main/assets"
-New-Item -ItemType Directory -Force "$assets/mods/forge","$assets/forge/1.20.1-47.4.20" | Out-Null
-Copy-Item -LiteralPath $visor.FullName -Destination "$assets/mods/forge/Visor-0.5.0-pico-alpha.4.jar"
-Copy-Item -LiteralPath "$runtime/profile.json" -Destination "$assets/forge/1.20.1-47.4.20/profile.json"
-Copy-Item -LiteralPath "$runtime/libraries" -Destination "$assets/forge/1.20.1-47.4.20" -Recurse -Force
-Write-Host 'Staged the verified Android Forge Visor jar and prepared Forge runtime in Pojlib assets.'
-
-
+$assets = Join-Path $workspace 'sources/Pojlib/src/main/assets'
+# Resolve and validate everything before changing staged assets.
+$resolved = @($manifest.artifacts | ForEach-Object {
+    $path = Resolve-VisorArtifact $workspace $_ $Offline.IsPresent
+    [pscustomobject]@{ item=$_; path=$path; hash=(Get-FileHash -LiteralPath $path).Hash }
+})
+$receipt = [ordered]@{ schemaVersion=1; manifestSHA256=(Get-FileHash "$workspace/build-targets/visor-downloads.json").Hash; artifacts=@() }
+foreach ($artifact in $resolved) {
+    $destination = Join-Path $assets $artifact.item.asset
+    New-Item -ItemType Directory -Force (Split-Path $destination -Parent) | Out-Null
+    Copy-Item -LiteralPath $artifact.path -Destination $destination -Force
+    $receipt.artifacts += [ordered]@{ id=$artifact.item.id; asset=$artifact.item.asset; sha256=$artifact.hash }
+}
+New-Item -ItemType Directory -Force "$assets/forge/$($config.forge)" | Out-Null
+Copy-Item -LiteralPath "$runtime/profile.json" -Destination "$assets/forge/$($config.forge)/profile.json" -Force
+Copy-Item -LiteralPath "$runtime/libraries" -Destination "$assets/forge/$($config.forge)" -Recurse -Force
+$receipt | ConvertTo-Json -Depth 10 | Set-Content "$assets/visor-downloads.staged.json" -Encoding utf8NoBOM
+Write-Host 'Staged four validated Android artifacts, download receipt, and prepared Forge runtime. Rebuild Pojlib assembleRelease before packaging the APK.'
